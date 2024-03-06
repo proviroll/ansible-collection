@@ -1,0 +1,19 @@
+---
+forest_data_volume: /home/{{ ansible_user }}/forest/forest_data
+forest_config_volume: /home/{{ ansible_user }}/forest/config
+forest_config_filename: config.toml
+forest_home_container: /home/forest
+forest_data_container: /home/forest/forest_data
+forest_user: "{{ ansible_user }}"
+forest_group: "{{ ansible_user }}"
+forest_container_name: forest-{{ network }}-{{ forest_nodetype }}
+filecoin_forest_dockerhub_imagename: ghcr.io/chainsafe/forest
+filecoin_forest_dockerhub_tag: latest
+forest_container_args: "--chain {{ network }} --auto-download-snapshot  --config {{ forest_home_container }}/{{ forest_config_filename }}"
+network:
+forest_nodetype: 
+docker_log_driver: json-file
+# Limit local size to 500MB of logs per container
+docker_log_options:
+  max-file: "5"
+  max-size: 100m

@@ -1,0 +1,89 @@
+[API]
+  # Binding address for the Lotus API
+  #
+  # type: string
+  # env var: LOTUS_API_LISTENADDRESS
+  ListenAddress = "{{ lotus_api_multiaddr }}"
+
+  # type: string
+  # env var: LOTUS_API_REMOTELISTENADDRESS
+  #RemoteListenAddress = ""
+
+  # type: Duration
+  # env var: LOTUS_API_TIMEOUT
+  #Timeout = "30s"
+
+
+[Logging]
+  [Logging.SubsystemLevels]
+    # env var: LOTUS_LOGGING_SUBSYSTEMLEVELS_EXAMPLE-SUBSYSTEM
+    #example-subsystem = "INFO"
+
+
+[Libp2p]
+  # Binding address for the libp2p host - 0 means random port.
+  # Format: multiaddress; see https://multiformats.io/multiaddr/
+  
+  ListenAddresses = ["/ip4/0.0.0.0/tcp/{{ lotus_libp2p_port }}"]
+
+  # ConnMgrLow is the number of connections that the basic connection manager
+  # will trim down to.
+  #
+  # type: uint
+  # env var: LOTUS_LIBP2P_CONNMGRLOW
+  ConnMgrLow = {{ lotus_daemon_conn_mgr_low }} 
+
+  # ConnMgrHigh is the number of connections that, when exceeded, will trigger
+  # a connection GC operation. Note: protected/recently formed connections don't
+  # count towards this limit.
+  #
+  # type: uint
+  # env var: LOTUS_LIBP2P_CONNMGRHIGH
+  ConnMgrHigh = {{ lotus_daemon_conn_mgr_high }}
+  ConnMgrGrace = "5m0s"
+
+[Pubsub]
+    Bootstrapper = true
+    IPColocationWhitelist = ["10.0.0.0/8"]
+
+[Chainstore]
+  # type: bool
+  # env var: LOTUS_CHAINSTORE_ENABLESPLITSTORE
+  EnableSplitstore = true
+
+  [Chainstore.Splitstore]
+    # ColdStoreType specifies the type of the coldstore.
+    # It can be "discard" (default) for discarding cold blocks, "messages" to store only messages or "universal" to store all chain state..
+    #
+    # type: string
+    # env var: LOTUS_CHAINSTORE_SPLITSTORE_COLDSTORETYPE
+    ColdStoreType = "{{ lotus_chainstore_splitstore_coldstoretype }}"
+
+    # HotStoreType specifies the type of the hotstore.
+    # Only currently supported value is "badger".
+    #
+    # type: string
+    # env var: LOTUS_CHAINSTORE_SPLITSTORE_HOTSTORETYPE
+    #HotStoreType = "badger"
+
+    # MarkSetType specifies the type of the markset.
+    # It can be "map" for in memory marking or "badger" (default) for on-disk marking.
+    #
+    # type: string
+    # env var: LOTUS_CHAINSTORE_SPLITSTORE_MARKSETTYPE
+    #MarkSetType = "badger"
+
+    # HotStoreMessageRetention specifies the retention policy for messages, in finalities beyond
+    # the compaction boundary; default is 0.
+    #
+    # type: uint64
+    # env var: LOTUS_CHAINSTORE_SPLITSTORE_HOTSTOREMESSAGERETENTION
+    #HotStoreMessageRetention = 0
+
+    # HotStoreFullGCFrequency specifies how often to perform a full (moving) GC on the hotstore.
+    # A value of 0 disables, while a value 1 will do full GC in every compaction.
+    # Default is 20 (about once a week).
+    #
+    # type: uint64
+    # env var: LOTUS_CHAINSTORE_SPLITSTORE_HOTSTOREFULLGCFREQUENCY
+    HotStoreFullGCFrequency = {{ lotus_chainstore_splitstore_hotstorefullgcfrequency }}

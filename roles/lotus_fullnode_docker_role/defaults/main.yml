@@ -1,0 +1,49 @@
+# if true it will clean everything, and download snapshot, for first run it should be true.
+# for next times should be used based on need
+fresh_sync: false
+
+lotus_user: "{{ ansible_user }}"
+lotus_user_id: "532"
+chain: "calibnet"
+lotus_group: "{{ ansible_user }}"
+lotus_path: "/var/lib/lotus"
+lotus_config_volume: "/home/{{ lotus_user }}/lotus/config"  
+lotus_config_filename: "config.toml"
+#Data need to be defined (ipfs or local volume)
+lotus_data_volume: "/home/{{ ansible_user }}/lotus/data"
+lotus_data_dir: "/data/lotus_data"
+lotus_snapshot_location: "{{ lotus_data_dir }}/snapshot"
+lotus_reset: no
+lotus_daemon_bootstrap: true
+lotus_golog_log_fmt: json
+lotus_env: {}
+
+#config toml vars
+lotus_api_multiaddr: "/ip4/0.0.0.0/tcp/1234/http"
+lotus_libp2p_port: 1347
+lotus_daemon_conn_mgr_low: 1024
+lotus_daemon_conn_mgr_high: 2048
+lotus_chain_badgerstore_disable_fsync: "true" 
+lotus_chainstore_splitstore_coldstoretype: "discard" 
+lotus_chainstore_splitstore_hotstorefullgcfrequency: 1
+
+lotus_ipfs_gateway: "https://proofs.filecoin.io/ipfs/"
+lotus_import_peerkey: false
+lotus_import_wallet: false
+lotus_import_jwt: false
+lotus_daemon_profile: ""
+lotus_daemon_enable_splitstore: false
+#Image vars 
+filecoin_dockerhub_imagename: filecoin/lotus-all-in-one
+filecoin_dockerhub_tag: stable-calibnet
+lotus_container_name: lotus-calibnet-fullnode
+docker_log_driver: json-file
+lotus_container_args: "lotus daemon --import-snapshot {{ lotus_path }}/snapshot/snapshot.forest.car.zst  --remove-existing-chain true --bootstrap={{ lotus_daemon_bootstrap | lower }} --profile={{ lotus_daemon_profile }}"
+# Limit local size to 500MB of logs per container
+docker_log_options:
+  max-file: "5"
+  max-size: 100m
+
+#lotus calibnet snapshot args
+lotus_calibnet_snapshot_args: --import-snapshot "{{ lotus_calibnet_snapshot_url }}" --remove-existing-chain true
+lotus_calibnet_snapshot_url: "https://forest-archive.chainsafe.dev/latest/{{ chain }}/"

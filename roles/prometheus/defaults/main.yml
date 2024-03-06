@@ -1,0 +1,26 @@
+---
+bootstrap_user: devops
+
+container_name_prometheus: prometheus
+
+# Common auth for metrics polling
+metrics_auth_user: infra
+
+prometheus_web_port: 9090
+prometheus_public_port: 39090
+metrics_node_exporter_local_port: 9100
+metrics_node_exporter_public_port: 39100
+
+# All directories should be rooted here, allows to set home_dir_custom
+home_dir_default: /home/{{bootstrap_user}}
+home_dir: "{{ home_dir_custom | default(home_dir_default) }}"
+
+# Data bind volumes, to run docker without privileges
+prometheus_config_dir: "{{home_dir}}/prometheus"
+prometheus_target_dir: "{{prometheus_config_dir}}/targets"
+
+prometheus_config_container_dir: /etc/prometheus
+
+alertmanager_url: 127.0.0.1:{{alertmanager_web_port}}
+
+alertmanager_web_port: 9093

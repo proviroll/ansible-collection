@@ -1,0 +1,3 @@
+---
+- name: Reload prometheus
+  ansible.builtin.command: curl -X POST http://localhost:{{prometheus_web_port}}/-/reload

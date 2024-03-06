@@ -1,0 +1,3 @@
+---
+- name: Restart_forest_docker
+  ansible.builtin.command: docker restart {{ forest_container_name }}

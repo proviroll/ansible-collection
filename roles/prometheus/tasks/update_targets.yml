@@ -1,0 +1,8 @@
+---
+- name: Template prometheus targets files
+  ansible.builtin.template:
+    src: ./templates/targets.yml
+    dest: "{{ prometheus_target_dir }}/targets_{{ item }}.yml"
+  with_items: ["{{ groups['all'] }}"]
+  notify:
+    - Reload prometheus

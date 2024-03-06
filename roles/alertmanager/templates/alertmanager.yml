@@ -1,0 +1,45 @@
+global:
+  resolve_timeout: 1m
+  pagerduty_url: "https://events.pagerduty.com/v2/enqueue"
+
+route:
+  group_wait: 10s
+  group_interval: 10s
+  repeat_interval: 10s
+  receiver: "null"
+  routes:
+    - receiver: "null"
+      match:
+        severity: "none"
+
+    - receiver: "slack_webhook_infra"
+      matchers: 
+        - 'group=~"lotus|forest"'
+        - 'alertname=~"HostOutOfMemory|HostOomKillDetected|SystemMemoryLeakDetected|PrometheusRuleEvaluationFailures|HostDiskWillFillIn24Hours|HostClockNotSynchronizing|HostRequiresReboot"'
+
+    - receiver: "pagerduty-infra-high"
+      matchers:
+        - 'group=~"metrics"'
+        - 'alertname=~"HostOutOfMemory|HostOomKillDetected|SystemMemoryLeakDetected|InstanceDown|PrometheusRuleEvaluationFailures|HostDiskWillFillIn24Hours|HostClockNotSynchronizing|HostRequiresReboot"'
+
+receivers:
+  - name: "null"
+    slack_configs: 
+    ## define slack webhook channel 
+    ## below channel is for testing 
+      - channel: "alert-infra"
+        api_url: "{{ alertmanager_slack_webhook_url }}"
+        send_resolved: true
+
+  - name: "slack_webhook_infra"
+    slack_configs:
+      - channel: "alert-infra"
+        api_url: "{{ alertmanager_slack_webhook_url }}" 
+        send_resolved: true
+  
+  - name: "pagerduty-infra-high"
+    pagerduty_configs:
+      - service_key: "{{pagerduty_infra_service_key}}"
+        send_resolved: true
+
+## TODO refine receivers with alert severity

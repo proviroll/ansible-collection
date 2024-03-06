@@ -1,0 +1,34 @@
+---
+- name: Create data directory for polkadot binary
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    # set the UID and GID to 1000 (non-root) to allow the (node) user inside the container rw to /data
+    owner: "{{ non_root_user }}"
+    group: "{{ non_root_group }}"
+  with_items:
+    - "{{ polkadot_host_data_dir }}"
+
+- name: Deploy and start polkadot container
+  community.docker.docker_container:
+    name: "{{ container_name_polkadot }}"
+    state: started
+    image: "{{ polkadot_image_and_tag }}"
+    pull: true
+    stop_timeout: 20
+    command: "{{ polkadot_args }}"
+    volumes:
+      - "{{ polkadot_host_data_dir }}:{{ polkadot_container_data_dir }}"
+    restart_policy: always
+    network_mode: host
+    log_driver: "{{ docker_log_driver }}"
+    log_options: "{{ docker_log_options }}"
+
+    # labels:
+    #   promtail_logging: "true"
+    #   scrape_location: "polkadot"
+    #   instance: "{{inventory_hostname}}"
+    #   network: "{{hostvars[inventory_hostname]['network']}}"
+    #   client_name: "{{hostvars[inventory_hostname]['polkadot-client-name']}}"
+    #   group: "{{hostvars[inventory_hostname]['group']}}"
+    #   host_type: "{{hostvars[inventory_hostname]['host_type']}}"

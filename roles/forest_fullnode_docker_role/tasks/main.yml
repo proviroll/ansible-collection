@@ -1,0 +1,62 @@
+---
+- name: Create data dir
+  ansible.builtin.file:
+    path: "{{ forest_data_volume }}"
+    state: directory
+
+- name: Create  config dir
+  ansible.builtin.file:
+    path: "{{ forest_config_volume }}"
+    state: directory
+
+- name: Template forest full node config file
+  ansible.builtin.template:
+    src: templates/config.toml.j2
+    dest: "{{ forest_config_volume }}/{{ forest_config_filename }}"
+  notify:
+    - Restart_forest_docker
+
+- name: Match user-group data folder permissions for docker container 
+  become: true
+  ansible.builtin.file:
+    path: "{{ forest_data_volume }}"
+    owner: "{{ forest_user }}"
+    group: "{{ forest_group }}"
+    recurse: true
+
+- name: Match user-group config folder permissions for docker container 
+  become: true
+  ansible.builtin.file:
+    path: "{{ forest_config_volume }}"
+    owner: "{{ forest_user }}"
+    group: "{{ forest_group }}"
+    recurse: true
+
+- name: Start forest node container
+  register: forest_docker_start
+  community.docker.docker_container:
+    name: "{{ forest_container_name }}"
+    state: started
+    image: "{{ filecoin_forest_dockerhub_imagename }}:{{ filecoin_forest_dockerhub_tag }}"
+    pull: true
+    stop_timeout: 20
+    #TODO add genesis file if necessary --genesis="{{ forest_path }}/genesis.car" 
+    #TODO garbage collector var --env "FOREST_GC_TRIGGER_FACTOR=1.4" ( should be added at issue resolution https://github.com/ChainSafe/forest/issues/3863)
+    command: "{{ forest_container_args }}" 
+    volumes:
+      - "{{ forest_data_volume }}:{{ forest_data_container }}"
+      - "{{ forest_config_volume }}/{{ forest_config_filename }}:{{ forest_home_container }}/{{ forest_config_filename }}"
+    restart_policy: always
+    network_mode: host
+    log_driver: "{{ docker_log_driver }}"
+    log_options: "{{ docker_log_options }}"
+    memory_swappiness: 0
+    #run as root to avoid permission issues 
+    #TODO set devops user uid and gid to 1000 at bootstrap
+    user: 0:0
+    labels:
+      promtail_logging: "true"
+      scrape_location: "forest"
+      instance: "{{ inventory_hostname }}"
+      network: "{{ hostvars[inventory_hostname]['network'] }}"
+

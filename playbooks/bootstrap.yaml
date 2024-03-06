@@ -1,0 +1,22 @@
+#bootstrap ansible playbook
+#
+# This playbook allows you to bootstrap your server with common utilities.
+#
+# You can import this playbook within yours by using the following example:
+#
+#  - ansible.builtin.import_playbook: chainsafe.general.bootstrap_server
+#
+- name: "Bootstrap server"
+  hosts: "{{ target | default('all') }}"
+  serial: "{{ batch_count | default('100%') }}"
+  become: true
+  gather_facts: false
+  roles:
+    - role: chainsafe.general.bootstrap
+
+- name: "install packages"
+  hosts: "{{ target | default('all') }}"
+  serial: "{{ batch_count | default('100%') }}"
+  become: true
+  roles:
+    - role: chainsafe.general.install_packages

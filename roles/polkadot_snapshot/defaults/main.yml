@@ -1,0 +1,33 @@
+---
+# defaults file for ansible/polkadot/roles/polkadot_snapshot
+container_name_polkadot: chainsafe_snapshot_server_{{ network }}
+polkadot_image_and_tag: parity/polkadot:latest
+
+# Below user ID will be set in both host and container folders
+non_root_user: "1000"
+non_root_group: "1000"
+
+# Polkadot snapshot data and db paths
+polkadot_container_data_dir: /data
+polkadot_host_data_dir: /home/devops/data/polkadot_snapshot
+polkadot_db_dir: "{% if network != 'polkadot' %}{{ polkadot_host_data_dir }}/chains/ksmcc3/{% else %}{{ polkadot_host_data_dir }}/chains/{{ network }}/{% endif %}"
+
+script_directory: /home/{{ ansible_user }}/script
+logs_directory: /home/{{ ansible_user }}/logs
+
+# Ports
+p2p_port: 30333
+rpc_http_port: 9933
+rpc_ws_port: 9944
+prometheus_port: 9615
+
+# Configurable VARS values in the polkadot_snapshot yml
+snapshot_bucket_name: polkadot-fullnode-snapshots
+snapshot_bucket_region: us-east-2
+aws_s3_endpoint: https://{{ snapshot_bucket_name }}.s3.{{ snapshot_bucket_region }}.amazonaws.com
+aws_access_key:
+aws_secret_key:
+slack_webhook_url:
+network: polkadot
+timeout_period: 8h
+polkadot_snapshot_link:

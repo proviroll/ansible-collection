@@ -1,0 +1,23 @@
+---
+network: westend
+polkadot_image_and_tag: parity/polkadot:latest
+container_name_polkadot: polkadot_{{network}}
+
+# Bind volumes
+polkadot_host_data_dir: /home/{{ansible_user}}/polkadot_{{network}}
+polkadot_container_data_dir: /data
+
+# Below user ID will be set in both host and container folders
+non_root_user: "1000"
+non_root_group: "1000"
+
+polkadot_args:
+  - --base-path "{{polkadot_container_data_dir}}"
+  - --name Chainsafe-validator
+  - --chain="{{network}}"
+
+docker_log_driver: json-file
+# Limit local size to 500MB of logs per container
+docker_log_options:
+  max-file: "5"
+  max-size: 100m

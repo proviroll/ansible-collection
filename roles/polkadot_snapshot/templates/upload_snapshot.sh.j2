@@ -1,0 +1,40 @@
+#!/bin/bash
+# This script is designed for automating the creating of Polkadot node database snapshot to AWS S3. 
+# The script stops the Polkadot node container, creates a compressed snapshot of the blockchain database, 
+# and uploads it to a specified AWS S3 bucket. After the upload, we check to ensure the container is running as expected.
+
+set -euo pipefail
+
+## Configure aws
+aws configure set default.s3.multipart_chunksize 4GB
+aws configure set aws_access_key_id "$AWS_ACCESS_KEY"
+aws configure set aws_secret_access_key "$AWS_SECRET_KEY"
+
+AWS_S3_ENDPOINT={{ aws_s3_endpoint }}
+NETWORK="{{ network }}"
+if [ "$NETWORK" = "kusama" ]; then
+    NETWORK="ksmcc3"
+fi
+BLOCK_HEIGHT=$(curl --silent --show-error http://localhost:9615/metrics | grep "substrate_block_height{status=\"best\",chain=\"$NETWORK\"}" | grep -oP 'substrate_block_height{status="best",chain="'"$NETWORK"'"} \K\d+')
+DB_DIR={{ polkadot_db_dir }}
+
+# Stop the snapshot container
+docker stop {{ container_name_polkadot }}
+docker wait {{ container_name_polkadot }}
+
+# Compress Database to lz4
+SNAPSHOT_NAME=$(echo {{ network }}-$BLOCK_HEIGHT.tar.lz4)
+cd $DB_DIR
+tar cvf - db 2> /dev/null | lz4 > "{{ polkadot_host_data_dir }}/$SNAPSHOT_NAME"
+
+docker start {{ container_name_polkadot }}
+
+aws --endpoint "$AWS_S3_ENDPOINT" s3 cp --no-progress {{ polkadot_host_data_dir }}/$SNAPSHOT_NAME s3://{{ snapshot_bucket_name }}/{{ network }}/
+rm {{ polkadot_host_data_dir }}/$SNAPSHOT_NAME
+
+# Make sure the Polkadot Full node is working
+if [ "$(docker inspect -f {% raw %}'{{.State.Running}}'{% endraw %} {{ container_name_polkadot }})" != "true" ]; then
+    echo "Container {{ container_name_polkadot }} is not running"
+    exit 1
+fi
+

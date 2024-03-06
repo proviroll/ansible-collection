@@ -1,0 +1,52 @@
+import os
+import subprocess
+import requests
+from datetime import datetime
+
+CHAIN_NAME = "{{ network }}"
+
+def get_env_variable(name):
+    return os.environ.get(name)
+
+def post_slack_message_webhook(webhook_url, message, log_contents=None):
+    headers = {'Content-type': 'application/json'}
+    data = {"text": message}
+    
+    response = requests.post(webhook_url, json=data, headers=headers)
+    if response.status_code == 200:
+        print("Slack message sent.")
+        if log_contents:
+            # Send another message with the log contents
+            log_message = {"text": f"Log Files Contents:\n```{log_contents}```"}
+            response_log = requests.post(webhook_url, json=log_message, headers=headers)
+            if response_log.status_code != 200:
+                print(f"Error sending log contents to Slack: {response_log.text}")
+    else:
+        print(f"Error sending Slack message: {response.text}")
+
+def run_snapshot(chain_name):
+    date_str = datetime.now().strftime('%Y%m%d_%H%M%S')
+    log_file = f"../logs/{chain_name}_{date_str}_export.txt"
+
+    # Execute the bash script
+    command = f"bash -c 'timeout --signal=KILL {{ timeout_period }} ./upload_snapshot.sh' > {log_file} 2>&1"
+    process = subprocess.run(command, shell=True, text=True)
+
+    log_contents = None
+    with open(log_file, 'r') as file:
+        log_contents = file.read()
+        print(f"Snapshot export log:\n{log_contents}")
+
+    if process.returncode == 0:
+        # leaving this here incase we need it back, which i think we should(signed: samuel)
+      # post_slack_message_webhook(SLACK_WEBHOOK_URL, f"✅ Snapshot uploaded for {chain_name}.", log_contents=log_contents)
+      print("✅ Snapshot uploaded")
+    else:
+       post_slack_message_webhook(SLACK_WEBHOOK_URL, f"⛔ Snapshot Upload failed for {chain_name}.", log_contents=log_contents)
+
+     # (TODO) Additional functionality like pruning snapshots can be added here   
+
+# Main execution
+SLACK_WEBHOOK_URL = get_env_variable('SLACK_WEBHOOK_URL')
+
+run_snapshot(CHAIN_NAME)

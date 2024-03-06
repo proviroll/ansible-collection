@@ -1,0 +1,4 @@
+---
+- name: Reload alertmanager
+  ansible.builtin.command: curl -X POST http://localhost:{{ alertmanager_web_port }}/-/reload
+  ignore_errors: true

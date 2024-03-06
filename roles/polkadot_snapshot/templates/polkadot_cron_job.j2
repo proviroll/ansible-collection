@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# shellcheck source=/dev/null
+cd {{ script_directory }} || exit
+source .polkadot_env
+flock -n /tmp/polkadot.lock -c "python3 main.py > ../logs/python_polkadot_snapshots_log.txt 2>&1"

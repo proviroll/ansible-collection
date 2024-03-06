@@ -1,0 +1,11 @@
+---
+- name: Start release tracker 
+  docker_container:
+    name: release-tracker
+    state: started
+    image: "{{ release_tracker_image }}"
+    pull: true
+    restart_policy: always
+    env:
+       GITHUB_ACCESS_TOKEN: "{{ github_access_token }}"
+       SLACK_WEBHOOK_URL: "{{ slack_release_tracker_webhook_url }}"

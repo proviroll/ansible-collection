@@ -1,0 +1,20 @@
+- name: Ensure lotus peerkey
+  block:
+    - name: Verify lotus_libp2p_keyinfo is defined
+      fail: msg="lotus_libp2p_keyinfo is not defined"
+      when: lotus_libp2p_keyinfo is not defined
+    - name: Ensure keystore path created
+      file:
+        path: "{{ lotus_path }}/keystore/"
+        state: directory
+        owner: "{{ lotus_user }}"
+        group: "{{ lotus_user }}"
+        mode: "0700"
+    - name: Ensure peerkey exists
+      become_user: "{{ lotus_user }}"
+      shell:
+        cmd: /usr/local/bin/lotus-shed keyinfo import
+        stdin: "{{ lotus_libp2p_keyinfo }}"
+      ignore_errors: true
+      environment:
+        LOTUS_PATH: "{{ lotus_path }}"

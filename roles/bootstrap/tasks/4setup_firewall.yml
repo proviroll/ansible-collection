@@ -1,0 +1,5 @@
+---
+- name: Setup firewall rules
+  when: setup_firewall
+  ansible.builtin.include_role:
+    name: geerlingguy.firewall

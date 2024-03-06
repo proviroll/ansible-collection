@@ -1,0 +1,24 @@
+---
+# To re-use in start - stop playbooks
+container_name_nginx: nginx
+
+bootstrap_user: devops
+
+#set nginx_dir
+nginx_dir: "{{home_dir_default}}/nginx"
+
+# All directories should be rooted here, allows to set home_dir_custom
+home_dir_default: /home/{{bootstrap_user}}
+home_dir: "{{ home_dir_custom | default(home_dir_default) }}"
+
+#set nginx_conf_file
+nginx_conf_file: nginx.conf
+
+# Common auth for metrics polling
+metrics_auth_user: infra
+#todo rotate this key and store in vault 
+# Rotate every 3 months - Use https://randomkeygen.com/
+metrics_auth_password: "{{ metrics_auth_password }}"
+
+metrics_node_exporter_local_port: 9100
+metrics_node_exporter_public_port: 39100

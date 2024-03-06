@@ -1,0 +1,31 @@
+#!/bin/bash
+# This script is designed for setting up a Polkadot fullnode. 
+# It first downloads and decompresses the blockchain data into the Polkadot host db data directory.
+# After preparing the data, it runs a Docker container for the Polkadot fullnode with the downloaded db.
+
+set -eux pipefail
+
+# Download and Decompress the polkadot snapshot
+cd {{ polkadot_host_data_dir }}
+aria2c -x5 -o temp_file {{ polkadot_snapshot_link }}
+lz4 -c -d temp_file | tar -x -C {{ polkadot_db_dir }}
+rm temp_file
+
+# Start the polkadot Full node
+docker run \
+  --detach \
+  --name="{{ container_name_polkadot }}" \
+  --volume={{ polkadot_host_data_dir }}:{{ polkadot_container_data_dir }} \
+  --publish={{ p2p_port }}:{{ p2p_port }} \
+  --publish={{ rpc_http_port }}:{{ rpc_http_port }} \
+  --publish={{ rpc_ws_port }}:{{ rpc_ws_port }} \
+  --publish={{ prometheus_port }}:{{ prometheus_port }} \
+  --restart=always \
+  {{ polkadot_image_and_tag }} \
+  --base-path {{ polkadot_container_data_dir }} \
+  --chain="{{ network }}" \
+  --wasm-execution Compiled \
+  --rpc-external  \
+  --state-pruning 256 \
+  --prometheus-external \
+  --name "{{ container_name_polkadot }}" || exit 1

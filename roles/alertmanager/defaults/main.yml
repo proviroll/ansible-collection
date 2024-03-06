@@ -1,0 +1,19 @@
+---
+bootstrap_user: devops
+
+# To re-use in start - stop playbooks
+container_name_alertmanager: alertmanager
+
+alertmanager_web_port: 9093
+
+# Data bind volumes, to run docker without privileges
+alertmanager_config_dir: "{{home_dir}}/alertmanager"
+
+home_dir_default: /home/{{bootstrap_user}}
+home_dir: "{{ home_dir_custom | default(home_dir_default) }}"
+
+#Alertmanager config alertmanager_config_file=alertmanager.yml 
+alertmanager_config_file: alertmanager.yml
+
+# alertmanager public port
+alertmanager_public_port: 39093

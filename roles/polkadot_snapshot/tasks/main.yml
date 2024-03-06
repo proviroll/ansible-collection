@@ -1,0 +1,115 @@
+---
+- name: Gracefully Stop the Polkadot Docker Container
+  community.docker.docker_container:
+    name: "{{ container_name_polkadot }}"
+    state: absent
+
+- name: Check for Existing Polkadot Data Directory
+  ansible.builtin.stat:
+    path: "{{ polkadot_host_data_dir }}"
+  register: data_dir
+
+- name: Clean Up Old Polkadot Data Directory (If Present)
+  ansible.builtin.file:
+    path: "{{ polkadot_host_data_dir }}"
+    state: absent
+  when: data_dir.stat.exists
+
+- name: Create Polkadot Data and DB Directories with Proper Permissions
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    recurse: true
+    mode: "0700"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  with_items:
+    - "{{ polkadot_host_data_dir }}"
+    - "{{ polkadot_db_dir }}"
+
+- name: Set Up Polkadot Scripts Directory
+  ansible.builtin.file:
+    path: "{{ script_directory }}"
+    state: directory
+    mode: "0777"
+  become: true
+
+- name: Set Up Polkadot Logs Directory
+  ansible.builtin.file:
+    path: "{{ logs_directory }}"
+    state: directory
+    mode: "0777"
+  become: true
+
+- name: Template Snapshot Upload Script for Polkadot Node
+  ansible.builtin.template:
+    src: upload_snapshot.sh.j2
+    dest: "{{ script_directory }}/upload_snapshot.sh"
+    mode: "0755"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+
+- name: Template Startup Script for Polkadot Node
+  ansible.builtin.template:
+    src: run_polkadot_node.sh.j2
+    dest: "{{ script_directory }}/run_polkadot_node.sh"
+    mode: "0645"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+
+- name: Create Main Python Script Template for Polkadot Operations
+  ansible.builtin.template:
+    src: main.py.j2
+    dest: "{{ script_directory }}/main.py"
+    mode: "0644"
+    owner: "{{ non_root_user }}"
+    group: "{{ non_root_group }}"
+
+- name: Generate Environment Configuration File from Polkadot Template
+  ansible.builtin.template:
+    src: .polkadot_env.j2
+    dest: "{{ script_directory }}/.polkadot_env"
+    mode: "0645"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+
+- name: Copy Initialization Script for Polkadot
+  ansible.builtin.copy:
+    src: init.sh
+    dest: "{{ script_directory }}/init.sh"
+
+- name: Copy and Template Cron Job Script for Polkadot Daily Snapshot Upload
+  ansible.builtin.template:
+    src: polkadot_cron_job.j2
+    dest: "{{ script_directory }}/polkadot_cron_job"
+    mode: "0645"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+
+- name: Ensure Python3 and Pip3 Are Installed
+  ansible.builtin.apt:
+    name:
+      - python3
+      - python3-pip
+    state: present
+  become: true
+
+- name: Install Python 'requests' library
+  ansible.builtin.pip:
+    name: requests
+  become: true
+
+- name: Install Python Slack SDK Using Pip3
+  ansible.builtin.pip:
+    name: slack_sdk
+    extra_args: --upgrade
+    executable: pip3
+
+- name: Execute Polkadot Initialization Script
+  become: true
+  ansible.builtin.shell: |
+    source .polkadot_env 
+    bash ./init.sh > ../logs/init_log.txt 2>&1
+  args:
+    chdir: "{{ script_directory }}"
+    executable: /bin/bash

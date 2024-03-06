@@ -1,0 +1,3 @@
+---
+- ansible.builtin.include_tasks: 1install_common_packages.yml
+- ansible.builtin.include_tasks: 2install_docker_and_docker_compose.yml

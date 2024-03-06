@@ -1,0 +1,21 @@
+---
+github_user_pubkeys: []
+old_github_user_pubkeys: []
+ansible_user: devops
+initial_remote_user: root
+bootstrap_user: devops
+backup_user: loginbackup
+
+#### firewall task vars ####
+setup_firewall: false
+# list of TCP ports to allow incoming traffic
+firewall_allowed_tcp_ports:
+  - 22
+
+# list of UDP ports to allow incoming traffic
+# firewall_allowed_udp_ports:
+#   - 22
+
+# Allow only the IP 167.89.89.18 to access port 4949 (Munin).
+# firewall_additional_rules:
+#   - "iptables -A INPUT -p tcp --dport 4949 -s 167.89.89.18 -j ACCEPT"
