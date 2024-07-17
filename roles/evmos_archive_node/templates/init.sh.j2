@@ -1,0 +1,91 @@
+#!/bin/sh
+#set -uxe
+set -x
+
+MONIKER=${1:-mainnet-archive}
+CHAIN_ID=${2:-evmos_9001-2}
+HOME_PATH="{{ host_home_dir }}"
+DATA_PATH="{{ host_data_dir }}"
+CONFIG_PATH="{{ host_config_dir }}"
+# OWN_PERSISTENT_PEER="evmos-mainnet-0.evmos.svc"
+# OWN_PERSISTENT_PEER_ID=$(curl -s $OWN_PERSISTENT_PEER:26657/status | jq -r .result.node_info.id)
+
+RCLONE_CONFIG="[b2]
+type = b2
+account = {{ backblaze_account}}
+key = {{ backblaze_key }}
+"
+
+mkdir -p $HOME/.config/rclone
+echo "$RCLONE_CONFIG" > "$HOME/.config/rclone/rclone.conf"
+
+touch {{ host_base_dir }}/init_started
+
+rclone_sync_in() {
+    rclone sync b2:evmos-archive-mainnet-snapshot/ $DATA_PATH -P --transfers 16 --checkers=32 --fast-list --buffer-size 1024M
+}
+
+full_init() {
+    evmosd init $MONIKER --chain-id $CHAIN_ID
+
+    cd $HOME_PATH/.evmosd/config/
+    DATA_SIZE_KB=$(du -s -k ~/.evmosd/data | awk '{print $1}')
+    DATA_SIZE_GB=$((DATA_SIZE_KB / 1024 / 1024))
+
+    if [ "$DATA_SIZE_GB" -lt 100 ]; then
+        test -f genesis.json && rm genesis.json
+        test -f addrbook.json && rm addrbook.json
+        evmosd tendermint unsafe-reset-all --home $HOME_PATH/.evmosd --keep-addr-book
+        # Get Genesis
+        curl -s https://snapshots.polkachu.com/genesis/evmos/genesis.json -O
+        rclone_sync_in
+    else
+        echo 'This node has already more than 100GB of data, continue without reset.'
+        du -sh $HOME_PATH/.evmosd/*
+    fi
+
+    date
+    EXTERNAL_IP=$(curl -s curlmyip.org)
+    echo "External IP: $EXTERNAL_IP"
+
+    if [ "$MONIKER" == "{{ inventory_hostname }}" ]; then
+        rclone_sync_in
+    fi
+}
+
+update_config() {
+    Fetch persistent peers
+    export EVMOSD_PERSISTENT_PEERS=""
+
+    cp -v $CONFIG_PATH/.evmosd/init/config.toml $HOME_PATH/.evmosd/config/config.toml
+    cp -v $HOME_PATH/.evmosd/init/app.toml $HOME_PATH/.evmosd/config/app.toml
+
+    toml-cli set $HOME_PATH/.evmosd/config/config.toml moniker $MONIKER
+    toml-cli set $HOME_PATH/.evmosd/config/config.toml p2p.persistent_peers $EVMOSD_PERSISTENT_PEERS
+
+    toml-cli set $HOME_PATH/.evmosd/config/config.toml p2p.external_address "${EXTERNAL_IP:-0.0.0.0}:26656"
+}
+
+if [ -f "$HOME_PATH/.evmosd/config/synced" ]; then
+    echo 'Starting rclone sync'
+    LAST_BLOCK=$(evmosd block $DATA_PATH | jq .last_commit.height)
+    rclone_sync_out
+else
+    echo 'Starting full init'
+    full_init
+fi
+
+# update_config
+rclone_sync_in
+
+#Remove flag-file
+rm -v $HOME_PATH/.evmosd/config/synced
+
+echo '####### config.toml #######'
+# cat $HOME_PATH/.evmosd/config/config.toml
+diff -s $HOME_PATH/.evmosd/init/config.toml $HOME_PATH/.evmosd/config/config.toml
+echo
+echo '####### app.toml #######'
+# cat $HOME_PATH/.evmosd/config/app.toml
+diff -s $HOME_PATH/.evmosd/init/app.toml $HOME_PATH/.evmosd/config/app.toml
+echo "Init script done!"

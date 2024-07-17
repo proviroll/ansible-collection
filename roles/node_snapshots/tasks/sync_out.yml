@@ -1,0 +1,45 @@
+---
+- name: Template sync-out.sh (archive)
+  ansible.builtin.template:
+    src: templates/archive-sync-out.sh.j2
+    dest: '{{ host_config_dir }}/sync-out.sh'
+  when: "'evmos_archive_node' in group_names"
+
+- name: Template sync-out.sh (pruned)
+  ansible.builtin.template:
+    src: templates/pruned-sync-out.sh.j2
+    dest: '{{ host_config_dir }}/sync-out.sh'
+  when: "'evmos_pruned_node' in group_names"
+
+- name: Ensure script is executable
+  ansible.builtin.file:
+    path: '{{ host_config_dir }}/sync-out.sh'
+    mode: '0755'
+
+- name: Schedule sync-out.sh to run once a day (pruned)
+  ansible.builtin.cron:
+    name: evmos sync out
+    user: evmos
+    job: '{{ host_config_dir }}/sync-out.sh > {{ host_config_dir }}/sync-out.log'
+    minute: '0'
+    hour: '12'
+    day: '*'
+    cron_file: sync_out
+  when: automate == true and 'evmos_pruned_node' in group_names
+
+# This should be ran on a Friday for it to work properly
+- name: Schedule sync-out.sh to run every 14 days (archive)
+  ansible.builtin.cron:
+    name: evmos sync out
+    user: evmos
+    job: 'test $(date +\%u) -eq 5 && {{ host_config_dir }}/sync-out.sh > {{ host_config_dir }}/sync-out.log'
+    minute: '0'
+    hour: '12'
+    day: '*/14'
+    cron_file: sync_out
+  when: automate == true and 'evmos_archive_node' in group_names
+
+- name: Run sync-out.sh
+  ansible.builtin.shell:
+    cmd: 'nohup sh {{ host_config_dir }}/sync-out.sh > {{ host_config_dir }}/sync-out.log 2>&1 &'
+  when: automate == false

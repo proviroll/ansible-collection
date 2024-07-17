@@ -1,0 +1,4 @@
+---
+# Defaults
+pyroscope_container_name: pyroscope
+pyroscope_image_name: grafana/pyroscope:latest

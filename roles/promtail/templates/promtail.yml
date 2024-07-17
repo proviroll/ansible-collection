@@ -1,17 +1,15 @@
 server:
-  http_listen_port: {{promrtail_http_listen_port}}
+  http_listen_port: 9080
   grpc_listen_port: 0
 
 positions:
   filename: /tmp/positions.yaml
 
 clients:
-  - url: "{{loki_push_url}}"
+  - url: '{{ loki_push_url }}'
     basic_auth:
-      username: "{{ loki_basic_auth_user }}"
-      password: "{{ loki_basic_auth_password }}"
-
-# local machine logs
+      username: '{{ metrics_auth_user }}'
+      password: '{{ metrics_auth_password }}'
 
 scrape_configs:
   - job_name: docker
@@ -20,7 +18,7 @@ scrape_configs:
         refresh_interval: 5s
         filters:
           - name: label
-            values: ["promtail_logging=true"]
+            values: ['promtail_logging=true']
     relabel_configs:
       - source_labels: ['__meta_docker_container_name']
         regex: '/(.*)'

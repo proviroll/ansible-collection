@@ -1,0 +1,3 @@
+---
+- name: Restart_evmos_docker
+  ansible.builtin.command: docker restart evmosd

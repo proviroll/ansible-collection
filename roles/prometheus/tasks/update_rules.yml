@@ -1,9 +1,9 @@
 ---
 - name: Copy prometheus rules file
-  # Don't template to prevent clashing with altermanager templating
+  # Don't template to prevent clashing with alertmanager templating
   ansible.builtin.copy:
     src: rules.yml
-    dest: "{{ prometheus_config_dir }}/rules.yml"
+    dest: '{{ prometheus_config_dir }}/rules.yml'
     validate: promtool check rules %s
   notify:
     - Reload prometheus

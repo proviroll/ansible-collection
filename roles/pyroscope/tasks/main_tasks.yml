@@ -1,0 +1,12 @@
+---
+- name: Run Pyroscope container
+  community.docker.docker_container:
+    name: '{{ pyroscope_container_name }}'
+    image: ' {{ pyroscope_image }}'
+    state: started
+    recreate: yes
+    pull: yes
+    network_mode: host
+    published_ports:
+      - '4040:4040'
+    cleanup: yes

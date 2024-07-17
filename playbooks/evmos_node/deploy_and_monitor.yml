@@ -1,0 +1,12 @@
+---
+- name: Deploy & monitor a pruned node
+  hosts: evmos_pruned_node
+  become: true
+  roles:
+    - evmos_pruned_node
+
+- name: Deploy & monitor an archive node
+  hosts: evmos_archive_node
+  become: true
+  roles:
+    - evmos_archive_node

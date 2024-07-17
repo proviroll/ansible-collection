@@ -1,0 +1,5 @@
+- name: Setup firewall
+  hosts: all
+  become: true
+  roles:
+    - geerlingguy.firewall

@@ -1,0 +1,40 @@
+---
+# Create dirs
+- name: Create data dir
+  ansible.builtin.file:
+    path: "{{ host_data_dir }}"
+    state: directory
+
+- name: Create config dir
+  ansible.builtin.file:
+    path: "{{ host_config_dir }}"
+    state: directory
+
+# Template files
+- name: Generate persistent_peers strings
+  ansible.builtin.set_fact:
+    persistent_peers: "{{ persistent_peers_list | join(',') }}"
+  vars:
+    persistent_peers_list: "{% set result = [] %}{% for host in groups['evmos_pruned_mainnet'] if host != inventory_hostname %}{% set _ = result.append(hostvars[host]['node-id']
+      + '@' + hostvars[host]['ansible_host'] + ':26656') %}{% endfor %}{{ result }}"
+
+- name: Template evmos pruned node config file
+  ansible.builtin.template:
+    src: templates/config.toml.j2
+    dest: "{{ host_config_dir }}/config.toml"
+  notify:
+    - Restart_evmos_docker
+
+- name: Template evmos pruned node app file
+  ansible.builtin.template:
+    src: templates/app.toml
+    dest: "{{ host_config_dir }}/app.toml"
+  notify:
+    - Restart_evmos_docker
+
+- name: Template evmos pruned node init file
+  ansible.builtin.template:
+    src: templates/init.sh.j2
+    dest: "{{ host_config_dir }}/init.sh"
+  notify:
+    - Restart_evmos_docker

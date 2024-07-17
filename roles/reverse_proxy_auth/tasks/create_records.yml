@@ -1,0 +1,13 @@
+---
+# Create A records on Cloudflare DNS
+- name: Create A record
+  community.general.cloudflare_dns:
+    zone: '{{ root_domain }}'
+    record: '{{ subdomain_prefix + item.name + "." if (network | default("")) else "" + (network | default("")) }}'
+    type: A
+    value: '{{ ansible_host }}'
+    api_token: '{{ cloudflare_token }}'
+    state: present
+  loop: '{{ nginx_servers }}'
+  loop_control:
+    loop_var: item

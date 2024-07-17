@@ -1,0 +1,26 @@
+#!/bin/sh
+
+echo 'Starting the evmos node monitor'
+sleep 30
+
+while true; do
+    localStatus=$(curl -s http://localhost:26657/status)
+    latestBlockHeight=$(echo $localStatus | jq -r .result.sync_info.latest_block_height)
+    catchingUp=$(echo $localStatus | jq .result.sync_info.catching_up)
+    remoteBlockHeight=$(curl -s https://evmos-rpc.polkachu.com/block | jq -r .result.block.header.height)
+    blocksDelta=$(echo $remoteBlockHeight - $latestBlockHeight | bc)
+    timestamp=$(date "+%Y-%m-%d %H:%M:%S")
+
+    if [ "$catchingUp" = "false" ]; then
+        echo "$timestamp Updating configuration..."
+
+        toml set {{ host_config_dir }}/config.toml statesync.enable false
+
+        echo $latestBlockHeight > {{ host_config_dir }}/synced
+        echo "$timestamp node in sync, flag file created at $latestBlockHeight (delta: $blocksDelta)"
+    else
+        echo $timestamp catching up...blocks delta: $blocksDelta
+    fi
+
+    sleep 60
+done

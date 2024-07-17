@@ -1,0 +1,4 @@
+---
+# Host dirs
+host_data_dir: '{{ host_base_dir }}/data'
+host_config_dir: '{{ host_base_dir }}/config'

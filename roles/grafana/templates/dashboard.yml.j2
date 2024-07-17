@@ -1,0 +1,20 @@
+apiVersion: 1
+
+providers:
+  - name: evmos
+    type: file
+    disableDeletion: true
+    updateIntervalSeconds: 60
+    allowUiUpdates: true
+    options:
+      path: "{{ grafana_provisioning_dir }}/dashboards"
+      foldersFromFilesStructure: true
+
+  - name: external_dashboards
+    type: file
+    disableDeletion: true
+    updateIntervalSeconds: 60
+    allowUiUpdates: true
+    options:
+      path: "{{ grafana_external_dashboards_dir }}"
+      foldersFromFilesStructure: true

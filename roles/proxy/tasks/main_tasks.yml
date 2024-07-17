@@ -1,0 +1,44 @@
+---
+- name: Create proxy directory on host
+  ansible.builtin.file:
+    path: '{{ proxy_config_dir }}'
+    state: directory
+
+- name: Template config.json.j2
+  ansible.builtin.template:
+    src: ./templates/config.json.j2
+    dest: '{{ proxy_config_dir }}/config.json'
+
+- name: Write service account key to temporary file
+  ansible.builtin.copy:
+    content: '{{ service_account_key }}'
+    dest: /tmp/service_account_key.json
+    mode: '0600'
+
+- name: Login to Google Container Registry
+  ansible.builtin.shell:
+    cmd: |
+      cat /tmp/service_account_key.json | docker login -u _json_key --password-stdin https://eu.gcr.io
+
+- name: Remove temporary file
+  ansible.builtin.file:
+    path: /tmp/service_account_key.json
+    state: absent
+
+- name: Run proxy container
+  community.docker.docker_container:
+    name: '{{ proxy_container_name }}'
+    image: '{{ proxy_container_image }}'
+    state: started
+    restart_policy: always
+    stop_timeout: 20
+    network_mode: host
+    command: '{{ proxy_container_command }}'
+    volumes:
+      - '{{ proxy_config_dir }}/config.json:/app/config.json'
+    log_driver: json-file
+    log_options:
+      max-file: '10'
+      max-size: 30m
+      mode: non-blocking
+      max-buffer-size: 4m

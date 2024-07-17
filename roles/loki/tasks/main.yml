@@ -1,34 +1,45 @@
-
 - name: Create loki config dir
   file:
-    path: "{{loki_dir}}"
+    path: '{{ loki_dir }}'
     state: directory
 
 - name: Create loki data dir
   file:
-    path: "{{loki_data_dir}}"
+    path: '{{ loki_data_dir }}'
     state: directory
 
 - name: Template config file
   template:
-    src: ./templates/loki.yml
-    dest: "{{loki_config_file_path}}"
+    src: ./templates/loki.yml.j2
+    dest: '{{ loki_config_file_path }}'
+
+- name: Change ownership of Loki directories
+  file:
+    path: '{{ item }}'
+    owner: root
+    group: root
+    recurse: yes
+  with_items:
+    - '{{ loki_dir }}'
+    - '{{ loki_data_dir }}'
+  become: true
 
 - name: Start Loki
   docker_container:
     name: loki
+    user: root
     state: started
-    image: grafana/loki:{{loki_docker_version}}
+    image: grafana/loki:{{ loki_docker_version }}
     pull: true
-    command: "-config.file={{loki_config_file_path}}"
+    command: '-config.file={{ loki_config_file_path }}'
     volumes:
-      - "{{loki_dir}}:{{loki_dir}}"
-      - "{{loki_data_dir}}:{{loki_data_dir}}"
+      - '{{ loki_dir }}:{{ loki_dir }}'
+      - '{{ loki_data_dir }}:{{ loki_data_dir }}'
     restart_policy: unless-stopped
     network_mode: host
     log_driver: json-file
     log_options:
-      max-file: "10"
+      max-file: '10'
       max-size: 30m
       mode: non-blocking
       max-buffer-size: 4m

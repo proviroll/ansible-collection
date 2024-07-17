@@ -1,0 +1,9 @@
+---
+- hosts: metrics
+  become: true
+  vars:
+    grafana_docker_data_dir: /var/lib/grafana
+    prometheus_endpoint: https://prometheus.evmos.dev
+  gather_facts: false
+  roles:
+    - grafana

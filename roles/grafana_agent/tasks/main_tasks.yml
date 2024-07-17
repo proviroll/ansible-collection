@@ -1,0 +1,26 @@
+---
+- name: Create directory for Grafana Agent config file
+  file:
+    path: '{{ grafana_agent_config_dir }}'
+    state: directory
+    mode: '0755'
+
+- name: Template Grafana Agent config file
+  template:
+    src: ./templates/config.river.j2
+    dest: '{{ grafana_agent_config_dir }}/config.river'
+  notify: Restart Grafana Agent
+
+- name: Run Grafana Agent
+  docker_container:
+    name: '{{ grafana_agent_container_name }}'
+    image: '{{ grafana_agent_image }}'
+    command: 'run --server.http.listen-addr=0.0.0.0:{{ grafana_agent_webport }} /etc/agent/config.river'
+    env:
+      AGENT_MODE: flow
+    volumes:
+      - /etc/agent/config.river:/etc/agent/config.river
+    ports:
+      - '{{ grafana_agent_webport }}:{{ grafana_agent_webport }}'
+    state: started
+    restart_policy: always

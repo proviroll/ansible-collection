@@ -1,0 +1,45 @@
+events {
+    worker_connections 1024;
+}
+
+http {
+    {% for server in nginx_servers -%}
+    server {
+        listen {{ server.listen_port }}{% if server.type == 'grpc' %} http2{% endif %}{% if server.listen_port == 443 %} ssl{% endif %};
+        server_name "{{ subdomain_prefix + server.name + '.' + subdomain_template }}";
+
+        {% if server.type == 'http' -%}
+        {% if server.listen_port == 443 -%}
+        ssl_certificate /etc/letsencrypt/live/{{ subdomain_template }}/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/{{ subdomain_template }}/privkey.pem;
+        {% endif -%}
+
+        location {{ server.endpoint | default("/") }} {
+            {% if server.auth -%}
+            auth_basic "Restricted";                                
+            auth_basic_user_file /etc/nginx/.htpasswd;
+            {% endif -%}
+
+            proxy_pass http://127.0.0.1:{{ server.proxy_pass_port }}{{ server.proxy_pass_endpoint | default("") }};
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header Host $http_host;
+            proxy_set_header X-NginX-Proxy true;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+        }
+        {% elif server.type == 'grpc' -%}
+        {% if server.listen_port == 443 -%}
+        ssl_certificate /etc/letsencrypt/live/{{ subdomain_template }}/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/{{ subdomain_template }}/privkey.pem;
+        {% endif -%}
+
+        location {{ server.endpoint | default("/") }} {
+            grpc_pass grpc://127.0.0.1:{{ server.proxy_pass_port }}{{ server.proxy_pass_endpoint | default("") }};
+        }
+        {% endif -%}
+    } 
+    {% endfor -%}
+}

@@ -1,7 +1,6 @@
 ---
-- name: Install deps
+- name: Install dependencies
   ansible.builtin.apt:
-    # prometheus: For promtool to verify files
     name: [prometheus]
     state: latest
     update_cache: true
@@ -12,62 +11,62 @@
 
 - name: Create prometheus_config_dir
   ansible.builtin.file:
-    path: "{{ prometheus_config_dir }}"
+    path: '{{ prometheus_config_dir }}'
     state: directory
 
 - name: Create prometheus targets dir
   ansible.builtin.file:
-    path: "{{ prometheus_config_dir }}/targets"
+    path: '{{ prometheus_config_dir }}/targets'
     state: directory
 
 - name: Find target files
   ansible.builtin.find:
-    paths: "{{ prometheus_config_dir }}/targets"
+    paths: '{{ prometheus_config_dir }}/targets'
     recurse: true
   register: target_files
 
 - name: Remove foreign target files
-  with_items: "{{target_files.files | map(attribute='path') | map('basename') | list}}"
+  with_items: "{{ target_files.files | map(attribute='path') | map('basename') | list }}"
   when: (item.split('.') | first) not in hostvars
   ansible.builtin.file:
-    path: "{{ prometheus_config_dir }}/targets/{{ item }}"
+    path: '{{ prometheus_config_dir }}/targets/{{ item }}'
     state: absent
 
 - name: Template prometheus targets files
   ansible.builtin.template:
-    src: ./templates/targets.yml
-    dest: "{{ prometheus_config_dir }}/targets/targets_{{ item }}.yml"
-  with_items: "{{ groups['metrics'] }}"
+    src: ./templates/targets.yml.j2
+    dest: '{{ prometheus_config_dir }}/targets/targets_{{ item }}.yml'
+  with_items: "{{ groups['all'] }}"
   notify:
     - Reload prometheus
 
-- name: Copy prometheus config file
+- name: Template prometheus config file
   ansible.builtin.template:
-    src: ./templates/prometheus.yml
-    dest: "{{ prometheus_config_dir }}/prometheus.yml"
+    src: ./templates/prometheus.yml.j2
+    dest: '{{ prometheus_config_dir }}/prometheus.yml'
   notify:
     - Reload prometheus
 
-- name: Copy prometheus web config file
-  when: prometheus_auth|bool
+- name: Template prometheus web config file
+  when: prometheus_auth_enabled | bool
   ansible.builtin.template:
-    src: ./templates/web-config.yml
-    dest: "{{ prometheus_config_dir }}/web-config.yml"
+    src: ./templates/web-config.yml.j2
+    dest: '{{ prometheus_config_dir }}/web-config.yml'
   notify:
     - Reload prometheus
 
 - name: Copy prometheus rules file
-  # Don't template to prevent clashing with altermanager templating
+  # Don't template to prevent clashing with alertmanager templating
   ansible.builtin.copy:
     src: ./templates/rules.yml
-    dest: "{{ prometheus_config_dir }}/rules.yml"
+    dest: '{{ prometheus_config_dir }}/rules.yml'
     validate: promtool check rules %s
   notify:
     - Reload prometheus
 
 - name: Start prometheus
   community.docker.docker_container:
-    name: "{{ container_name_prometheus }}"
+    name: '{{ prometheus_container_name }}'
     state: started
     image: prom/prometheus
     pull: true
@@ -75,18 +74,18 @@
 
     command: >
       --config.file={{ prometheus_config_container_dir }}/prometheus.yml --storage.tsdb.path=/prometheus --web.listen-address="127.0.0.1:{{ prometheus_web_port }}"
-      --web.enable-lifecycle {% if prometheus_auth | bool %} --storage.tsdb.retention.time=30d --web.config.file={{ prometheus_config_container_dir }}/web-config.yml
+      --web.enable-lifecycle {% if prometheus_auth_enabled | bool %} --storage.tsdb.retention.time=30d --web.config.file={{ prometheus_config_container_dir }}/web-config.yml
       {% endif %}
 
     volumes:
-      - "{{ prometheus_config_dir }}:{{ prometheus_config_container_dir }}"
+      - '{{ prometheus_config_dir }}:{{ prometheus_config_container_dir }}'
       - prometheus_data:/prometheus
 
     restart_policy: unless-stopped
     network_mode: host
     log_driver: json-file
     log_options:
-      max-file: "10"
+      max-file: '10'
       max-size: 30m
       mode: non-blocking
       max-buffer-size: 4m

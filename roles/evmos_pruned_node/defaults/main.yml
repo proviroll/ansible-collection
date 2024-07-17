@@ -1,0 +1,29 @@
+---
+# Users & groups
+evmos_user: evmos
+evmos_group: evmos
+ansible_user: devops
+
+# Host dirs
+host_home_dir: /home/{{ evmos_user }}
+host_base_dir: /home/{{ evmos_user }}
+host_data_dir: '{{ host_base_dir }}/data'
+host_config_dir: '{{ host_base_dir }}/config'
+
+# Container volumes
+container_data_volume: /home/evmos/.evmosd/data
+container_config_volume: /home/evmos/.evmosd/config
+
+# Container image
+evmos_image_name: tharsishq/evmos
+evmos_image_tag: v18.1.0
+
+# Container command
+# TODO: update the min gas price value, or remove it entirely and see if the app.toml error is gone
+evmos_container_command: /bin/bash -c 'evmosd config chain-id evmos_9001-2 && evmosd start --minimum-gas-prices=1aevmos'
+
+# Docker logging
+docker_log_driver: json-file
+docker_log_options:
+  max-size: 10m
+  max-file: '3'

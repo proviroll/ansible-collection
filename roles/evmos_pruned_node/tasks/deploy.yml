@@ -1,0 +1,50 @@
+---
+# Log in with Docker, using the GCP SA key
+- name: Write service account key to temporary file
+  ansible.builtin.copy:
+    content: '{{ service_account_key }}'
+    dest: /tmp/service_account_key.json
+    mode: '0600'
+
+- name: Login to Google Container Registry
+  ansible.builtin.shell:
+    cmd: |
+      cat /tmp/service_account_key.json | docker login -u _json_key --password-stdin https://eu.gcr.io
+
+- name: Remove temporary file
+  ansible.builtin.file:
+    path: /tmp/service_account_key.json
+    state: absent
+
+# Change ownership and start evmosd
+- name: Change ownership of data and config directories to 'evmos' user
+  ansible.builtin.file:
+    path: '{{ item }}'
+    owner: evmos
+    group: evmos
+    recurse: true
+  loop:
+    - '{{ host_data_dir }}'
+    - '{{ host_config_dir }}'
+- name: Start evmos node container
+  register: evmos_docker_start
+  community.docker.docker_container:
+    name: evmosd
+    state: started
+    image: '{{ evmos_image_name }}:{{ evmos_image_tag }}'
+    pull: true
+    stop_timeout: 20
+    command: '{{ evmos_container_command }}'
+    volumes:
+      - '{{ host_data_dir }}:{{ container_data_volume }}'
+      - '{{ host_config_dir }}:{{ container_config_volume }}'
+    restart_policy: always
+    network_mode: host
+    log_driver: '{{ docker_log_driver }}'
+    log_options: '{{ docker_log_options }}'
+    memory_swappiness: 0
+    user: 1000:1000
+    labels:
+      promtail_logging: 'true'
+      scrape_location: evmos
+      instance: '{{ inventory_hostname }}'

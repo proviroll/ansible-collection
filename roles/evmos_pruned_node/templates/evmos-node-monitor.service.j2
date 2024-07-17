@@ -1,0 +1,11 @@
+[Unit]
+Description=Evmos Pruned Node Service
+After=network.target
+
+[Service]
+ExecStart={{ host_config_dir }}/evmos-node-monitor.sh
+User=evmos
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

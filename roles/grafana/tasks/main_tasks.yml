@@ -1,0 +1,73 @@
+- name: Create docker volume data
+  docker_volume:
+    name: grafana_data
+
+- name: Create datasources dir
+  file:
+    path: '{{ grafana_provisioning_dir }}/datasources'
+    state: directory
+- name: Template datasource file
+  template:
+    src: ./templates/datasource.yml.j2
+    dest: '{{ grafana_provisioning_dir }}/datasources/datasource.yml'
+
+- name: Create dashboards dir
+  file:
+    path: '{{ grafana_provisioning_dir }}/dashboards'
+    state: directory
+
+- name: Template dashboard file
+  template:
+    src: ./templates/dashboard.yml.j2
+    dest: '{{ grafana_provisioning_dir }}/dashboards/dashboard.yml'
+  notify:
+    - Restart Grafana
+
+- name: Template config file
+  template:
+    src: ./templates/grafana.ini.j2
+    dest: '{{ grafana_config_file }}'
+  notify:
+    - Restart Grafana
+
+- name: Copy evmos dashboards
+  ansible.builtin.copy:
+    src: './dashboards/'
+    dest: '{{ grafana_provisioning_dir }}/dashboards/'
+
+- name: Create grafana_external_dashboards_dir
+  file:
+    path: '{{ grafana_external_dashboards_dir }}'
+    state: directory
+
+- name: Download external dashboards
+  get_url:
+    url: '{{ item }}'
+    dest: '{{ grafana_external_dashboards_dir }}'
+  loop: '{{ grafana_dashboard_urls }}'
+
+- name: Start Grafana
+  docker_container:
+    name: grafana
+    state: started
+    image: grafana/grafana:10.1.1
+    pull: true
+
+    command: >
+      --packaging=docker
+      --config={{ grafana_config_file }}
+      cfg:default.paths.provisioning={{ grafana_provisioning_dir }}
+      cfg:default.paths.data=/var/lib/grafana
+
+    volumes:
+      - '{{ grafana_main_dir }}:{{ grafana_main_dir }}'
+      - 'grafana_data:/var/lib/grafana'
+
+    restart_policy: unless-stopped
+    network_mode: host
+    log_driver: json-file
+    log_options:
+      max-file: '10'
+      max-size: 30m
+      mode: non-blocking
+      max-buffer-size: 4m

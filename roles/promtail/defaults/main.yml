@@ -1,0 +1,5 @@
+---
+# Promtail
+promtail_dir: '/etc/promtail'
+promtail_config_file_path: '{{ promtail_dir }}/promtail.yml'
+loki_push_url: 'http://46.4.72.8:33100/loki/api/v1/push'

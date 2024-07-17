@@ -1,0 +1,54 @@
+{
+    "logfile": "",
+    "githubtoken":"{{ proxy_github_token }}",
+    "httpserver": {
+        "address": "",
+        "port": "{{ proxy_http_port }}"
+    },
+    "grpcserver":{
+        "address": "",
+        "port": "{{ proxy_grpc_port }}"
+    },
+    "nodes": {
+        "missingblocksallowed": 50,
+        "diffallowed": 3,
+        "refreshduration":"30s",
+        "testnetheight": 400000000,
+        "inhousepruned":  [
+            {% for host in groups['evmos_pruned_mainnet'] %}
+            {
+                "name":"{{ hostvars[host]['moniker'] }}",
+                "endpoint": "http://{{ hostvars[host]['ansible_host'] }}"
+            },
+            {% endfor %}
+            {% for host in groups['evmos_archive_mainnet'] %}
+            {
+                "name":"{{ hostvars[host]['moniker'] }}",
+                "endpoint": "http://{{ hostvars[host]['ansible_host'] }}"
+            }{% if not loop.last %},{% endif %}
+            {% endfor %}
+        ],
+        "inhousearchive":  [
+            {% for host in groups['evmos_archive_mainnet'] %}
+            {
+                "name":"{{ hostvars[host]['moniker'] }}",
+                "endpoint": "http://{{ hostvars[host]['ansible_host'] }}",
+                "startheight": 0,
+                "endheight": 9999999999
+
+            }{% if not loop.last %},{% endif %}
+            {% endfor %}
+        ],
+        "external": {
+            "web3rest": [
+                {
+                    "endpoint": "https://evmos.lava.build/"
+                }
+            ],
+            "cosmosrest": [],
+            "tendermintrest": [],
+            "web3ws": [],
+            "cosmosws": []
+        }
+    }
+}

@@ -1,0 +1,5 @@
+---
+- hosts: metrics
+  become: true
+  roles:
+    - pyroscope
