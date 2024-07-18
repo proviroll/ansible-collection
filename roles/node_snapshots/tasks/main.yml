@@ -1,0 +1,8 @@
+---
+- name: Include tasks for sync_out
+  import_tasks: sync_in.yml
+  when: sync_type == 'in'
+
+- name: Include tasks for sync_in
+  import_tasks: sync_out.yml
+  when: sync_type == 'out'

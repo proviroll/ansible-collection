@@ -1,0 +1,2 @@
+blackbox_exporter_dir: '/opt/blackbox_exporter'
+blackbox_exporter_config_dir: '{{ blackbox_exporter_dir }}/config'

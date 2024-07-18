@@ -1,0 +1,6 @@
+---
+- name: Setup a reverse proxy
+  hosts: all
+  roles:
+    - role: reverse_proxy_auth
+  become: true

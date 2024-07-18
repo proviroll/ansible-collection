@@ -1,0 +1,17 @@
+---
+- name: Update and upgrade all available packages
+  when: upgrade_all_packages
+  ansible.builtin.apt:
+    update_cache: true
+    upgrade: true
+
+- name: Install common apt packages
+  ansible.builtin.apt:
+    name: [git, nano, htop, gnupg, python3, apache2-utils, rclone, aria2, jq, python3-pip]
+    state: latest
+    update_cache: true
+
+- name: Install common pip packages
+  ansible.builtin.pip:
+    name: [toml-cli]
+    state: latest

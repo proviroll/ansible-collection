@@ -1,0 +1,16 @@
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: "{{ prometheus_endpoint }}"
+    uid: "{{ prometheus_datasource_uid }}"
+    isDefault: true
+{% if grafana_basic_auth_enabled | bool %}
+    basicAuth: true
+    basicAuthUser: admin
+    secureJsonData:
+      basicAuthPassword: "{{ prometheus_auth_password }}"
+    editable: true
+{% endif %}

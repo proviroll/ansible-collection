@@ -1,0 +1,118 @@
+#!/bin/sh
+#set -uxe
+set -x
+
+MONIKER=${1:-mainnet-dev}
+CHAIN_ID=${2:-evmos_9001-2}
+HOME_PATH="{{ host_home_dir }}"
+DATA_PATH="{{ host_data_dir }}"
+CONFIG_PATH="{{ host_config_dir }}"
+
+RCLONE_CONFIG="[b2]
+type = b2
+account = {{ backblaze_account }}
+key= {{ backblaze_key }}
+"
+
+mkdir -p $HOME/.config/rclone
+echo "$RCLONE_CONFIG" > "$HOME/.config/rclone/rclone.conf"
+
+sync_polkachu() {
+    SNAPSHOT_URL=$(curl -s https://polkachu.com/api/v2/chain_snapshots/evmos/mainnet -H "Content-Type: application/json" -H "Accept: application/json" -H "x-polkachu: evmos" | jq -r .snapshot.url)
+    time curl -sL -o latest_snapshot.tar.lz4 "$SNAPSHOT_URL" -w "Download speed: %{speed_download} bytes/sec\nTotal time: %{time_total} seconds\n" &&
+    time lz4 -c -d latest_snapshot.tar.lz4  | tar -vx -C $HOME_PATH &&
+    rm -v latest_snapshot.tar.lz4
+}
+
+rclone_sync_in() {
+    rclone sync b2:evmos-pruned-mainnet-snapshot/ $DATA_PATH -P --transfers 16 --checkers=32 --fast-list --buffer-size 1024M 2>&1 | awk '/Transferred:/||/Checks:/||/Elapsed time:/'
+}
+
+full_init() {
+    evmosd init $MONIKER --chain-id $CHAIN_ID
+
+    cd $HOME_PATH/.evmosd/config/
+    DATA_SIZE_KB=$(du -s -k ~/.evmosd/data | awk '{print $1}')
+    DATA_SIZE_GB=$((DATA_SIZE_KB / 1024 / 1024))
+
+    if [ "$DATA_SIZE_GB" -lt 100 ]; then
+        evmosd tendermint unsafe-reset-all --home $HOME_PATH/.evmosd --keep-addr-book
+        # Get Genesis
+        test -f genesis.json && rm genesis.json
+        test -f addrbook.json && rm addrbook.json
+        curl -s https://snapshots.polkachu.com/genesis/evmos/genesis.json -O
+        rclone_sync_in || sync_polkachu
+    else
+        echo 'This node has already more than 100GB of data, continue without reset.'
+        du -sh $HOME_PATH/.evmosd/*
+    fi
+
+    date
+    # sync_polkachu
+    EXTERNAL_IP=$(curl -s curlmyip.org)
+    echo "External IP: $EXTERNAL_IP"
+}
+
+update_config() {
+    INTERVAL=90000
+    LATEST_HEIGHT=$(curl -s https://evmos-rpc.polkachu.com/block | jq -r .result.block.header.height)
+    BLOCK_HEIGHT=$(($LATEST_HEIGHT-$INTERVAL)) 
+    TRUST_HASH=$(curl -s "https://evmos-rpc.polkachu.com/block?height=$BLOCK_HEIGHT" | jq -r .result.block_id.hash)
+
+    # Print out block and transaction hash from which to sync state.
+    echo "trust_height: $BLOCK_HEIGHT"
+    echo "trust_hash: $TRUST_HASH"
+
+    export EVMOSD_STATESYNC_RPC_SERVERS="http://bd-evmos-mainnet-state-sync-eu-01.bdnodes.net:26657,http://bd-evmos-mainnet-state-sync-us-01.bdnodes.net:26657"
+    export EVMOSD_STATESYNC_TRUST_HEIGHT=$BLOCK_HEIGHT
+    export EVMOSD_STATESYNC_TRUST_HASH=$TRUST_HASH
+
+    cp -v $HOME_PATH/.evmosd/init/config.toml $HOME_PATH/.evmosd/config/config.toml
+    cp -v $HOME_PATH/.evmosd/init/app.toml $HOME_PATH/.evmosd/config/app.toml
+
+    #Apply statesync settings
+    if [ -f "$HOME_PATH/.evmosd/config/synced" ]; then
+        toml-cli set $HOME_PATH/.evmosd/config/config.toml statesync.enable false
+    else
+        echo "no state sync"
+        # toml-cli set $HOME_PATH/.evmosd/config/config.toml statesync.enable true
+    fi
+    toml-cli set $HOME_PATH/.evmosd/config/config.toml moniker $MONIKER
+    # toml-cli set $HOME_PATH/.evmosd/config/config.toml p2p.persistent_peers $EVMOSD_PERSISTENT_PEERS
+
+    #https://docs.cometbft.com/v0.37/core/validators
+    #toml-cli set $HOME_PATH/.evmosd/config/config.toml p2p.pex false
+    toml-cli set $HOME_PATH/.evmosd/config/config.toml p2p.external_address "${EXTERNAL_IP:-0.0.0.0}:26656"
+    # toml-cli set $HOME_PATH/.evmosd/config/config.toml statesync.rpc_servers $EVMOSD_STATESYNC_RPC_SERVERS
+    toml-cli set $HOME_PATH/.evmosd/config/config.toml statesync.trust_height $EVMOSD_STATESYNC_TRUST_HEIGHT
+    toml-cli set $HOME_PATH/.evmosd/config/config.toml statesync.trust_hash $EVMOSD_STATESYNC_TRUST_HASH
+
+    #Enable prometheus
+    # toml-cli set $HOME_PATH/.evmosd/config/config.toml instrumentation.prometheus true
+
+    #Enable priv_validator_laddr
+    #toml-cli set $HOME_PATH/.evmosd/config/config.toml priv_validator_laddr "0.0.0.0:1234"
+}
+
+# if [ -f "$HOME_PATH/.evmosd/config/synced" ]; then
+#     echo 'Starting rclone sync'
+#     LAST_BLOCK=$(evmosd last-block $DATA_PATH | jq .last_commit.height)
+#     rclone_sync_out
+# else
+#     echo 'Starting full init'
+#     full_init
+# fi
+
+# update_config
+
+#Remove flag-file
+rm -v $HOME_PATH/.evmosd/config/synced
+
+echo '####### config.toml #######'
+# cat $HOME_PATH/.evmosd/config/config.toml
+diff -s $HOME_PATH/.evmosd/init/config.toml $HOME_PATH/.evmosd/config/config.toml
+echo
+echo '####### app.toml #######'
+# cat $HOME_PATH/.evmosd/config/app.toml
+diff -s $HOME_PATH/.evmosd/init/app.toml $HOME_PATH/.evmosd/config/app.toml
+echo "Init script done!"

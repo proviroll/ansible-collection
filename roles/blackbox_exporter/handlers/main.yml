@@ -1,0 +1,3 @@
+---
+- name: Restart Blackbox Exporter
+  ansible.builtin.command: docker restart blackbox_exporter

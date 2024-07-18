@@ -1,0 +1,49 @@
+logging {
+  level  = "info"
+  format = "logfmt"
+}
+
+pyroscope.write "{{ grafana_agent_write_job_name }}" {
+        endpoint {
+                url = "{{ pyroscope_url }}"
+        }
+}
+
+pyroscope.scrape "{{ grafana_agent_scrape_job_name }}" {
+        targets = [{"__address__" = "{{ hostvars[inventory_hostname]['ansible_host'] }}:6060", "service_name" = "{{ inventory_hostname }}"}]
+        forward_to = [pyroscope.write.{{ grafana_agent_write_job_name }}.receiver]
+
+        profiling_config {
+                profile.process_cpu {
+                        enabled = true
+                }
+
+                profile.godeltaprof_memory {
+                        enabled = true
+                }
+
+                profile.memory { 
+                        enabled = true
+                }
+
+                profile.godeltaprof_mutex {
+                        enabled = true
+                }
+
+                profile.mutex { 
+                        enabled = true
+                }
+
+                profile.godeltaprof_block {
+                        enabled = true
+                }
+
+                profile.block {
+                        enabled = true
+                }
+
+                profile.goroutine {
+                        enabled = true
+                }
+        }
+}

@@ -1,0 +1,8 @@
+---
+- hosts: all
+  become: true
+  roles:
+    - role: node_snapshots
+      vars:
+        automate: true
+        sync_type: out

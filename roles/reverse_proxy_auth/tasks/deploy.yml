@@ -1,0 +1,19 @@
+---
+# Start the container
+- name: Start NGINX
+  community.docker.docker_container:
+    name: nginx
+    state: started
+    image: nginx:alpine
+    pull: true
+    volumes:
+      - /home/evmos/nginx:/etc/nginx
+      - /etc/letsencrypt/:/etc/letsencrypt
+    restart_policy: unless-stopped
+    network_mode: host
+    log_driver: json-file
+    log_options:
+      max-file: '10'
+      max-size: 30m
+      mode: non-blocking
+      max-buffer-size: 4m

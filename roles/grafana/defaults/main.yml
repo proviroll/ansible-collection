@@ -1,0 +1,8 @@
+---
+prometheus:
+  web_port: 9090
+  datasource_uid: prometheus
+
+metrics_auth:
+  user: admin
+  password:

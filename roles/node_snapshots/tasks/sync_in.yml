@@ -1,0 +1,21 @@
+---
+- name: Template sync-in.sh (archive)
+  ansible.builtin.template:
+    src: templates/archive-sync-in.sh.j2
+    dest: '{{ host_config_dir }}/sync-in.sh'
+  when: "'evmos_archive_node' in group_names"
+
+- name: Template sync-in.sh (pruned)
+  ansible.builtin.template:
+    src: templates/pruned-sync-in.sh.j2
+    dest: '{{ host_config_dir }}/sync-in.sh'
+  when: "'evmos_pruned_node' in group_names"
+
+- name: Ensure script is executable
+  ansible.builtin.file:
+    path: '{{ host_config_dir }}/sync-in.sh'
+    mode: '0755'
+
+- name: Run sync-in.sh
+  ansible.builtin.shell:
+    cmd: 'nohup sh {{ host_config_dir }}/sync-in.sh > {{ host_config_dir }}/sync-in.log'

@@ -1,9 +1,0 @@
----
-promtail_dir: "/etc/promtail"
-promtail_config_file_path: "{{promtail_dir}}/promtail.yml"
-promtail_docker_version: 2.8.8
-promrtail_http_listen_port: 9080
-#set loki server url
-loki_push_url: ""
-loki_basic_auth_user: ""
-loki_basic_auth_password: ""

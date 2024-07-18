@@ -1,0 +1,11 @@
+[Unit]
+Description=Evmos Archive Node Service
+After=network.target
+
+[Service]
+ExecStart={{ host_config_dir }}/init.sh
+User={{ ansible_user }}
+# Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

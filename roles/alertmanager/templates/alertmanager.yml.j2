@@ -1,0 +1,46 @@
+global:
+  resolve_timeout: 1m
+
+inhibit_rules:
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'critical'
+    equal: ['alertname', 'instance']
+
+receivers:
+  - name: 'slack_webhook_infra'
+    slack_configs:
+      - channel: 'devops-alerts'
+        api_url: '{{ slack_webhook_url }}'
+        send_resolved: true
+        {% raw %}
+        color: '{{ template "slack.color" . }}'
+        title: '{{ template "slack.title" . }}'
+        text: '{{ template "slack.text" . }}'
+        actions:
+          - type: button
+            text: 'Query :mag:'
+            url: '{{ (index .Alerts 0).GeneratorURL }}'
+          - type: button
+            text: 'Dashboard :chart_with_upwards_trend:'
+            url: '{{ (index .Alerts 0).Annotations.dashboard_url }}'
+        {% endraw %}  
+  - name: 'null'
+
+route:
+  group_wait: 10s
+  group_interval: 600s
+  repeat_interval: 600s
+  receiver: 'slack_webhook_infra'
+  routes:
+    - receiver: 'null'
+      match:
+        severity: 'info'
+    - receiver: 'slack_webhook_infra'
+      matchers:
+        - 'group=~"AllInstances"'
+        - 'alertname=~"HostOutOfMemory|HostOomKillDetected|SystemMemoryLeakDetected|PrometheusRuleEvaluationFailures|HostDiskWillFillIn24Hours|HostClockNotSynchronizing|HostRequiresReboot"'
+
+templates: 
+  - '/config/templates/*.tmpl'

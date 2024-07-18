@@ -1,0 +1,8 @@
+---
+proxy_http_port: 42069
+proxy_grpc_port: 9595
+proxy_home_dir: /home/devops
+proxy_config_dir: '{{ proxy_home_dir }}/proxy'
+proxy_container_name: proxy
+proxy_container_image: eu.gcr.io/anton-infra/external/proxy:179d7e4
+proxy_container_command: './proxy -c ./config.json'

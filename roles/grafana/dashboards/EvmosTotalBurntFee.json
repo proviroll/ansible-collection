@@ -1,0 +1,192 @@
+{
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": {
+            "type": "grafana",
+            "uid": "-- Grafana --"
+          },
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "type": "dashboard"
+        }
+      ]
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "id": 9251,
+    "links": [],
+    "liveNow": false,
+    "panels": [
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PBFA97CFB590B2093"
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 0
+        },
+        "id": 3,
+        "options": {
+          "code": {
+            "language": "plaintext",
+            "showLineNumbers": false,
+            "showMiniMap": false
+          },
+          "content": "<img height=\"100%\" width=\"100%\" style=\"max-width:100%;max-height:100%;\" src=\"data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTA3IiBoZWlnaHQ9IjY2IiB2aWV3Qm94PSIwIDAgMTA3IDY2IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8ZyBjbGlwLXBhdGg9InVybCgjY2xpcDBfNjkxMF8yMzcyKSI+CjxwYXRoIGQ9Ik00MS41NjkyIDIuMjExMkMyMy4xMTYyIDkuMjUyNjggMjEuNDI2MyAyNy4zNTk0IDE2LjA4NjUgMzUuODA5MkMxMC43NDY2IDQ0LjI1ODkgLTEuNTU1NDMgNDkuMDIwMyAwLjEzNDQwMyA1My4zNzkzQzEuODI0MjQgNTcuNzM4NCAxNC4xMjYzIDUzLjA0NCAyMy44NTk3IDU1Ljg2MDZDMzMuNTkzMiA1OC42NzcyIDQ2Ljg0MTUgNzAuODgyNSA2NS4yOTQ1IDYzLjg0MUM2OS43NjgxIDYyLjEyODQgNzMuODEzNiA1OS40NzI1IDc3LjE1MTMgNTYuMDU2OEM4MC40ODkxIDUyLjY0MTEgODMuMDM5NSA0OC41NDcxIDg0LjYyNjIgNDQuMDU3N0M4NC43ODc2IDQzLjY5MzEgODQuNzk2MyA0My4yNzk5IDg0LjY1MDYgNDIuOTA4OUM4NC41MDQ4IDQyLjUzNzkgODQuMjE2NCA0Mi4yMzk1IDgzLjg0ODkgNDIuMDc5NEM4My40ODE0IDQxLjkxOTMgODMuMDY0OSA0MS45MTA3IDgyLjY5MDkgNDIuMDU1M0M4Mi4zMTcgNDIuMTk5OSA4Mi4wMTYzIDQyLjQ4NiA4MS44NTQ5IDQyLjg1MDZDNzkuOTQ4NSA0Ni42NjQ4IDc3LjEyNTYgNDkuOTU1IDczLjYzNTEgNTIuNDMxNEM3MC4xNDQ2IDU0LjkwNzcgNjYuMDkzNyA1Ni40OTQxIDYxLjgzOTQgNTcuMDUwN0M1Ny41ODUxIDU3LjYwNzMgNTMuMjU4MiA1Ny4xMTcgNDkuMjQgNTUuNjIzQzQ1LjIyMTcgNTQuMTI5IDQxLjYzNTcgNTEuNjc3MyAzOC43OTc5IDQ4LjQ4MzhDMzcuMTU1OSA0Ni42NTQ3IDM1Ljc4OTkgNDQuNTk5MSAzNC43NDIzIDQyLjM4MTJDMzQuNDA0MyA0MS43Nzc2IDM0LjEzMzkgNDEuMTA3IDMzLjg2MzUgNDAuNTAzNUMzMy41OTMyIDM5Ljg5OTkgMzMuMzkwNCAzOS4xNjIyIDMzLjE4NzYgMzguNDkxNkMzOC43OTc5IDM1Ljk0MzMgNDUuMTUxNyAzMy4xOTM3IDUyLjQ1MTcgMzAuNDQ0MkM1OS43NTE4IDI3LjY5NDcgNjYuMDM4IDI1LjQ4MTYgNzEuNzgzNSAyMy43MzhDNzUuNzAzOSAyMi41MzA5IDc5LjI4NjQgMjEuNTI1IDgyLjQ2MzMgMjAuNzIwMkw4My4yMDY4IDIwLjU4NjFDODMuNDM5OCAyMC41MjIgODMuNjg4NyAyMC41NDg5IDgzLjkwMjQgMjAuNjYxMUM4NC4xMTYgMjAuNzczMyA4NC4yNzgzIDIwLjk2MjUgODQuMzU1OSAyMS4xODk3Qzg0LjQ3NjMgMjEuNDQ2OSA4NC41NjcgMjEuNzE2OSA4NC42MjYyIDIxLjk5NDRDODUuMjg3MSAyMy43Nzk1IDg1Ljc4NDggMjUuNjE5OSA4Ni4xMTMzIDI3LjQ5MzVDODYuMTQ0MyAyNy42NzMgODYuMjE4MSAyNy44NDI1IDg2LjMyODYgMjcuOTg3OEM4Ni40MzkyIDI4LjEzMzIgODYuNTgzMiAyOC4yNTAyIDg2Ljc0ODcgMjguMzI5Qzg2LjkxNDEgMjguNDA3OCA4Ny4wOTYyIDI4LjQ0NjEgODcuMjc5NyAyOC40NDA3Qzg3LjQ2MzEgMjguNDM1NCA4Ny42NDI2IDI4LjM4NjUgODcuODAzMSAyOC4yOTgyQzkwLjQzOTMgMjYuODg5OSA5Mi44NzI3IDI1LjQ4MTYgOTUuMDM1NiAyNC4yMDc1QzEwMy4xNDcgMTkuMjQ0OSAxMDcuNjA4IDE1LjAyIDEwNi42NjIgMTIuNjcyOEMxMDUuNzE1IDEwLjMyNTcgOTkuNjMyIDEwLjEyNDUgOTAuMzA0MSAxMS44MDFDODcuMzMgMTIuMzM3NSA4NC4wMTc5IDEzLjA3NTIgODAuNTAzIDE0LjAxNDFMNzguNjc4IDE0LjQ4MzVDNzUuNjM2MyAxNS4yODgyIDcyLjUyNyAxNi4xNiA2OS4yODI1IDE3LjE2NkM2My4xOTkxIDE5LjA0MzcgNTYuNjQyNSAyMS4zMjM4IDQ5Ljg4MzIgMjMuODcyMkM0My4xMjM5IDI2LjQyMDUgMzcuNjQ4OCAyOC43Njc3IDMyLjEwNjEgMzEuMjQ4OUMzMi4wNzkgMjYuOTkzMSAzMy4xMDE5IDIyLjc5NTMgMzUuMDg1NCAxOS4wMjE2QzM3LjA2ODkgMTUuMjQ4IDM5Ljk1MjkgMTIuMDEzMiA0My40ODU5IDkuNTk5MjRDNDcuMDE4OCA3LjE4NTMyIDUxLjA5MzQgNS42NjU2MyA1NS4zNTQyIDUuMTcyNzNDNTkuNjE1IDQuNjc5ODIgNjMuOTMyNyA1LjIyODY3IDY3LjkzMDcgNi43NzE0QzY4LjIyMTggNi44NzAyNCA2OC41MzUyIDYuODg0ODkgNjguODM0NSA2LjgxMzY0QzY5LjEzMzcgNi43NDI0IDY5LjQwNjMgNi41ODgxOSA2OS42MjA1IDYuMzY5MDNDNjkuNzgzMiA2LjIwMjM3IDY5LjkwMzkgNiA2OS45NzMgNS43NzgzNUM3MC4wNDIxIDUuNTU2NyA3MC4wNTc1IDUuMzIyMDIgNzAuMDE4IDUuMDkzMzZDNjkuOTc4NCA0Ljg2NDcgNjkuODg1MSA0LjY0ODUgNjkuNzQ1NiA0LjQ2MjMzQzY5LjYwNjEgNC4yNzYxNSA2OS40MjQzIDQuMTI1MjUgNjkuMjE0OSA0LjAyMTg3QzY1LjAxNzkgMS43NDAzOCA2MC4zNjkyIDAuMzk2MjQ0IDU1LjU5MzkgMC4wODM0ODQ1QzUwLjgxODYgLTAuMjI5Mjc1IDQ2LjAzMjEgMC40OTY4OTUgNDEuNTY5MiAyLjIxMTJaIiBmaWxsPSIjRkZGNEUxIi8+CjwvZz4KPGRlZnM+CjxjbGlwUGF0aCBpZD0iY2xpcDBfNjkxMF8yMzcyIj4KPHJlY3Qgd2lkdGg9IjEwNi43OTgiIGhlaWdodD0iNjUuOTg4OCIgZmlsbD0id2hpdGUiLz4KPC9jbGlwUGF0aD4KPC9kZWZzPgo8L3N2Zz4K\" />",
+          "mode": "html"
+        },
+        "pluginVersion": "10.1.1",
+        "type": "text"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PC13EE12FF1DA7A4B"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "blue",
+                  "value": null
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 14,
+          "w": 12,
+          "x": 0,
+          "y": 8
+        },
+        "id": 1,
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "textMode": "auto"
+        },
+        "pluginVersion": "10.1.1",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "PC13EE12FF1DA7A4B"
+            },
+            "editorMode": "code",
+            "expr": "burned_tx_fee_amount{denom=\"aevmos\", cluster=\"prod-1\", endpoint=\"metrics\", namespace=\"evmos\", pod=\"evmos-mainnet-0\"} * 0.000000000000000001",
+            "instant": false,
+            "legendFormat": "__auto",
+            "range": true,
+            "refId": "A"
+          }
+        ],
+        "title": "Total Burnt Fee Amount (EVMOS)",
+        "type": "stat"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PC13EE12FF1DA7A4B"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "semi-dark-green",
+                  "value": null
+                }
+              ]
+            },
+            "unit": "locale"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 14,
+          "w": 12,
+          "x": 12,
+          "y": 8
+        },
+        "id": 2,
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "textMode": "auto"
+        },
+        "pluginVersion": "10.1.1",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "PC13EE12FF1DA7A4B"
+            },
+            "editorMode": "code",
+            "expr": "burned_tx_fee_amount{denom=\"aevmos\"}",
+            "instant": false,
+            "legendFormat": "__auto",
+            "range": true,
+            "refId": "A"
+          }
+        ],
+        "title": "Total Burnt Fee Amount (AEVMOS)",
+        "type": "stat"
+      }
+    ],
+    "refresh": "",
+    "schemaVersion": 38,
+    "style": "dark",
+    "tags": [],
+    "templating": {
+      "list": []
+    },
+    "time": {
+      "from": "2024-01-23T06:32:42.915Z",
+      "to": "2024-01-23T18:32:42.915Z"
+    },
+    "timepicker": {},
+    "timezone": "",
+    "title": "Total Amount of Burnt Fees",
+    "uid": "f912fd54-f6df-4413-a6e6-ef54c65cea8f",
+    "version": 1,
+    "weekStart": ""
+  }

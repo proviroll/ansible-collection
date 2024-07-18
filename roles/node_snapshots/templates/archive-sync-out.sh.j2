@@ -1,0 +1,75 @@
+#!/bin/sh
+#set -uxe
+
+syncedHeight=$(cat {{ host_config_dir }}/synced)
+remoteBlockHeight=$(curl -s https://evmos-rpc.polkachu.com/block | jq -r .result.block.header.height)
+blocksDelta=$(echo $remoteBlockHeight - $syncedHeight | bc)
+
+webhookURL="{{ slack_webhook_url }}"
+sendSlackNotification() {
+    curl -X POST -H 'Content-type: application/json' --data "$1" $webhookURL
+}
+
+if [ "$blocksDelta" -gt 500 ]; then
+    sendSlackNotification "{\"text\":\"$(date '+%Y-%m-%d %H:%M:%S') - :x: Sync out failed on node \`{{ inventory_hostname }}\`: Blocks delta is too high ($blocksDelta).\"}"
+else 
+    # Check if the evmosd container is running
+    if docker ps | grep -q 'evmosd'; then
+        docker stop 'evmosd'
+    fi
+
+    # Double-check that evmosd isn't running, then sync
+    pgrep "evmosd start" > /dev/null
+    evmosd_status=$?
+
+    if [ $evmosd_status -ne 0 ]; then
+        startsAt=$(date -u -Iseconds)
+        endsAt=$(date -u -Iseconds -d "+24 hours")
+
+        echo 'evmosd is not running, silencing alerts'
+        silence_response=$(curl -u alertmanager:{{ alertmanager_password }} -X POST -H "Content-Type: application/json" -d '
+            {
+            "matchers": [
+                {
+                "name": "alertname",
+                "value": "EvmosNodeUnhealthy",
+                "isRegex": false
+                },
+                {
+                "name": "instance",
+                "value": "{{ inventory_hostname }}",
+                "isRegex": false
+                }
+            ],
+            "startsAt": "'"$startsAt"'",
+            "endsAt": "'"$endsAt"'",
+            "createdBy": "devops",
+            "comment": "Silenced during snapshot upload."
+            }' '{{ alertmanager_external_url }}/api/v2/silences')
+        
+        silence_id=$(echo $silence_response | jq -r '.silenceID')
+
+        echo 'alerts silenced, starting sync'
+        sendSlackNotification "{\"text\":\"$(date '+%Y-%m-%d %H:%M:%S') - :bulb: Node \`{{ inventory_hostname }}\` is under maintenance (snapshot upload is in progress, block delta: $blocksDelta).\"}"
+        rclone sync {{ host_data_dir }} b2:evmos-archive-mainnet-snapshot/ -P --exclude "/snapshots/**" --exclude '//*.json' --delete-excluded --transfers 16 --drive-chunk-size 1G --checkers=32 --fast-list --modify-window 1s 2>&1
+        
+        rclone_exit_status=$?
+        if [ $rclone_exit_status -ne 0 ]; then
+            sendSlackNotification "{\"text\":\"$(date '+%Y-%m-%d %H:%M:%S') - :x: Rclone sync failed on node \`{{ inventory_hostname }}\` with exit code $rclone_exit_status.\"}"
+        fi
+        
+        echo 'sync over, resuming the alerts'
+        curl -u alertmanager:{{ alertmanager_password }} -X DELETE "{{ alertmanager_external_url }}/api/v2/silence/$silence_id"
+
+        echo 'starting evmosd'
+        docker start evmosd
+        sleep 1200
+        
+        health_check_status=$(curl -o /dev/null -w "%{http_code}" -s http://127.0.0.1:26657/health)
+        if [ $health_check_status -eq 200 ] || [ $health_check_status -eq 206 ]; then
+            sendSlackNotification "{\"text\":\"$(date '+%Y-%m-%d %H:%M:%S') - :white_check_mark: Snapshot upload is over, node \`{{ inventory_hostname }}\` is up and running.\"}"
+        else
+            sendSlackNotification "{\"text\":\"$(date '+%Y-%m-%d %H:%M:%S') - :warning: Health check failed after snapshot upload, node \`{{ inventory_hostname }}\` is not running properly.\"}"
+        fi
+    fi
+fi

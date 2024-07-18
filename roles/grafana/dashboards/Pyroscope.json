@@ -1,0 +1,1443 @@
+{
+	"annotations": {
+		"list": [
+			{
+				"builtIn": 1,
+				"datasource": {
+					"type": "grafana",
+					"uid": "-- Grafana --"
+				},
+				"enable": true,
+				"hide": true,
+				"iconColor": "rgba(0, 211, 255, 1)",
+				"name": "Annotations & Alerts",
+				"type": "dashboard"
+			}
+		]
+	},
+	"editable": true,
+	"fiscalYearStartMonth": 0,
+	"graphTooltip": 0,
+	"id": 26,
+	"links": [],
+	"liveNow": false,
+	"panels": [
+		{
+			"collapsed": false,
+			"gridPos": {
+				"h": 1,
+				"w": 24,
+				"x": 0,
+				"y": 0
+			},
+			"id": 15,
+			"panels": [],
+			"title": "CPU Time",
+			"type": "row"
+		},
+		{
+			"datasource": {
+				"type": "grafana-pyroscope-datasource",
+				"uid": "e7e5653b-5fad-4ec7-a7ce-6a61fab83ce1"
+			},
+			"fieldConfig": {
+				"defaults": {
+					"color": {
+						"mode": "palette-classic"
+					},
+					"custom": {
+						"axisCenteredZero": false,
+						"axisColorMode": "text",
+						"axisLabel": "",
+						"axisPlacement": "auto",
+						"barAlignment": 0,
+						"drawStyle": "line",
+						"fillOpacity": 0,
+						"gradientMode": "none",
+						"hideFrom": {
+							"legend": false,
+							"tooltip": false,
+							"viz": false
+						},
+						"insertNulls": false,
+						"lineInterpolation": "linear",
+						"lineWidth": 1,
+						"pointSize": 5,
+						"scaleDistribution": {
+							"type": "linear"
+						},
+						"showPoints": "auto",
+						"spanNulls": false,
+						"stacking": {
+							"group": "A",
+							"mode": "none"
+						},
+						"thresholdsStyle": {
+							"mode": "off"
+						}
+					},
+					"mappings": [],
+					"thresholds": {
+						"mode": "absolute",
+						"steps": [
+							{
+								"color": "green",
+								"value": null
+							},
+							{
+								"color": "red",
+								"value": 80
+							}
+						]
+					}
+				},
+				"overrides": []
+			},
+			"gridPos": {
+				"h": 13,
+				"w": 8,
+				"x": 0,
+				"y": 1
+			},
+			"id": 12,
+			"options": {
+				"legend": {
+					"calcs": [],
+					"displayMode": "list",
+					"placement": "bottom",
+					"showLegend": true
+				},
+				"tooltip": {
+					"mode": "single",
+					"sort": "none"
+				}
+			},
+			"pluginVersion": "10.1.1",
+			"targets": [
+				{
+					"datasource": {
+						"type": "grafana-pyroscope-datasource",
+						"uid": "e7e5653b-5fad-4ec7-a7ce-6a61fab83ce1"
+					},
+					"groupBy": ["service_name"],
+					"labelSelector": "{service_name=~\"${host:pipe}\"}",
+					"profileTypeId": "process_cpu:cpu:nanoseconds:cpu:nanoseconds",
+					"queryType": "metrics",
+					"refId": "A"
+				}
+			],
+			"type": "timeseries"
+		},
+		{
+			"datasource": {
+				"type": "grafana-pyroscope-datasource",
+				"uid": "e7e5653b-5fad-4ec7-a7ce-6a61fab83ce1"
+			},
+			"gridPos": {
+				"h": 13,
+				"w": 16,
+				"x": 8,
+				"y": 1
+			},
+			"id": 2,
+			"pluginVersion": "10.1.1",
+			"targets": [
+				{
+					"datasource": {
+						"type": "grafana-pyroscope-datasource",
+						"uid": "e7e5653b-5fad-4ec7-a7ce-6a61fab83ce1"
+					},
+					"groupBy": [],
+					"labelSelector": "{service_name=~\"${host:pipe}\"}",
+					"profileTypeId": "process_cpu:cpu:nanoseconds:cpu:nanoseconds",
+					"queryType": "profile",
+					"refId": "A"
+				}
+			],
+			"type": "flamegraph"
+		},
+		{
+			"collapsed": false,
+			"gridPos": {
+				"h": 1,
+				"w": 24,
+				"x": 0,
+				"y": 14
+			},
+			"id": 17,
+			"panels": [],
+			"title": "Goroutines",
+			"type": "row"
+		},
+		{
+			"datasource": {
+				"type": "grafana-pyroscope-datasource",
+				"uid": "e7e5653b-5fad-4ec7-a7ce-6a61fab83ce1"
+			},
+			"fieldConfig": {
+				"defaults": {
+					"color": {
+						"mode": "palette-classic"
+					},
+					"custom": {
+						"axisCenteredZero": false,
+						"axisColorMode": "text",
+						"axisLabel": "",
+						"axisPlacement": "auto",
+						"barAlignment": 0,
+						"drawStyle": "line",
+						"fillOpacity": 0,
+						"gradientMode": "none",
+						"hideFrom": {
+							"legend": false,
+							"tooltip": false,
+							"viz": false
+						},
+						"insertNulls": false,
+						"lineInterpolation": "linear",
+						"lineWidth": 1,
+						"pointSize": 5,
+						"scaleDistribution": {
+							"type": "linear"
+						},
+						"showPoints": "auto",
+						"spanNulls": false,
+						"stacking": {
+							"group": "A",
+							"mode": "none"
+						},
+						"thresholdsStyle": {
+							"mode": "off"
+						}
+					},
+					"mappings": [],
+					"thresholds": {
+						"mode": "absolute",
+						"steps": [
+							{
+								"color": "green",
+								"value": null
+							},
+							{
+								"color": "red",
+								"value": 80
+							}
+						]
+					}
+				},
+				"overrides": []
+			},
+			"gridPos": {
+				"h": 13,
+				"w": 8,
+				"x": 0,
+				"y": 15
+			},
+			"id": 18,
+			"options": {
+				"legend": {
+					"calcs": [],
+					"displayMode": "list",
+					"placement": "bottom",
+					"showLegend": true
+				},
+				"tooltip": {
+					"mode": "single",
+					"sort": "none"
+				}
+			},
+			"pluginVersion": "10.1.1",
+			"targets": [
+				{
+					"datasource": {
+						"type": "grafana-pyroscope-datasource",
+						"uid": "e7e5653b-5fad-4ec7-a7ce-6a61fab83ce1"
+					},
+					"groupBy": ["service_name"],
+					"labelSelector": "{service_name=~\"${host:pipe}\"}",
+					"profileTypeId": "goroutine:goroutine:count:goroutine:count",
+					"queryType": "metrics",
+					"refId": "A"
+				}
+			],
+			"type": "timeseries"
+		},
+		{
+			"datasource": {
+				"type": "grafana-pyroscope-datasource",
+				"uid": "e7e5653b-5fad-4ec7-a7ce-6a61fab83ce1"
+			},
+			"gridPos": {
+				"h": 13,
+				"w": 16,
+				"x": 8,
+				"y": 15
+			},
+			"id": 5,
+			"pluginVersion": "10.1.1",
+			"targets": [
+				{
+					"datasource": {
+						"type": "grafana-pyroscope-datasource",
+						"uid": "e7e5653b-5fad-4ec7-a7ce-6a61fab83ce1"
+					},
+					"groupBy": [],
+					"labelSelector": "{service_name=~\"${host:pipe}\"}",
+					"profileTypeId": "goroutine:goroutine:count:goroutine:count",
+					"queryType": "profile",
+					"refId": "A"
+				}
+			],
+			"type": "flamegraph"
+		},
+		{
+			"collapsed": false,
+			"gridPos": {
+				"h": 1,
+				"w": 24,
+				"x": 0,
+				"y": 28
+			},
+			"id": 16,
+			"panels": [],
+			"title": "Block Contentions",
+			"type": "row"
+		},
+		{
+			"datasource": {
+				"type": "grafana-pyroscope-datasource",
+				"uid": "e7e5653b-5fad-4ec7-a7ce-6a61fab83ce1"
+			},
+			"description": "Number of times goroutines have contended for the same resource.",
+			"fieldConfig": {
+				"defaults": {
+					"color": {
+						"mode": "palette-classic"
+					},
+					"custom": {
+						"axisCenteredZero": false,
+						"axisColorMode": "text",
+						"axisLabel": "",
+						"axisPlacement": "auto",
+						"barAlignment": 0,
+						"drawStyle": "line",
+						"fillOpacity": 0,
+						"gradientMode": "none",
+						"hideFrom": {
+							"legend": false,
+							"tooltip": false,
+							"viz": false
+						},
+						"insertNulls": false,
+						"lineInterpolation": "linear",
+						"lineWidth": 1,
+						"pointSize": 5,
+						"scaleDistribution": {
+							"type": "linear"
+						},
+						"showPoints": "auto",
+						"spanNulls": false,
+						"stacking": {
+							"group": "A",
+							"mode": "none"
+						},
+						"thresholdsStyle": {
+							"mode": "off"
+						}
+					},
+					"mappings": [],
+					"thresholds": {
+						"mode": "absolute",
+						"steps": [
+							{
+								"color": "green"
+							},
+							{
+								"color": "red",
+								"value": 80
+							}
+						]
+					}
+				},
+				"overrides": []
+			},
+			"gridPos": {
+				"h": 13,
+				"w": 8,
+				"x": 0,
+				"y": 29
+			},
+			"id": 13,
+			"options": {
+				"legend": {
+					"calcs": [],
+					"displayMode": "list",
+					"placement": "bottom",
+					"showLegend": true
+				},
+				"tooltip": {
+					"mode": "single",
+					"sort": "none"
+				}
+			},
+			"pluginVersion": "10.1.1",
+			"targets": [
+				{
+					"datasource": {
+						"type": "grafana-pyroscope-datasource",
+						"uid": "e7e5653b-5fad-4ec7-a7ce-6a61fab83ce1"
+					},
+					"groupBy": ["service_name"],
+					"labelSelector": "{service_name=~\"${host:pipe}\"}",
+					"profileTypeId": "block:contentions:count:contentions:count",
+					"queryType": "metrics",
+					"refId": "A"
+				}
+			],
+			"type": "timeseries"
+		},
+		{
+			"datasource": {
+				"type": "grafana-pyroscope-datasource",
+				"uid": "e7e5653b-5fad-4ec7-a7ce-6a61fab83ce1"
+			},
+			"gridPos": {
+				"h": 13,
+				"w": 16,
+				"x": 8,
+				"y": 29
+			},
+			"id": 3,
+			"pluginVersion": "10.1.1",
+			"targets": [
+				{
+					"datasource": {
+						"type": "grafana-pyroscope-datasource",
+						"uid": "e7e5653b-5fad-4ec7-a7ce-6a61fab83ce1"
+					},
+					"groupBy": [],
+					"labelSelector": "{service_name=~\"${host:pipe}\"}",
+					"profileTypeId": "block:contentions:count:contentions:count",
+					"queryType": "profile",
+					"refId": "A"
+				}
+			],
+			"type": "flamegraph"
+		},
+		{
+			"collapsed": false,
+			"gridPos": {
+				"h": 1,
+				"w": 24,
+				"x": 0,
+				"y": 42
+			},
+			"id": 26,
+			"panels": [],
+			"title": "Block Delay",
+			"type": "row"
+		},
+		{
+			"datasource": {
+				"type": "grafana-pyroscope-datasource",
+				"uid": "e7e5653b-5fad-4ec7-a7ce-6a61fab83ce1"
+			},
+			"fieldConfig": {
+				"defaults": {
+					"color": {
+						"mode": "palette-classic"
+					},
+					"custom": {
+						"axisCenteredZero": false,
+						"axisColorMode": "text",
+						"axisLabel": "",
+						"axisPlacement": "auto",
+						"barAlignment": 0,
+						"drawStyle": "line",
+						"fillOpacity": 0,
+						"gradientMode": "none",
+						"hideFrom": {
+							"legend": false,
+							"tooltip": false,
+							"viz": false
+						},
+						"insertNulls": false,
+						"lineInterpolation": "linear",
+						"lineWidth": 1,
+						"pointSize": 5,
+						"scaleDistribution": {
+							"type": "linear"
+						},
+						"showPoints": "auto",
+						"spanNulls": false,
+						"stacking": {
+							"group": "A",
+							"mode": "none"
+						},
+						"thresholdsStyle": {
+							"mode": "off"
+						}
+					},
+					"mappings": [],
+					"thresholds": {
+						"mode": "absolute",
+						"steps": [
+							{
+								"color": "green"
+							},
+							{
+								"color": "red",
+								"value": 80
+							}
+						]
+					}
+				},
+				"overrides": []
+			},
+			"gridPos": {
+				"h": 13,
+				"w": 8,
+				"x": 0,
+				"y": 43
+			},
+			"id": 4,
+			"options": {
+				"legend": {
+					"calcs": [],
+					"displayMode": "list",
+					"placement": "bottom",
+					"showLegend": true
+				},
+				"tooltip": {
+					"mode": "single",
+					"sort": "none"
+				}
+			},
+			"pluginVersion": "10.1.1",
+			"targets": [
+				{
+					"datasource": {
+						"type": "grafana-pyroscope-datasource",
+						"uid": "e7e5653b-5fad-4ec7-a7ce-6a61fab83ce1"
+					},
+					"groupBy": ["service_name"],
+					"labelSelector": "{service_name=~\"${host:pipe}\"}",
+					"profileTypeId": "block:delay:nanoseconds:contentions:count",
+					"queryType": "metrics",
+					"refId": "A"
+				}
+			],
+			"type": "timeseries"
+		},
+		{
+			"datasource": {
+				"type": "grafana-pyroscope-datasource",
+				"uid": "e7e5653b-5fad-4ec7-a7ce-6a61fab83ce1"
+			},
+			"gridPos": {
+				"h": 13,
+				"w": 16,
+				"x": 8,
+				"y": 43
+			},
+			"id": 27,
+			"pluginVersion": "10.1.1",
+			"targets": [
+				{
+					"datasource": {
+						"type": "grafana-pyroscope-datasource",
+						"uid": "e7e5653b-5fad-4ec7-a7ce-6a61fab83ce1"
+					},
+					"groupBy": [],
+					"labelSelector": "{service_name=~\"${host:pipe}\"}",
+					"profileTypeId": "block:delay:nanoseconds:contentions:count",
+					"queryType": "profile",
+					"refId": "A"
+				}
+			],
+			"type": "flamegraph"
+		},
+		{
+			"collapsed": false,
+			"gridPos": {
+				"h": 1,
+				"w": 24,
+				"x": 0,
+				"y": 56
+			},
+			"id": 24,
+			"panels": [],
+			"title": "Mutex Contentions",
+			"type": "row"
+		},
+		{
+			"datasource": {
+				"type": "grafana-pyroscope-datasource",
+				"uid": "e7e5653b-5fad-4ec7-a7ce-6a61fab83ce1"
+			},
+			"fieldConfig": {
+				"defaults": {
+					"color": {
+						"mode": "palette-classic"
+					},
+					"custom": {
+						"axisCenteredZero": false,
+						"axisColorMode": "text",
+						"axisLabel": "",
+						"axisPlacement": "auto",
+						"barAlignment": 0,
+						"drawStyle": "line",
+						"fillOpacity": 0,
+						"gradientMode": "none",
+						"hideFrom": {
+							"legend": false,
+							"tooltip": false,
+							"viz": false
+						},
+						"insertNulls": false,
+						"lineInterpolation": "linear",
+						"lineWidth": 1,
+						"pointSize": 5,
+						"scaleDistribution": {
+							"type": "linear"
+						},
+						"showPoints": "auto",
+						"spanNulls": false,
+						"stacking": {
+							"group": "A",
+							"mode": "none"
+						},
+						"thresholdsStyle": {
+							"mode": "off"
+						}
+					},
+					"mappings": [],
+					"thresholds": {
+						"mode": "absolute",
+						"steps": [
+							{
+								"color": "green"
+							},
+							{
+								"color": "red",
+								"value": 80
+							}
+						]
+					}
+				},
+				"overrides": []
+			},
+			"gridPos": {
+				"h": 13,
+				"w": 8,
+				"x": 0,
+				"y": 57
+			},
+			"id": 10,
+			"options": {
+				"legend": {
+					"calcs": [],
+					"displayMode": "list",
+					"placement": "bottom",
+					"showLegend": true
+				},
+				"tooltip": {
+					"mode": "single",
+					"sort": "none"
+				}
+			},
+			"pluginVersion": "10.1.1",
+			"targets": [
+				{
+					"datasource": {
+						"type": "grafana-pyroscope-datasource",
+						"uid": "e7e5653b-5fad-4ec7-a7ce-6a61fab83ce1"
+					},
+					"groupBy": ["service_name"],
+					"labelSelector": "{service_name=~\"${host:pipe}\"}",
+					"profileTypeId": "mutex:contentions:count:contentions:count",
+					"queryType": "metrics",
+					"refId": "A"
+				}
+			],
+			"type": "timeseries"
+		},
+		{
+			"datasource": {
+				"type": "grafana-pyroscope-datasource",
+				"uid": "e7e5653b-5fad-4ec7-a7ce-6a61fab83ce1"
+			},
+			"gridPos": {
+				"h": 13,
+				"w": 16,
+				"x": 8,
+				"y": 57
+			},
+			"id": 25,
+			"pluginVersion": "10.1.1",
+			"targets": [
+				{
+					"datasource": {
+						"type": "grafana-pyroscope-datasource",
+						"uid": "e7e5653b-5fad-4ec7-a7ce-6a61fab83ce1"
+					},
+					"groupBy": [],
+					"labelSelector": "{service_name=~\"${host:pipe}\"}",
+					"profileTypeId": "mutex:contentions:count:contentions:count",
+					"queryType": "profile",
+					"refId": "A"
+				}
+			],
+			"type": "flamegraph"
+		},
+		{
+			"collapsed": false,
+			"gridPos": {
+				"h": 1,
+				"w": 24,
+				"x": 0,
+				"y": 70
+			},
+			"id": 28,
+			"panels": [],
+			"title": "Mutex Delay",
+			"type": "row"
+		},
+		{
+			"datasource": {
+				"type": "grafana-pyroscope-datasource",
+				"uid": "e7e5653b-5fad-4ec7-a7ce-6a61fab83ce1"
+			},
+			"fieldConfig": {
+				"defaults": {
+					"color": {
+						"mode": "palette-classic"
+					},
+					"custom": {
+						"axisCenteredZero": false,
+						"axisColorMode": "text",
+						"axisLabel": "",
+						"axisPlacement": "auto",
+						"barAlignment": 0,
+						"drawStyle": "line",
+						"fillOpacity": 0,
+						"gradientMode": "none",
+						"hideFrom": {
+							"legend": false,
+							"tooltip": false,
+							"viz": false
+						},
+						"insertNulls": false,
+						"lineInterpolation": "linear",
+						"lineWidth": 1,
+						"pointSize": 5,
+						"scaleDistribution": {
+							"type": "linear"
+						},
+						"showPoints": "auto",
+						"spanNulls": false,
+						"stacking": {
+							"group": "A",
+							"mode": "none"
+						},
+						"thresholdsStyle": {
+							"mode": "off"
+						}
+					},
+					"mappings": [],
+					"thresholds": {
+						"mode": "absolute",
+						"steps": [
+							{
+								"color": "green"
+							},
+							{
+								"color": "red",
+								"value": 80
+							}
+						]
+					}
+				},
+				"overrides": []
+			},
+			"gridPos": {
+				"h": 13,
+				"w": 8,
+				"x": 0,
+				"y": 71
+			},
+			"id": 11,
+			"options": {
+				"legend": {
+					"calcs": [],
+					"displayMode": "list",
+					"placement": "bottom",
+					"showLegend": true
+				},
+				"tooltip": {
+					"mode": "single",
+					"sort": "none"
+				}
+			},
+			"pluginVersion": "10.1.1",
+			"targets": [
+				{
+					"datasource": {
+						"type": "grafana-pyroscope-datasource",
+						"uid": "e7e5653b-5fad-4ec7-a7ce-6a61fab83ce1"
+					},
+					"groupBy": ["service_name"],
+					"labelSelector": "{service_name=~\"${host:pipe}\"}",
+					"profileTypeId": "mutex:delay:nanoseconds:contentions:count",
+					"queryType": "metrics",
+					"refId": "A"
+				}
+			],
+			"type": "timeseries"
+		},
+		{
+			"datasource": {
+				"type": "grafana-pyroscope-datasource",
+				"uid": "e7e5653b-5fad-4ec7-a7ce-6a61fab83ce1"
+			},
+			"gridPos": {
+				"h": 13,
+				"w": 16,
+				"x": 8,
+				"y": 71
+			},
+			"id": 29,
+			"pluginVersion": "10.1.1",
+			"targets": [
+				{
+					"datasource": {
+						"type": "grafana-pyroscope-datasource",
+						"uid": "e7e5653b-5fad-4ec7-a7ce-6a61fab83ce1"
+					},
+					"groupBy": [],
+					"labelSelector": "{service_name=~\"${host:pipe}\"}",
+					"profileTypeId": "mutex:delay:nanoseconds:contentions:count",
+					"queryType": "profile",
+					"refId": "A"
+				}
+			],
+			"type": "flamegraph"
+		},
+		{
+			"collapsed": false,
+			"gridPos": {
+				"h": 1,
+				"w": 24,
+				"x": 0,
+				"y": 84
+			},
+			"id": 14,
+			"panels": [],
+			"title": "Allocated Space in Memory",
+			"type": "row"
+		},
+		{
+			"datasource": {
+				"type": "grafana-pyroscope-datasource",
+				"uid": "e7e5653b-5fad-4ec7-a7ce-6a61fab83ce1"
+			},
+			"fieldConfig": {
+				"defaults": {
+					"color": {
+						"mode": "palette-classic"
+					},
+					"custom": {
+						"axisCenteredZero": false,
+						"axisColorMode": "text",
+						"axisLabel": "",
+						"axisPlacement": "auto",
+						"barAlignment": 0,
+						"drawStyle": "line",
+						"fillOpacity": 0,
+						"gradientMode": "none",
+						"hideFrom": {
+							"legend": false,
+							"tooltip": false,
+							"viz": false
+						},
+						"insertNulls": false,
+						"lineInterpolation": "linear",
+						"lineWidth": 1,
+						"pointSize": 5,
+						"scaleDistribution": {
+							"type": "linear"
+						},
+						"showPoints": "auto",
+						"spanNulls": false,
+						"stacking": {
+							"group": "A",
+							"mode": "none"
+						},
+						"thresholdsStyle": {
+							"mode": "off"
+						}
+					},
+					"mappings": [],
+					"thresholds": {
+						"mode": "absolute",
+						"steps": [
+							{
+								"color": "green"
+							},
+							{
+								"color": "red",
+								"value": 80
+							}
+						]
+					}
+				},
+				"overrides": []
+			},
+			"gridPos": {
+				"h": 13,
+				"w": 8,
+				"x": 0,
+				"y": 85
+			},
+			"id": 7,
+			"options": {
+				"legend": {
+					"calcs": [],
+					"displayMode": "list",
+					"placement": "bottom",
+					"showLegend": true
+				},
+				"tooltip": {
+					"mode": "single",
+					"sort": "none"
+				}
+			},
+			"pluginVersion": "10.1.1",
+			"targets": [
+				{
+					"datasource": {
+						"type": "grafana-pyroscope-datasource",
+						"uid": "e7e5653b-5fad-4ec7-a7ce-6a61fab83ce1"
+					},
+					"groupBy": ["service_name"],
+					"labelSelector": "{service_name=~\"${host:pipe}\"}",
+					"profileTypeId": "memory:alloc_space:bytes:space:bytes",
+					"queryType": "metrics",
+					"refId": "A"
+				}
+			],
+			"type": "timeseries"
+		},
+		{
+			"datasource": {
+				"type": "grafana-pyroscope-datasource",
+				"uid": "e7e5653b-5fad-4ec7-a7ce-6a61fab83ce1"
+			},
+			"gridPos": {
+				"h": 13,
+				"w": 16,
+				"x": 8,
+				"y": 85
+			},
+			"id": 19,
+			"pluginVersion": "10.1.1",
+			"targets": [
+				{
+					"datasource": {
+						"type": "grafana-pyroscope-datasource",
+						"uid": "e7e5653b-5fad-4ec7-a7ce-6a61fab83ce1"
+					},
+					"groupBy": [],
+					"labelSelector": "{service_name=~\"${host:pipe}\"}",
+					"profileTypeId": "memory:alloc_space:bytes:space:bytes",
+					"queryType": "profile",
+					"refId": "A"
+				}
+			],
+			"type": "flamegraph"
+		},
+		{
+			"collapsed": false,
+			"gridPos": {
+				"h": 1,
+				"w": 24,
+				"x": 0,
+				"y": 98
+			},
+			"id": 20,
+			"panels": [],
+			"title": "Allocated Objects in Memory",
+			"type": "row"
+		},
+		{
+			"datasource": {
+				"type": "grafana-pyroscope-datasource",
+				"uid": "e7e5653b-5fad-4ec7-a7ce-6a61fab83ce1"
+			},
+			"fieldConfig": {
+				"defaults": {
+					"color": {
+						"mode": "palette-classic"
+					},
+					"custom": {
+						"axisCenteredZero": false,
+						"axisColorMode": "text",
+						"axisLabel": "",
+						"axisPlacement": "auto",
+						"barAlignment": 0,
+						"drawStyle": "line",
+						"fillOpacity": 0,
+						"gradientMode": "none",
+						"hideFrom": {
+							"legend": false,
+							"tooltip": false,
+							"viz": false
+						},
+						"insertNulls": false,
+						"lineInterpolation": "linear",
+						"lineWidth": 1,
+						"pointSize": 5,
+						"scaleDistribution": {
+							"type": "linear"
+						},
+						"showPoints": "auto",
+						"spanNulls": false,
+						"stacking": {
+							"group": "A",
+							"mode": "none"
+						},
+						"thresholdsStyle": {
+							"mode": "off"
+						}
+					},
+					"mappings": [],
+					"thresholds": {
+						"mode": "absolute",
+						"steps": [
+							{
+								"color": "green"
+							},
+							{
+								"color": "red",
+								"value": 80
+							}
+						]
+					}
+				},
+				"overrides": []
+			},
+			"gridPos": {
+				"h": 13,
+				"w": 8,
+				"x": 0,
+				"y": 99
+			},
+			"id": 6,
+			"options": {
+				"legend": {
+					"calcs": [],
+					"displayMode": "list",
+					"placement": "bottom",
+					"showLegend": true
+				},
+				"tooltip": {
+					"mode": "single",
+					"sort": "none"
+				}
+			},
+			"pluginVersion": "10.1.1",
+			"targets": [
+				{
+					"datasource": {
+						"type": "grafana-pyroscope-datasource",
+						"uid": "e7e5653b-5fad-4ec7-a7ce-6a61fab83ce1"
+					},
+					"groupBy": ["service_name"],
+					"labelSelector": "{service_name=~\"${host:pipe}\"}",
+					"profileTypeId": "memory:alloc_objects:count:space:bytes",
+					"queryType": "metrics",
+					"refId": "A"
+				}
+			],
+			"type": "timeseries"
+		},
+		{
+			"datasource": {
+				"type": "grafana-pyroscope-datasource",
+				"uid": "e7e5653b-5fad-4ec7-a7ce-6a61fab83ce1"
+			},
+			"gridPos": {
+				"h": 13,
+				"w": 16,
+				"x": 8,
+				"y": 99
+			},
+			"id": 21,
+			"pluginVersion": "10.1.1",
+			"targets": [
+				{
+					"datasource": {
+						"type": "grafana-pyroscope-datasource",
+						"uid": "e7e5653b-5fad-4ec7-a7ce-6a61fab83ce1"
+					},
+					"groupBy": [],
+					"labelSelector": "{service_name=~\"${host:pipe}\"}",
+					"profileTypeId": "memory:alloc_objects:count:space:bytes",
+					"queryType": "profile",
+					"refId": "A"
+				}
+			],
+			"type": "flamegraph"
+		},
+		{
+			"collapsed": false,
+			"gridPos": {
+				"h": 1,
+				"w": 24,
+				"x": 0,
+				"y": 112
+			},
+			"id": 30,
+			"panels": [],
+			"title": "Used Space in Memory",
+			"type": "row"
+		},
+		{
+			"datasource": {
+				"type": "grafana-pyroscope-datasource",
+				"uid": "e7e5653b-5fad-4ec7-a7ce-6a61fab83ce1"
+			},
+			"fieldConfig": {
+				"defaults": {
+					"color": {
+						"mode": "palette-classic"
+					},
+					"custom": {
+						"axisCenteredZero": false,
+						"axisColorMode": "text",
+						"axisLabel": "",
+						"axisPlacement": "auto",
+						"barAlignment": 0,
+						"drawStyle": "line",
+						"fillOpacity": 0,
+						"gradientMode": "none",
+						"hideFrom": {
+							"legend": false,
+							"tooltip": false,
+							"viz": false
+						},
+						"insertNulls": false,
+						"lineInterpolation": "linear",
+						"lineWidth": 1,
+						"pointSize": 5,
+						"scaleDistribution": {
+							"type": "linear"
+						},
+						"showPoints": "auto",
+						"spanNulls": false,
+						"stacking": {
+							"group": "A",
+							"mode": "none"
+						},
+						"thresholdsStyle": {
+							"mode": "off"
+						}
+					},
+					"mappings": [],
+					"thresholds": {
+						"mode": "absolute",
+						"steps": [
+							{
+								"color": "green"
+							},
+							{
+								"color": "red",
+								"value": 80
+							}
+						]
+					}
+				},
+				"overrides": []
+			},
+			"gridPos": {
+				"h": 13,
+				"w": 8,
+				"x": 0,
+				"y": 113
+			},
+			"id": 9,
+			"options": {
+				"legend": {
+					"calcs": [],
+					"displayMode": "list",
+					"placement": "bottom",
+					"showLegend": true
+				},
+				"tooltip": {
+					"mode": "single",
+					"sort": "none"
+				}
+			},
+			"pluginVersion": "10.1.1",
+			"targets": [
+				{
+					"datasource": {
+						"type": "grafana-pyroscope-datasource",
+						"uid": "e7e5653b-5fad-4ec7-a7ce-6a61fab83ce1"
+					},
+					"groupBy": ["service_name"],
+					"labelSelector": "{service_name=~\"${host:pipe}\"}",
+					"profileTypeId": "memory:inuse_space:bytes:space:bytes",
+					"queryType": "metrics",
+					"refId": "A"
+				}
+			],
+			"type": "timeseries"
+		},
+		{
+			"datasource": {
+				"type": "grafana-pyroscope-datasource",
+				"uid": "e7e5653b-5fad-4ec7-a7ce-6a61fab83ce1"
+			},
+			"gridPos": {
+				"h": 13,
+				"w": 16,
+				"x": 8,
+				"y": 113
+			},
+			"id": 31,
+			"pluginVersion": "10.1.1",
+			"targets": [
+				{
+					"datasource": {
+						"type": "grafana-pyroscope-datasource",
+						"uid": "e7e5653b-5fad-4ec7-a7ce-6a61fab83ce1"
+					},
+					"groupBy": [],
+					"labelSelector": "{service_name=~\"${host:pipe}\"}",
+					"profileTypeId": "memory:inuse_space:bytes:space:bytes",
+					"queryType": "profile",
+					"refId": "A"
+				}
+			],
+			"type": "flamegraph"
+		},
+		{
+			"collapsed": false,
+			"gridPos": {
+				"h": 1,
+				"w": 24,
+				"x": 0,
+				"y": 126
+			},
+			"id": 22,
+			"panels": [],
+			"title": "Used Objects in Memory",
+			"type": "row"
+		},
+		{
+			"datasource": {
+				"type": "grafana-pyroscope-datasource",
+				"uid": "e7e5653b-5fad-4ec7-a7ce-6a61fab83ce1"
+			},
+			"fieldConfig": {
+				"defaults": {
+					"color": {
+						"mode": "palette-classic"
+					},
+					"custom": {
+						"axisCenteredZero": false,
+						"axisColorMode": "text",
+						"axisLabel": "",
+						"axisPlacement": "auto",
+						"barAlignment": 0,
+						"drawStyle": "line",
+						"fillOpacity": 0,
+						"gradientMode": "none",
+						"hideFrom": {
+							"legend": false,
+							"tooltip": false,
+							"viz": false
+						},
+						"insertNulls": false,
+						"lineInterpolation": "linear",
+						"lineWidth": 1,
+						"pointSize": 5,
+						"scaleDistribution": {
+							"type": "linear"
+						},
+						"showPoints": "auto",
+						"spanNulls": false,
+						"stacking": {
+							"group": "A",
+							"mode": "none"
+						},
+						"thresholdsStyle": {
+							"mode": "off"
+						}
+					},
+					"mappings": [],
+					"thresholds": {
+						"mode": "absolute",
+						"steps": [
+							{
+								"color": "green"
+							},
+							{
+								"color": "red",
+								"value": 80
+							}
+						]
+					}
+				},
+				"overrides": []
+			},
+			"gridPos": {
+				"h": 13,
+				"w": 8,
+				"x": 0,
+				"y": 127
+			},
+			"id": 23,
+			"options": {
+				"legend": {
+					"calcs": [],
+					"displayMode": "list",
+					"placement": "bottom",
+					"showLegend": true
+				},
+				"tooltip": {
+					"mode": "single",
+					"sort": "none"
+				}
+			},
+			"pluginVersion": "10.1.1",
+			"targets": [
+				{
+					"datasource": {
+						"type": "grafana-pyroscope-datasource",
+						"uid": "e7e5653b-5fad-4ec7-a7ce-6a61fab83ce1"
+					},
+					"groupBy": ["service_name"],
+					"labelSelector": "{service_name=~\"${host:pipe}\"}",
+					"profileTypeId": "memory:inuse_objects:count:space:bytes",
+					"queryType": "metrics",
+					"refId": "A"
+				}
+			],
+			"type": "timeseries"
+		},
+		{
+			"datasource": {
+				"type": "grafana-pyroscope-datasource",
+				"uid": "e7e5653b-5fad-4ec7-a7ce-6a61fab83ce1"
+			},
+			"gridPos": {
+				"h": 13,
+				"w": 16,
+				"x": 8,
+				"y": 127
+			},
+			"id": 8,
+			"pluginVersion": "10.1.1",
+			"targets": [
+				{
+					"datasource": {
+						"type": "grafana-pyroscope-datasource",
+						"uid": "e7e5653b-5fad-4ec7-a7ce-6a61fab83ce1"
+					},
+					"groupBy": [],
+					"labelSelector": "{service_name=~\"${host:pipe}\"}",
+					"profileTypeId": "memory:inuse_objects:count:space:bytes",
+					"queryType": "profile",
+					"refId": "A"
+				}
+			],
+			"type": "flamegraph"
+		}
+	],
+	"refresh": "",
+	"schemaVersion": 38,
+	"style": "dark",
+	"tags": ["pyroscope"],
+	"templating": {
+		"list": [
+			{
+				"current": {
+					"selected": true,
+					"text": [
+						"evmos-pruned-mainnet-0",
+						"evmos-pruned-mainnet-1",
+						"evmos-pruned-mainnet-2",
+						"evmos-pruned-mainnet-3",
+						"evmos-archive-mainnet-0",
+						"evmos-archive-mainnet-1"
+					],
+					"value": [
+						"evmos-pruned-mainnet-0",
+						"evmos-pruned-mainnet-1",
+						"evmos-pruned-mainnet-2",
+						"evmos-pruned-mainnet-3",
+						"evmos-archive-mainnet-0",
+						"evmos-archive-mainnet-1"
+					]
+				},
+				"hide": 0,
+				"includeAll": false,
+				"multi": true,
+				"name": "host",
+				"options": [
+					{
+						"selected": true,
+						"text": "evmos-pruned-mainnet-0",
+						"value": "evmos-pruned-mainnet-0"
+					},
+					{
+						"selected": true,
+						"text": "evmos-pruned-mainnet-1",
+						"value": "evmos-pruned-mainnet-1"
+					},
+					{
+						"selected": true,
+						"text": "evmos-pruned-mainnet-2",
+						"value": "evmos-pruned-mainnet-2"
+					},
+					{
+						"selected": true,
+						"text": "evmos-pruned-mainnet-3",
+						"value": "evmos-pruned-mainnet-3"
+					},
+					{
+						"selected": true,
+						"text": "evmos-archive-mainnet-0",
+						"value": "evmos-archive-mainnet-0"
+					},
+					{
+						"selected": true,
+						"text": "evmos-archive-mainnet-1",
+						"value": "evmos-archive-mainnet-1"
+					},
+					{
+						"selected": false,
+						"text": "pyroscope",
+						"value": "pyroscope"
+					}
+				],
+				"query": "evmos-pruned-mainnet-0, evmos-pruned-mainnet-1, evmos-pruned-mainnet-2, evmos-pruned-mainnet-3, evmos-archive-mainnet-0, evmos-archive-mainnet-1, pyroscope",
+				"queryValue": "",
+				"skipUrlSync": false,
+				"type": "custom"
+			}
+		]
+	},
+	"time": {
+		"from": "now-6h",
+		"to": "now"
+	},
+	"timepicker": {},
+	"timezone": "",
+	"title": "Pyroscope",
+	"uid": "edccf709-870b-4f89-bbdc-70e7419af9d4",
+	"version": 14,
+	"weekStart": ""
+}

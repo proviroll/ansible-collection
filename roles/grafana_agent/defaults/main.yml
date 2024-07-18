@@ -1,0 +1,9 @@
+---
+# Default vars
+grafana_agent_config_dir: /etc/agent
+grafana_agent_container_name: grafana_agent
+grafana_agent_image: grafana/agent:latest
+grafana_agent_webport: 4545
+grafana_agent_write_job_name:
+grafana_agent_scrape_job_name:
+pyroscope_url:

@@ -1,0 +1,24 @@
+---
+- name: Create directory for blackbox_exporter
+  file:
+    path: '{{ blackbox_exporter_dir }}'
+    state: directory
+    mode: '0755'
+
+- name: Template blackbox.yml
+  template:
+    src: ./templates/blackbox.yml.j2
+    dest: '{{ blackbox_exporter_dir }}/blackbox.yml'
+  notify: Restart Blackbox Exporter
+
+- name: Deploy blackbox_exporter
+  docker_container:
+    name: blackbox_exporter
+    image: quay.io/prometheus/blackbox-exporter:latest
+    state: started
+    restart_policy: unless-stopped
+    ports:
+      - '9115:9115'
+    volumes:
+      - '{{ blackbox_exporter_dir }}:/config'
+    command: --config.file=/config/blackbox.yml

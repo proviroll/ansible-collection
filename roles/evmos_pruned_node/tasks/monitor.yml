@@ -1,0 +1,36 @@
+---
+# Run a health check
+- name: Wait for evmos node to come online
+  when: evmos_image_tag is defined
+  ansible.builtin.uri:
+    url: http://127.0.0.1:26657/health
+    status_code: [200, 206]
+  register: result
+  until: result.status == 200 or result.status == 206
+  retries: 120
+  delay: 1
+
+# Set up the systemd monitoring service
+- name: Template evmos archive node monitoring script
+  ansible.builtin.template:
+    src: templates/evmos-node-monitor.sh.j2
+    dest: "{{ host_config_dir }}/evmos-node-monitor.sh"
+
+- name: Ensure script is executable
+  ansible.builtin.file:
+    path: "{{ host_config_dir }}/evmos-node-monitor.sh"
+    mode: "0755"
+
+- name: Template systemd service file for script
+  ansible.builtin.template:
+    src: templates/evmos-node-monitor.service.j2
+    dest: /etc/systemd/system/evmos-node-monitor.service
+
+- name: Reload systemd to make it aware of the new service
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Start the service
+  ansible.builtin.systemd:
+    name: evmos-node-monitor
+    state: started
