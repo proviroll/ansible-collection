@@ -1,0 +1,8 @@
+---
+    - name: Initialize Celestia light node
+      command: cd /home/devops/celestia-node && celestia light init
+
+    - name: Start Celestia light node
+      command: cd /home/devops/celestia-node && celestia light start --core.ip rpc.celestia.pops.one --p2p.network celestia
+
+    

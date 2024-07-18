@@ -1,5 +1,5 @@
 ---
-- hosts: metrics
+- hosts: all
   become: true
   vars:
     grafana_docker_data_dir: /var/lib/grafana
