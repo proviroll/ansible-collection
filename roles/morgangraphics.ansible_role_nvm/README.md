@@ -262,7 +262,7 @@ ls -al >> output.txt
       nodejs_version: "10.15.0"
       nvm_commands:
        - "nvm alias webapp {{ nodejs_version }}" # <= Changes the default NVM version (supports Ansible variable syntax)
-       - "nvm exec webapp npm install" # install app dependences
+       - "nvm exec webapp npm install" # install app dependencies
        - "NODE_ENV=production nvm run webapp build" # invoke Node.js directly to run the production build script
        - "nvm exec webapp npm run prod" # invoke npm to run the production script in your package.json file
 

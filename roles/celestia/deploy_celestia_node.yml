@@ -2,8 +2,8 @@
     - name: Set Docker environment variables
       shell: |
         export NODE_TYPE=light
-        export NETWORK=celestia
-        export RPC_URL=this-is-an-rpc-url.com
+        export NETWORK=mocha
+        export RPC_URL=public-celestia-mocha4-consensus.numia.xyz
       environment:
         HOME: /devops
 
@@ -17,7 +17,7 @@
         docker run -e NODE_TYPE=$NODE_TYPE -e P2P_NETWORK=$NETWORK
         -v {{ ansible_env.HOME }}/my-node-store:/home/celestia
         ghcr.io/celestiaorg/celestia-node:v0.13.7
-        celestia $NODE_TYPE init --p2p.network $NETWORK
+         celestia $NODE_TYPE init --p2p.network $NETWORK
       environment:
         HOME: /devops 
 
