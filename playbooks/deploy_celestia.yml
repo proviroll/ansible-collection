@@ -4,4 +4,9 @@
   become: true 
 
   roles:
-    - celestia
+    - role : celestia
+      vars:
+        NETWORK: mocha
+        NODE_TYPE: light
+        P2P_NETWORK: mocha
+        RPC_URL: public-celestia-mocha4-consensus.numia.xyz

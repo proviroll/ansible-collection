@@ -1,49 +1,43 @@
 ---
-    - name: Set Docker environment variables
-      shell: |
-        export NODE_TYPE=light
-        export NETWORK=mocha
-        export RPC_URL=public-celestia-mocha4-consensus.numia.xyz
-      environment:
-        HOME: /devops
-
     - name: Create directory for node store on host machine
       file:
         path: "{{ ansible_env.HOME }}/my-node-store"
         state: directory
-
+    - name: Set Docker environment variables
+      set_fact:
+        docker_env_vars:
+          NODE_TYPE: "{{ NODE_TYPE }}"
+          P2P_NETWORK: "{{ P2P_NETWORK }}"
+          RPC_URL: "{{ RPC_URL }}"
     - name: Initialize Celestia node store
-      command: >
-        docker run -e NODE_TYPE=$NODE_TYPE -e P2P_NETWORK=$NETWORK
-        -v {{ ansible_env.HOME }}/my-node-store:/home/celestia
-        ghcr.io/celestiaorg/celestia-node:v0.13.7
-         celestia $NODE_TYPE init --p2p.network $NETWORK
-      environment:
-        HOME: /devops 
-
-    - name: Start Celestia light node
-      command: >
-        docker run -e NODE_TYPE=$NODE_TYPE -e P2P_NETWORK=$NETWORK
-        -v {{ ansible_env.HOME }}/my-node-store:/home/celestia
-        ghcr.io/celestiaorg/celestia-node:v0.13.7
-        celestia $NODE_TYPE start --core.ip $RPC_URL --p2p.network $NETWORK
+      community.docker.docker_container:
+        name: celestia_init
+        image: ghcr.io/celestiaorg/celestia-node:v0.14.0
+        command: "celestia {{ NODE_TYPE }} init "
+        user: "0:0"
+        env:
+          NODE_TYPE: "{{ NODE_TYPE }}"
+          P2P_NETWORK: "{{ NETWORK }}"
+          HOME: "/devops"
+        volumes:
+          - "{{ ansible_env.HOME }}/my-node-store:/home/celestia"
+        state: started
+        auto_remove: true
       environment:
         HOME: /devops
 
-#https://docs.celestia.org/nodes/docker-images
-# Quick start
-# Set the network you would like to run your node on:
-# Mainnet Beta
-# Mocha
-# Arabica
-# bash
-# export NETWORK=celestia
-# Set the node type
-# Light
-# export NODE_TYPE=light
-# Set an RPC endpoint for either Mainnet Beta, Mocha, or Arabica using the bare URL (without http or https):
-# export RPC_URL=this-is-an-rpc-url.com
-# Run the image from the command line:
-# docker run -e NODE_TYPE=$NODE_TYPE -e P2P_NETWORK=$NETWORK \
-#     ghcr.io/celestiaorg/celestia-node:v0.13.7 \
-#     celestia $NODE_TYPE start --core.ip $RPC_URL --p2p.network $NETWORK
+    - name: Start Celestia light node
+      docker_container:
+        name: celestia_light
+        image: ghcr.io/celestiaorg/celestia-node:v0.14.0
+        user: "0:0"
+        env:
+          NODE_TYPE: "{{ docker_env_vars.NODE_TYPE }}"
+          P2P_NETWORK: "{{ docker_env_vars.P2P_NETWORK }}"
+          RPC_URL: "{{ docker_env_vars.RPC_URL }}"
+        volumes:
+          - "{{ ansible_env.HOME }}/my-node-store:/home/celestia"
+        command: "celestia {{ docker_env_vars.NODE_TYPE }} start --core.ip {{ docker_env_vars.RPC_URL }} --p2p.network {{ docker_env_vars.P2P_NETWORK }}"
+        state: started
+      environment:
+        HOME: /devops
