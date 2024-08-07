@@ -3,14 +3,16 @@
       file:
         path: "{{ ansible_env.HOME }}/my-node-store"
         state: directory
+
     - name: Set Docker environment variables
       set_fact:
         docker_env_vars:
           NODE_TYPE: "{{ NODE_TYPE }}"
           P2P_NETWORK: "{{ P2P_NETWORK }}"
           RPC_URL: "{{ RPC_URL }}"
+
     - name: Initialize Celestia node store
-      community.docker.docker_container:
+      docker_container:
         name: celestia_init
         image: ghcr.io/celestiaorg/celestia-node:v0.14.0
         command: "celestia {{ NODE_TYPE }} init "
@@ -18,17 +20,17 @@
         env:
           NODE_TYPE: "{{ NODE_TYPE }}"
           P2P_NETWORK: "{{ NETWORK }}"
-          HOME: "/devops"
+          HOME: "{{ CELESTIA_HOME }}"
         volumes:
           - "{{ ansible_env.HOME }}/my-node-store:/home/celestia"
         state: started
         auto_remove: true
       environment:
-        HOME: /devops
+        HOME: "{{ CELESTIA_HOME }}"
 
-    - name: Start Celestia light node
+    - name: Start Celestia node
       docker_container:
-        name: celestia_light
+        name: celestia_node
         image: ghcr.io/celestiaorg/celestia-node:v0.14.0
         user: "0:0"
         env:
@@ -40,4 +42,4 @@
         command: "celestia {{ docker_env_vars.NODE_TYPE }} start --core.ip {{ docker_env_vars.RPC_URL }} --p2p.network {{ docker_env_vars.P2P_NETWORK }}"
         state: started
       environment:
-        HOME: /devops
+        HOME: "{{ CELESTIA_HOME }}"

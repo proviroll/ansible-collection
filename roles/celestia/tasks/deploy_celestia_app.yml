@@ -1,0 +1,33 @@
+---
+    - name: Download the Dockerfile
+      get_url:
+        url: https://raw.githubusercontent.com/celestiaorg/celestia-app/main/Dockerfile
+        dest: "{{ ansible_env.HOME }}/celestia-app/Dockerfile"
+        #approach 
+        vars_files:
+        - ../../../group_vars/celestia.yml  # Path to your configuration YAML file
+
+    - name: Build Celestia App Docker image using the downloaded Dockerfile
+      docker_image:
+        name: celestia-app:latest
+        build:
+          path: "{{ ansible_env.HOME }}/celestia-app"  # Directory where Dockerfile is saved
+          dockerfile: Dockerfile                       # Path to Dockerfile
+        source: build  # Indicates that we are building the image
+
+    - name: Run Celestia App container
+      docker_container:
+        name: celestia-app
+        image: celestia-app:latest
+        state: started
+        ports:
+          - "{{ rpc_port }}:{{ rpc_port }}"    # RPC Port
+          - "{{ p2p_port }}:{{ p2p_port }}"    # P2P Port
+          - "{{ grpc_port }}:{{ grpc_port }}"  # gRPC Port
+        volumes:
+          - "{{ ansible_env.HOME }}/celestia-app:/app/celestia"  # Mount directory inside container at /app/celestia
+        env_file: "{{ ansible_env.HOME }}/celestia-app/celestia.env"
+        environment:
+          SEEDS: "{{ mocha_pops_one_seed }}"  # Adding seed directly  # Adding seeds directly
+          MAX_NUM_PEERS: "2"          # Limit the number of peers
+        restart_policy: always

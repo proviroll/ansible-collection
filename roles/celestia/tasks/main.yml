@@ -1,3 +1,4 @@
 ---
 - ansible.builtin.include_tasks : install_dependencies.yml
 - ansible.builtin.include_tasks: deploy_celestia_node.yml
+- ansible.builtin.include_tasks : deploy_celestia_app.yml

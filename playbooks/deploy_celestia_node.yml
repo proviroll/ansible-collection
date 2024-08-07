@@ -1,0 +1,11 @@
+---
+- name: Deploy Celestia Light Node
+  hosts: all  
+  become: true 
+  tasks:
+  
+    - name: Include first task from role
+      include_tasks: ../roles/celestia/tasks/install_dependencies.yml
+
+    - name: Include second task from role
+      include_tasks: ../roles/celestia/tasks/deploy_celestia_node.yml
