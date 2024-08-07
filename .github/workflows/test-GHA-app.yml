@@ -1,0 +1,108 @@
+name: Deploy gossamer genesis node
+
+on:
+  workflow_dispatch:
+    inputs:
+      chain:
+        description: 'Select the chain to deploy'
+        required: true
+        default: 'westend'
+        type: choice
+        options:
+          - polkadot
+          - paseo
+          - westend
+      server_name:
+        description: 'Select the server'
+        required: true
+        default: 'genesis-westend'
+        type: choice
+        options:
+          - genesis-westend	
+          - genesis-paseo
+  repository_dispatch:
+    types: [deploy-gossamer-gene]
+
+env:
+  genesis-westend_IP: ${{ vars.GENESIS_WESTEND_IP }}
+  genesis-paseo_IP: ${{ vars.GENESIS_PASEO_IP }}
+  DIRECTORY_PATH:  ${{ vars.DIRECTORY_PATH }}
+
+jobs:
+  wipe-directory:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Check SSH connection
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ env[format('{0}_IP', github.event.inputs.server_name || github.event.client_payload.inputs.server_name)] }}
+        username: ec2-user
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: echo "SSH connection successful"
+
+    - name: Wipe directory on server
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ env[format('{0}_IP', github.event.inputs.server_name || github.event.client_payload.inputs.server_name)] }}
+        username: ec2-user
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: sudo rm -rf ${{ env.DIRECTORY_PATH }}${{ github.event.inputs.chain || github.event.client_payload.inputs.chain }}/*
+
+  update:
+    needs: wipe-directory
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          repository: ChainSafe/gossamer
+          ref: development 
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.GOSSAMER_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.GOSSAMER_AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+        
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: gossamer-${{ github.event.inputs.chain || github.event.client_payload.inputs.chain }}
+          IMAGE_TAG: ${{ github.sha }}
+          CHAIN: ${{ github.event.inputs.chain || github.event.client_payload.inputs.chain }}
+        run: |
+          docker build -f=Dockerfile.development . --progress=plain -t=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --build-arg chain=$CHAIN
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+      
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          repository: ChainSafe/infrastructure-general
+          ref: Amine/Add-gossamer-genesis
+          token: ${{ secrets.PAT }}
+      - name: Render Amazon ECS task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: terraform/gossamer/genesis/${{ github.event.inputs.chain || github.event.client_payload.inputs.chain }}/${{ github.event.inputs.chain || github.event.client_payload.inputs.chain }}-genesis-taskdef.json
+          container-name: ${{ github.event.inputs.chain || github.event.client_payload.inputs.chain }}-task
+          image: ${{ steps.build-image.outputs.image }}
+
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: gossamer-${{ github.event.inputs.chain || github.event.client_payload.inputs.chain }}-genesis-service
+          cluster: shared-gossamer
+          wait-for-service-stability: true
