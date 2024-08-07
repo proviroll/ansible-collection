@@ -21,7 +21,7 @@ on:
           - genesis-westend	
           - genesis-paseo
   repository_dispatch:
-    types: [deploy-gossamer-gene]
+    types: [deploy-gossamer-genesis]
 
 env:
   genesis-westend_IP: ${{ vars.GENESIS_WESTEND_IP }}
