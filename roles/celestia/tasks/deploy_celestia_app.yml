@@ -3,7 +3,7 @@
     name: celestia-app
     image: ghcr.io/celestiaorg/celestia-app:9523b4c  # Use specified Docker image
     state: started
-    user: "0.0"
+    user: "0:0"
     ports:
       - "{{ rpc_port }}:{{ rpc_port }}"    # RPC Port
       - "{{ p2p_port }}:{{ p2p_port }}"    # P2P Port

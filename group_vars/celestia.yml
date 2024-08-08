@@ -2,7 +2,7 @@
 #celestia variables
 rpc_port: 26657
 p2p_port: 26656
-grpc_port: 9090
+grpc_port: 50051
 network: mocha
 node_type: light
 p2p_network: mocha
