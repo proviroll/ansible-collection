@@ -3,6 +3,7 @@
   apt:
     update_cache: yes
     upgrade: dist
+
 - name: Install essential packages
   apt:
     name:
@@ -19,31 +20,38 @@
       - make
       - ncdu
     state: present
+
 - name: Set Golang version
   set_fact:
     golang_version: "1.21.1"
+
 - name: Download Golang
   get_url:
     url: "https://golang.org/dl/go{{ golang_version }}.linux-amd64.tar.gz"
     dest: "/tmp/go{{ golang_version }}.linux-amd64.tar.gz"
+
 - name: Remove old Golang
   file:
     path: /usr/local/go
     state: absent
+
 - name: Install Golang
   unarchive:
     src: "/tmp/go{{ golang_version }}.linux-amd64.tar.gz"
     dest: /usr/local
     remote_src: yes
+
 - name: Remove Golang archive
   file:
     path: "/tmp/go{{ golang_version }}.linux-amd64.tar.gz"
     state: absent
+
 - name: Add Golang to PATH
   lineinfile:
     path: /home/{{ ansible_user_id }}/.bash_profile
     line: 'export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin'
     create: yes
+    
 - name: Source bash_profile
   shell: source /home/{{ ansible_user_id }}/.bash_profile
   args:
