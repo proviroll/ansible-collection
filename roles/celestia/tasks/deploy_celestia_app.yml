@@ -38,6 +38,11 @@
   docker_container:
     name: celestia-genesis
     state: stopped
+    
+- name: Remove Genesis container
+  docker_container:
+    name: celestia-genesis
+    state: absent
 
 - name: Run Celestia App container
   docker_container:
