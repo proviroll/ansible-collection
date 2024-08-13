@@ -1,0 +1,7 @@
+---
+- name: Deploy Celestia Light Node
+  hosts: all  
+  become: true 
+
+  roles:
+    - role : celestia

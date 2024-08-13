@@ -1,0 +1,61 @@
+---
+- name: Initialize Celestia App
+  docker_container:
+    name: celestia-init
+    image: "{{ celestia_app_image }}"
+    command: "init {{ node_name }} --chain-id {{ chain_id }} --home /app/celestia-app"
+    volumes:
+      - "{{ ansible_env.HOME }}/celestia-app:/app/celestia"
+    ports:
+      - "{{ rpc_port }}:{{ rpc_port }}"
+      - "{{ p2p_port }}:{{ p2p_port }}"
+      - "{{ grpc_port }}:{{ grpc_port }}"
+    state: started
+    user: "0:0"
+  register: init_container
+
+- name: Wait for Celestia Init container to complete
+  docker_container:
+    name: celestia-init
+    state: stopped
+
+- name: Download Genesis File
+  docker_container:
+    name: celestia-genesis
+    image: "{{ celestia_app_image }}"
+    command: "download-genesis {{ chain_id }} --home /app/celestia-app"
+    volumes:
+        - "{{ ansible_env.HOME }}/celestia-app:/app/celestia-app"
+    ports:
+      - "{{ rpc_port }}:{{ rpc_port }}"
+      - "{{ p2p_port }}:{{ p2p_port }}"
+      - "{{ grpc_port }}:{{ grpc_port }}"
+    state: started
+    user: "0:0"
+  register: genesis_container
+
+- name: Wait for Genesis container to complete
+  docker_container:
+    name: celestia-genesis
+    state: stopped
+    
+- name: Remove Genesis container
+  docker_container:
+    name: celestia-genesis
+    state: absent
+
+- name: Run Celestia App container
+  docker_container:
+    name: celestia-app
+    image: "{{ celestia_app_image }}"
+    command: "start --home /app/celestia-app "
+
+    volumes:
+        - "{{ ansible_env.HOME }}/celestia-app:/app/celestia-app"
+    ports:
+      - "{{ rpc_port }}:{{ rpc_port }}"    # RPC Port
+      - "{{ p2p_port }}:{{ p2p_port }}"    # P2P Port
+      - "{{ grpc_port }}:{{ grpc_port }}"  # gRPC Port
+    state: started
+    user: "0:0"
+  register: start_container

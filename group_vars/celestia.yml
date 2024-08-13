@@ -1,0 +1,13 @@
+---
+#celestia variables
+rpc_port: 26657
+p2p_port: 26656
+grpc_port: 50051
+network: mocha
+node_type: full
+p2p_network: mocha
+rpc_url: public-celestia-mocha4-consensus.numia.xyz
+celestia_home: "/home/{{ ansible_user }}"
+node_name: test-node
+chain_id: celestia
+celestia_app_image: 'ghcr.io/celestiaorg/celestia-app:latest'

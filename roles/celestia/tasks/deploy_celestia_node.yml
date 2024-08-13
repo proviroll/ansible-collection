@@ -1,0 +1,34 @@
+---
+    - name: Create directory for node store on host machine
+      file:
+        path: "{{ ansible_env.HOME }}/my-node-store"
+        state: directory
+      
+    - name: Initialize Celestia node store
+      docker_container:
+        name: celestia_init
+        image: ghcr.io/celestiaorg/celestia-node:v0.14.0
+        command: "celestia {{ node_type }} init "
+        user: "0:0"
+        env:
+          NODE_TYPE: "{{ node_type }}"
+          P2P_NETWORK: "{{ p2p_network }}"
+          RPC_URL: "{{ rpc_url }}"
+          HOME: "{{ celestia_home }}"
+        volumes:
+          - "{{ ansible_env.HOME }}/my-node-store:/home/celestia"
+        state: started
+        auto_remove: true
+
+
+    - name: Start Celestia node
+      docker_container:
+        name: celestia_node
+        image: ghcr.io/celestiaorg/celestia-node:v0.14.0
+        user: "0:0"
+        volumes:
+          - "{{ ansible_env.HOME }}/my-node-store:/home/celestia"
+        command: "celestia {{ node_type }} start --core.ip {{ rpc_url }} --p2p.network {{ p2p_network }}"
+        state: started
+      environment:
+        HOME: "{{ celestia_home }}"
