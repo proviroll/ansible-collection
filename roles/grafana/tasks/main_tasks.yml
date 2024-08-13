@@ -2,26 +2,26 @@
   docker_volume:
     name: grafana_data
 
-# - name: Create datasources dir
-#   file:
-#     path: '{{ grafana_provisioning_dir }}/datasources'
-#     state: directory
-# - name: Template datasource file
-#   template:
-#     src: ./templates/datasource.yml.j2
-#     dest: '{{ grafana_provisioning_dir }}/datasources/datasource.yml'
+- name: Create datasources dir
+  file:
+    path: '{{ grafana_provisioning_dir }}/datasources'
+    state: directory
+- name: Template datasource file
+  template:
+    src: ./templates/datasource.yml.j2
+    dest: '{{ grafana_provisioning_dir }}/datasources/datasource.yml'
 
-# - name: Create dashboards dir
-#   file:
-#     path: '{{ grafana_provisioning_dir }}/dashboards'
-#     state: directory
+- name: Create dashboards dir
+  file:
+    path: '{{ grafana_provisioning_dir }}/dashboards'
+    state: directory
 
-# - name: Template dashboard file
-#   template:
-#     src: ./templates/dashboard.yml.j2
-#     dest: '{{ grafana_provisioning_dir }}/dashboards/dashboard.yml'
-#   notify:
-#     - Restart Grafana
+- name: Template dashboard file
+  template:
+    src: ./templates/dashboard.yml.j2
+    dest: '{{ grafana_provisioning_dir }}/dashboards/dashboard.yml'
+  notify:
+    - Restart Grafana
 
 - name: Template config file
   template:
@@ -30,21 +30,21 @@
   notify:
     - Restart Grafana
 
-# - name: Copy evmos dashboards
-#   ansible.builtin.copy:
-#     src: './dashboards/'
-#     dest: '{{ grafana_provisioning_dir }}/dashboards/'
+- name: Copy evmos dashboards
+  ansible.builtin.copy:
+    src: './dashboards/'
+    dest: '{{ grafana_provisioning_dir }}/dashboards/'
 
-# - name: Create grafana_external_dashboards_dir
-#   file:
-#     path: '{{ grafana_external_dashboards_dir }}'
-#     state: directory
+- name: Create grafana_external_dashboards_dir
+  file:
+    path: '{{ grafana_external_dashboards_dir }}'
+    state: directory
 
-# - name: Download external dashboards
-#   get_url:
-#     url: '{{ item }}'
-#     dest: '{{ grafana_external_dashboards_dir }}'
-#   loop: '{{ grafana_dashboard_urls }}'
+- name: Download external dashboards
+  get_url:
+    url: '{{ item }}'
+    dest: '{{ grafana_external_dashboards_dir }}'
+  loop: '{{ grafana_dashboard_urls }}'
 
 - name: Start Grafana
   docker_container:
