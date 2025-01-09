@@ -30,7 +30,7 @@
   notify:
     - Restart Grafana
 
-- name: Copy evmos dashboards
+- name: Copy dashboards
   ansible.builtin.copy:
     src: './dashboards/'
     dest: '{{ grafana_provisioning_dir }}/dashboards/'

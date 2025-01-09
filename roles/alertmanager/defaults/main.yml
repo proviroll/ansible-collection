@@ -7,3 +7,5 @@ home_dir_default: /home/{{ bootstrap_user }}
 home_dir: '{{ home_dir_custom | default(home_dir_default) }}'
 alertmanager_config_file: alertmanager.yml
 alertmanager_public_port: 39093
+
+slack_webhook_url: 'https://hooks.slack.com/services/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'

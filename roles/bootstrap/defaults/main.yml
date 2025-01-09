@@ -1,12 +1,12 @@
 ---
 github_user_pubkeys:
   - aminechakr
-  - hanchon
-  - clydedevv
+
 old_github_user_pubkeys: []
-ansible_user: ubuntu
+ansible_user: devops
 bootstrap_user: devops
 backup_user: loginbackup
+initial_remote_user: devops
 
 #### firewall task vars ####
 setup_firewall: false
