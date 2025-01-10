@@ -5,4 +5,4 @@ prometheus:
 
 metrics_auth:
   user: admin
-  password:
+  password: '{{ prometheus_auth_password }}'
