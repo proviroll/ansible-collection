@@ -1,0 +1,56 @@
+---
+# Setup SSL certificates & renewals
+
+- name: Install Certbot package
+  ansible.builtin.package:
+    name: certbot
+    state: present
+
+- name: Copy init-letsencrypt.sh script to machine
+  ansible.builtin.template:
+    src: init-letsencrypt.sh.j2
+    dest: "{{ nginx_config_dir }}/init-letsencrypt.sh"
+    mode: '0755'
+
+- name: Copy docker compose file user by the script (nginx + certbot)
+  ansible.builtin.template:
+    src: "certbot-nginx-init-docker-compose.yml.j2"
+    dest: "{{ nginx_config_dir }}/docker-compose.yml"
+    mode: '0755'
+
+## # One subdomain per execution
+## - name: Generate Certificates for each subdomain
+##   ansible.builtin.shell: >
+##     {{ nginx_config_dir }}/init-letsencrypt.sh {{ item }}
+##   with_items:
+##     - "{{ grafana_subdomain }}"
+##     - "{{ prometheus_subdomain }}"
+##     - "{{ alertmanager_subdomain }}"
+##   when: fresh_init == true
+
+- name: Start Certbot container for certificate renewal
+  community.docker.docker_container:
+    name: "{{ certbot_container_name }}"
+    state: started
+    image: "{{ certbot_image_and_tag }}"
+    pull: true
+    user: "0:0"
+    volumes:
+      - "{{ certbot_cert_dir }}:/etc/letsencrypt"
+      - "{{ nginx_config_dir }}:/etc/nginx"
+      - "{{ webroot_dir }}:/var/www/certbot"
+    restart_policy: always
+    network_mode: host
+    log_driver: json-file
+    log_options:
+      max-file: '10'
+      max-size: 30m
+      mode: non-blocking
+      max-buffer-size: 4m
+    entrypoint: /bin/sh
+    command: >-
+      -c 'trap "exit 0" TERM; 
+          while true; do 
+            certbot renew --deploy-hook "docker exec {{ nginx_container_name }} nginx -s reload"; 
+            sleep 12h; 
+          done'

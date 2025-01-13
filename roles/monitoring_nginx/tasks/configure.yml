@@ -1,0 +1,21 @@
+- name: Create NGINX configuration directory
+  ansible.builtin.file:
+    path: "{{ nginx_config_dir }}"
+    state: directory
+
+- name: Template NGINX config file
+  ansible.builtin.template:
+    src: "templates/nginx.conf.j2"
+    dest: "{{ nginx_config_dir }}/nginx.conf"
+  notify:
+    - Restart NGINX container
+
+- name: Create Basic Auth file for Prometheus
+  ansible.builtin.command:
+    cmd: "htpasswd -bc {{ nginx_config_dir }}/prometheus.htpasswd user password"
+    creates: /home/{{ ansible_user }}/nginx/prometheus.htpasswd
+
+- name: Create Basic Auth file for AlertManager
+  ansible.builtin.command:
+    cmd: "htpasswd -bc {{ nginx_config_dir }}/alertmanager.htpasswd user password"
+    creates: /home/{{ ansible_user }}/nginx/alertmanager.htpasswd

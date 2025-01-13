@@ -1,0 +1,17 @@
+services:
+  nginx:
+    image: {{ nginx_image_and_tag }}
+    container_name: {{ nginx_container_name }}
+    ports:
+      {{ nginx_ports | to_nice_yaml | indent(6) | trim }}    
+    volumes:
+      {{ nginx_volumes | to_nice_yaml | indent(6) | trim }}    
+    network_mode: host
+
+  certbot:
+    image: {{ certbot_image_and_tag }}
+    container_name: {{ certbot_container_name }}
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt
+      - /var/www/certbot:/var/www/certbot
+    network_mode: host
