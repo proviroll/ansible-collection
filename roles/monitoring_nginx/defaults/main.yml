@@ -3,15 +3,9 @@ nginx_config_dir: "/home/{{ ansible_user }}/nginx"
 nginx_conf_template: "./templates/nginx.conf.j2"
 nginx_basic_auth_prometheus: "{{ nginx_config_dir }}/prometheus.htpasswd"
 nginx_basic_auth_alertmanager: "{{ nginx_config_dir }}/alertmanager.htpasswd"
-grafana_subdomain: "grafana.{{ subdomain_template }}"
-prometheus_subdomain: "prometheus.{{ subdomain_template }}"
-alertmanager_subdomain: "alertmanager.{{ subdomain_template }}"
 
-grafana_server_name: "grafana.{{ subdomain_template }}"
 grafana_proxy_pass: "http://127.0.0.1:3000"
-prometheus_server_name: "prometheus.{{ subdomain_template }}"
 prometheus_proxy_pass: "http://127.0.0.1:9090"
-alertmanager_server_name: "alertmanager.{{ subdomain_template }}"
 alertmanager_proxy_pass: "http://127.0.0.1:9093"
 
 # NGINX Basic Auth credentials
@@ -31,6 +25,7 @@ nginx_ports:
   - "443:443"
 
 # Certbot and SSL
+cloudflare_token: "{{ vault_cloudflare_api_token }}"
 cloudflare_email: "devops@proviroll.io"
 subdomain_template: "proviroll.xyz"
 certbot_cert_dir: "/etc/letsencrypt"

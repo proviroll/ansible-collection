@@ -12,10 +12,10 @@
 
 - name: Create Basic Auth file for Prometheus
   ansible.builtin.command:
-    cmd: "htpasswd -bc {{ nginx_config_dir }}/prometheus.htpasswd user password"
+    cmd: "htpasswd -bc {{ nginx_config_dir }}/prometheus.htpasswd {{ vault_prometheus_alertmanager_htpassword_user }} {{ vault_prometheus_alertmanager_htpassword_password }}"
     creates: /home/{{ ansible_user }}/nginx/prometheus.htpasswd
 
 - name: Create Basic Auth file for AlertManager
   ansible.builtin.command:
-    cmd: "htpasswd -bc {{ nginx_config_dir }}/alertmanager.htpasswd user password"
+    cmd: "htpasswd -bc {{ nginx_config_dir }}/alertmanager.htpasswd {{ vault_prometheus_alertmanager_htpassword_user }} {{ vault_prometheus_alertmanager_htpassword_password }}"
     creates: /home/{{ ansible_user }}/nginx/alertmanager.htpasswd

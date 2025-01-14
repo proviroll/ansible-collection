@@ -1,56 +1,32 @@
 ---
 # Setup SSL certificates & renewals
-
 - name: Install Certbot package
   ansible.builtin.package:
-    name: certbot
+    name:
+      - certbot
+      - python3-certbot-dns-cloudflare
     state: present
 
-- name: Copy init-letsencrypt.sh script to machine
-  ansible.builtin.template:
-    src: init-letsencrypt.sh.j2
-    dest: "{{ nginx_config_dir }}/init-letsencrypt.sh"
-    mode: '0755'
+- name: Create Cloudflare credentials file
+  ansible.builtin.copy:
+    dest: "{{ nginx_config_dir }}/cloudflare.ini"
+    content: |
+      cloudflare_api_token = "{{ cloudflare_token }}"
 
-- name: Copy docker compose file user by the script (nginx + certbot)
-  ansible.builtin.template:
-    src: "certbot-nginx-init-docker-compose.yml.j2"
-    dest: "{{ nginx_config_dir }}/docker-compose.yml"
-    mode: '0755'
+# - name: Obtain SSL certificates
+#   ansible.builtin.command: >
+#     certbot certonly --dns-cloudflare --dns-cloudflare-credentials {{ nginx_config_dir }}/cloudflare.ini -d '{{ subdomain_template }},*.{{ subdomain_template }}' --non-interactive --agree-tos --email {{ cloudflare_email }} --expand
 
-## # One subdomain per execution
-## - name: Generate Certificates for each subdomain
-##   ansible.builtin.shell: >
-##     {{ nginx_config_dir }}/init-letsencrypt.sh {{ item }}
-##   with_items:
-##     - "{{ grafana_subdomain }}"
-##     - "{{ prometheus_subdomain }}"
-##     - "{{ alertmanager_subdomain }}"
-##   when: fresh_init == true
+- name: Remove Cloudflare credentials file
+  ansible.builtin.file:
+    path: "{{ nginx_config_dir }}/cloudflare.ini"
+    state: absent
 
-- name: Start Certbot container for certificate renewal
-  community.docker.docker_container:
-    name: "{{ certbot_container_name }}"
-    state: started
-    image: "{{ certbot_image_and_tag }}"
-    pull: true
-    user: "0:0"
-    volumes:
-      - "{{ certbot_cert_dir }}:/etc/letsencrypt"
-      - "{{ nginx_config_dir }}:/etc/nginx"
-      - "{{ webroot_dir }}:/var/www/certbot"
-    restart_policy: always
-    network_mode: host
-    log_driver: json-file
-    log_options:
-      max-file: '10'
-      max-size: 30m
-      mode: non-blocking
-      max-buffer-size: 4m
-    entrypoint: /bin/sh
-    command: >-
-      -c 'trap "exit 0" TERM; 
-          while true; do 
-            certbot renew --deploy-hook "docker exec {{ nginx_container_name }} nginx -s reload"; 
-            sleep 12h; 
-          done'
+# Cron job for Certbot renewal
+- name: Add Certbot renewal cron job with NGINX reload
+  ansible.builtin.cron:
+    name: "{{ certbot_renewal_cron_name }}"
+    minute: "{{ certbot_renewal_cron_time.minute }}"
+    hour: "{{ certbot_renewal_cron_time.hour }}"
+    job: "/usr/bin/certbot renew --quiet && docker exec {{ nginx_container_name }} nginx -s reload"
+    state: present

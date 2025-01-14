@@ -9,10 +9,11 @@ api_url = {{ grafana_auth_github_api_url }}
 allowed_organizations = {{ grafana_auth_github_allowed_organizations }}
 role_attribute_path = {{ grafana_auth_github_role_attribute_path }}
 token_url = {{ grafana_auth_token_url }}
+redirect_uri = {{ grafana_auth_redirect_uri }}
 
 [server]
 http_port = 3000
-root_url = "http://{{ monitoring_server_address }}:3000/"
+root_url = {{ grafana_root_url }}
 
 [database]
 wal = true

@@ -10,7 +10,7 @@ http {
     # Redirect HTTP to HTTPS
     server {
         listen 80;
-        server_name {{ grafana_subdomain }} {{ prometheus_subdomain }} {{ alertmanager_subdomain }};
+        server_name grafana.{{ subdomain_template }} prometheus.{{ subdomain_template }} alertmanager.{{ subdomain_template }};
 
         location /.well-known/acme-challenge/ {
             root {{ webroot_dir }};
@@ -24,10 +24,10 @@ http {
     # Grafana Subdomain (HTTPS)
     server {
         listen 443 ssl;
-        server_name {{ grafana_subdomain }};
+        server_name grafana.{{ subdomain_template }};
 
-        ssl_certificate /etc/letsencrypt/live/{{ grafana_subdomain }}/fullchain.pem;
-        ssl_certificate_key /etc/letsencrypt/live/{{ grafana_subdomain }}/privkey.pem;
+        ssl_certificate /etc/letsencrypt/live/{{ subdomain_template }}/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/{{ subdomain_template }}/privkey.pem;
 
         location / {
             proxy_pass {{ grafana_proxy_pass }}; # Ensure the protocol is correct
@@ -38,10 +38,10 @@ http {
     # Prometheus Subdomain (HTTPS)
     server {
         listen 443 ssl;
-        server_name {{ prometheus_subdomain }};
+        server_name prometheus.{{ subdomain_template }};
 
-        ssl_certificate /etc/letsencrypt/live/{{ prometheus_subdomain }}/fullchain.pem;
-        ssl_certificate_key /etc/letsencrypt/live/{{ prometheus_subdomain }}/privkey.pem;
+        ssl_certificate /etc/letsencrypt/live/{{ subdomain_template }}/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/{{ subdomain_template }}/privkey.pem;
 
 # Prometheus already deployed with basic_auth enabled
 #        auth_basic "Restricted Access";
@@ -56,10 +56,10 @@ http {
     # Alertmanager Subdomain (HTTPS)
     server {
         listen 443 ssl;
-        server_name {{ alertmanager_subdomain }};
+        server_name alertmanager.{{ subdomain_template }};
 
-        ssl_certificate /etc/letsencrypt/live/{{ alertmanager_subdomain }}/fullchain.pem;
-        ssl_certificate_key /etc/letsencrypt/live/{{ alertmanager_subdomain }}/privkey.pem;
+        ssl_certificate /etc/letsencrypt/live/{{ subdomain_template }}/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/{{ subdomain_template }}/privkey.pem;
 
         auth_basic "Restricted Access";
         auth_basic_user_file /etc/nginx/alertmanager.htpasswd;
