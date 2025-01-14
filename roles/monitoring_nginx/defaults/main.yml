@@ -31,7 +31,7 @@ nginx_ports:
   - "443:443"
 
 # Certbot and SSL
-cloudflare_email: "chakrellah@gmail.com"
+cloudflare_email: "devops@proviroll.io"
 subdomain_template: "proviroll.xyz"
 certbot_cert_dir: "/etc/letsencrypt"
 webroot_dir: "/var/www/certbot"
