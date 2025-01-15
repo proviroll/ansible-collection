@@ -1,0 +1,9 @@
+- name: Deploy solana validator
+  hosts: validator*
+  vars:
+    network: solana
+    network_type: mainnet-beta # Values : testnet, devnet, mainnet-beta
+    chain_id: 
+  become: true
+  roles:
+    - solana

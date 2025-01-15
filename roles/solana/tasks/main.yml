@@ -1,0 +1,65 @@
+- name: Create data directory for Solana
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    # set the UID and GID to 1000 (non-root) to allow the (node) user inside the container rw to /data
+    owner: "{{ non_root_user }}"
+    group: "{{ non_root_group }}"
+    mode: 0755
+  with_items:
+    - "{{ solana_host_data_dir }}"
+    - "{{ solana_host_keypairs_dir }}"
+    - "{{ solana_host_ledger_dir }}"
+    - "{{ solana_host_accounts_dir }}"
+    
+## With keypairs deposed on the server under '/tmp'
+- name: Copy validator-keypair-file
+  ansible.builtin.copy:
+    # src: "/tmp/validator-keypair.json"
+    src: "tmp/validator-keypair.json"
+    dest: "{{ solana_host_keypairs_dir }}/validator-keypair.json"
+    owner: root
+    group: root
+    mode: '0644'
+    # remote_src: yes
+
+- name: Copy vote-account-keypair
+  ansible.builtin.copy:
+    # src: "/tmp/vote-account-keypair.json"
+    src: "tmp/vote-account-keypair.json"
+    dest: "{{ solana_host_keypairs_dir }}/vote-account-keypair.json"
+    owner: root
+    group: root
+    mode: '0644'
+    # remote_src: yes
+
+- name: Copy authorized-withdrawer-keypair
+  ansible.builtin.copy:
+    # src: "/tmp/authorized-withdrawer-keypair.json"
+    src: "tmp/authorized-withdrawer-keypair.json"
+    dest: "{{ solana_host_keypairs_dir }}/authorized-withdrawer-keypair.json"
+    owner: root
+    group: root
+    # remote_src: yes
+
+- name: Run Docker container for Solana validator
+  community.docker.docker_container:
+    name: "{{ solana_container_name }}"
+    image: "{{ solana_image_and_tag }}"
+    state: started
+    restart_policy: always
+    volumes:
+      - "{{ solana_host_data_dir }}:{{ solana_container_data_dir }}"
+      - "{{ solana_host_ledger_dir }}:{{ solana_container_data_dir }}/ledger"
+      - "{{ solana_host_accounts_dir }}:{{ solana_container_data_dir }}/accounts" 
+      - "{{ solana_host_keypairs_dir }}:{{ solana_container_data_dir }}/keypairs"
+    ports:
+      - "8899:8899"
+      - "8000-8020:8000-8020"
+    command: >-
+      {{ solana_args }}
+
+- name: Set Solana config to point to localhost
+  community.docker.docker_container_exec:
+    container: "{{ solana_container_name }}"
+    command: 'solana config set --url {{ solana_api_url }}'
