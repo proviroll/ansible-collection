@@ -42,7 +42,12 @@
     group: root
     # remote_src: yes
 
-- name: Run Docker container for Solana validator
+- name: Remove existing Solana validator container if it exists
+  community.docker.docker_container:
+    name: "{{ solana_container_name }}"
+    state: absent
+
+- name: Run Solana validator container
   community.docker.docker_container:
     name: "{{ solana_container_name }}"
     image: "{{ solana_image_and_tag }}"
@@ -53,13 +58,19 @@
       - "{{ solana_host_ledger_dir }}:{{ solana_container_data_dir }}/ledger"
       - "{{ solana_host_accounts_dir }}:{{ solana_container_data_dir }}/accounts" 
       - "{{ solana_host_keypairs_dir }}:{{ solana_container_data_dir }}/keypairs"
+      - "/mnt/snapshots:{{ solana_container_data_dir }}/snapshots"
     ports:
       - "8899:8899"
       - "8000-8020:8000-8020"
     command: >-
       {{ solana_args }}
 
-- name: Set Solana config to point to localhost
+- name: Set Solana api endpoint
   community.docker.docker_container_exec:
     container: "{{ solana_container_name }}"
     command: 'solana config set --url {{ solana_api_url }}'
+
+- name: Set identity keypair location
+  community.docker.docker_container_exec:
+    container: "{{ solana_container_name }}"
+    command: 'solana config set --keypair {{ solana_container_data_dir }}/keypairs/validator-keypair.json'

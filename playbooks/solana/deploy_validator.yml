@@ -1,5 +1,5 @@
 - name: Deploy solana validator
-  hosts: validator*
+  hosts: solana-mainnet-beta-validator-1
   vars:
     network: solana
     network_type: mainnet-beta # Values : testnet, devnet, mainnet-beta

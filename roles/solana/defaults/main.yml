@@ -2,7 +2,7 @@
 network: "{{ network }}"
 chain_id: "{{ chain_id }}"
 
-solana_url: https://api.{{ network }}.solana.com
+solana_api_url: https://api.{{ network }}.solana.com
 # Mainnet https://api.mainnet-beta.solana.com 
 # Devnet https://api.devnet.solana.com
 # Testnet https://api.testnet.solana.com
@@ -13,6 +13,7 @@ non_root_group: "1000"
 # Container
 
 # Bind volumes
+solana_host_data_dir: "/home/devops/solana-test"
 solana_host_data_dir: "/home/devops/solana-validator"
 solana_host_keypairs_dir: "{{ solana_host_data_dir }}/keypairs"
 solana_host_ledger_dir: "{{ solana_host_data_dir }}/ledger"
@@ -21,71 +22,65 @@ solana_host_accounts_dir: "{{ solana_host_data_dir }}/accounts"
 solana_container_data_dir: /root # Must match 'solana_args'
 
 # Name, Image, env and Args
-solana_image_and_tag: "solanalabs/solana:v1.18.26"
-# Ref: https://hub.docker.com/r/solanalabs/solana/tags 
+solana_image_and_tag: "agave-validator:test" # agave-validator v2.0.25
 solana_container_name: "solana-validator"
+solana_container_env:
+  - PATH=/root/.local/share/solana/install/releases/stable-40aee13cd02255930dc78b5ccd1d1fcda9d5bb15/solana-release/bin:$PATH
 
 # Dynamically choose network vars:
 solana_args: "{{ solana_testnet_args if network_type == 'testnet'
            else (solana_mainnet_args if network_type == 'mainnet-beta'
            else 'Invalid network type') }}"
 
-solana_api_url: "{{ solana_testnet_api_url if network_type == 'testnet'
-              else (solana_mainnet_api_url if network_type == 'mainnet-beta'
-              else 'Invalid network type') }}"
-
 ### Testnet
 
-solana_testnet_api_url: "https://api.testnet.solana.com"
 solana_testnet_args:
-  solana-validator
-  --identity validator-keypair.json
-  --our-validator /root/validator-keypair.json
-  --vote-account vote-account-keypair.json
-  --known-validator 5D1fNXzvv5NjV1ysLjirC4WY92RNsVH18vjmcszZd8on
-  --known-validator dDzy5SR3AXdYWVqbDEkVFdvSPCtS9ihF5kJkHCtXoFs
-  --known-validator Ft5fbkqNa76vnsjYNwjDZUXoTWpP7VYm3mtsaQckQADN
-  --known-validator eoKpUABi59aT4rR9HGS3LcMecfut9x7zJyodWWP43YQ
-  --known-validator 9QxCLckBiJc783jnMvXZubK4wH86Eqqvashtrwvcsgkv
-  --only-known-rpc
-  --ledger ledger
-  --rpc-port 8899
-  --dynamic-port-range 8000-8020
-  --entrypoint entrypoint.testnet.solana.com:8001
-  --entrypoint entrypoint2.testnet.solana.com:8001
-  --entrypoint entrypoint3.testnet.solana.com:8001
-  --expected-genesis-hash 4uhcVJyU9pJkvQyS88uRDiswHXSCkY3zQawwpjk2NsNY
-  --wal-recovery-mode skip_any_corrupted_record
-  --limit-ledger-size 50000000
-
+    agave-validator \
+    --ledger /root/ledger \
+    --identity /root/keypairs/validator-keypair.json \
+    --known-validator 5D1fNXzvv5NjV1ysLjirC4WY92RNsVH18vjmcszZd8on
+    --known-validator dDzy5SR3AXdYWVqbDEkVFdvSPCtS9ihF5kJkHCtXoFs
+    --known-validator Ft5fbkqNa76vnsjYNwjDZUXoTWpP7VYm3mtsaQckQADN
+    --known-validator eoKpUABi59aT4rR9HGS3LcMecfut9x7zJyodWWP43YQ
+    --known-validator 9QxCLckBiJc783jnMvXZubK4wH86Eqqvashtrwvcsgkv
+    --dynamic-port-range 8000-8020 \
+    --entrypoint entrypoint.testnet.solana.com:8001
+    --entrypoint entrypoint2.testnet.solana.com:8001
+    --entrypoint entrypoint3.testnet.solana.com:8001
+    --expected-genesis-hash 4uhcVJyU9pJkvQyS88uRDiswHXSCkY3zQawwpjk2NsNY \
+    --wal-recovery-mode skip_any_corrupted_record \
+    --limit-ledger-size 50000000 \
+    --full-rpc-api \
+    --no-voting \
+    --no-os-network-limits-test \
+    --rpc-bind-address 0.0.0.0 \
+    --rpc-port 8899
 ## Mainnet
 
-solana_mainnet_api_url: https://api.mainnet-beta.solana.com
 solana_mainnet_args:
-  --identity /root/validator-keypair.json
-  --our-validator /root/validator-keypair.json
-  --our-localhost
-  --only-known-rpc
-  --known-validator 7Np41oeYqPefeNQEHSv1UDhYrehxin3NStELsSKCT4K2
-  --known-validator GdnSyH3YtwcxFvQrVVJMm1JhTS4QVX7MFsX56uJLUfiZ
-  --known-validator DE1bawNcRJB9rVm3buyMVfr8mBEoyyu73NBovf2oXJsJ
-  --known-validator CakcnaRDHka2gXyfbEd2d3xsvkJkqsLw2akB3zsN1D2S
-  --full-rpc-api
-  --no-voting
-  --rpc-port 8899
-  --rpc-bind-address 0.0.0.0
-  --private-rpc
-  --dynamic-port-range 8000-8020
-  --entrypoint entrypoint.mainnet-beta.solana.com:8001
-  --entrypoint entrypoint2.mainnet-beta.solana.com:8001
-  --entrypoint entrypoint3.mainnet-beta.solana.com:8001
-  --entrypoint entrypoint4.mainnet-beta.solana.com:8001
-  --entrypoint entrypoint5.mainnet-beta.solana.com:8001
-  --expected-genesis-hash 5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpKuc147dw2N9d
-  --wal-recovery-mode skip_any_corrupted_record
-  --limit-ledger-size 50000000
-
-solana_container_env:
+    agave-validator \
+    --ledger /root/ledger \
+    --identity /root/keypairs/validator-keypair.json \
+    --known-validator 2E2JPuFhjkQvEJEeNGqVSwGLJa5GoFqabQTutGjg1bzw \
+    --known-validator 7Np41oeYqPefeNQEHSv1UDhYrehxin3NStELsSKCT4K2 \
+    --known-validator GdnSyH3YtwcxFvQrVVJMm1JhTS4QVX7MFsX56uJLUfiZ \
+    --known-validator DE1bawNcRJB9rVm3buyMVfr8mBEoyyu73NBovf2oXJsJ \
+    --known-validator CakcnaRDHka2gXyfbEd2d3xsvkJkqsLw2akB3zsN1D2S \
+    --dynamic-port-range 8000-8020 \
+    --entrypoint entrypoint.mainnet-beta.solana.com:8001 \
+    --entrypoint entrypoint2.mainnet-beta.solana.com:8001 \
+    --entrypoint entrypoint3.mainnet-beta.solana.com:8001 \
+    --entrypoint entrypoint4.mainnet-beta.solana.com:8001 \
+    --entrypoint entrypoint5.mainnet-beta.solana.com:8001 \
+    --expected-genesis-hash 5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpKuc147dw2N9d \
+    --wal-recovery-mode skip_any_corrupted_record \
+    --limit-ledger-size 50000000 \
+    --full-rpc-api \
+    --no-voting \
+    --no-os-network-limits-test \
+    --rpc-bind-address 0.0.0.0 \
+    --rpc-port 8899
+# --only-known-rpc
 
 docker_log_driver: json-file
 # Limit local size to 500MB of logs per container
