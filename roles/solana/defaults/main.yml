@@ -13,8 +13,7 @@ non_root_group: "1000"
 # Container
 
 # Bind volumes
-solana_host_data_dir: "/home/devops/solana-test"
-solana_host_data_dir: "/home/devops/solana-validator"
+/solana_host_data_dir: "/home/devops/solana-validator"
 solana_host_keypairs_dir: "{{ solana_host_data_dir }}/keypairs"
 solana_host_ledger_dir: "{{ solana_host_data_dir }}/ledger"
 solana_host_accounts_dir: "{{ solana_host_data_dir }}/accounts"
