@@ -1,7 +1,7 @@
 AcceptEnv LANG LC_*
 AllowAgentForwarding no
 AllowTcpForwarding no
-AllowGroups ssh
+#AllowGroups ssh
 ChallengeResponseAuthentication no
 ClientAliveCountMax 2
 Compression no

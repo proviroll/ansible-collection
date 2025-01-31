@@ -1,6 +1,6 @@
 ---
-- hosts: all
+- hosts: solana*
   become: true
   roles:
     - bootstrap
-    # - install_packages
+    - install_packages
