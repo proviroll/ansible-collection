@@ -1,0 +1,21 @@
+AcceptEnv LANG LC_*
+AllowAgentForwarding no
+AllowTcpForwarding no
+AllowGroups ssh
+ChallengeResponseAuthentication no
+ClientAliveCountMax 2
+Compression no
+Include /etc/ssh/sshd_config.d/*.conf
+LogLevel VERBOSE
+MaxAuthTries 2
+MaxSessions 2
+PasswordAuthentication no
+PermitEmptyPasswords no
+PermitRootLogin no
+Port {{ ssh_port }}
+PrintMotd no
+Protocol 2
+Subsystem sftp /usr/lib/openssh/sftp-server
+TCPKeepAlive no
+UsePAM yes
+X11Forwarding no
