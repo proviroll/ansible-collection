@@ -1,0 +1,34 @@
+---
+- name: install ufw
+  apt:
+    name: ufw
+    state: present
+  become: yes
+
+- name: Allow SSH in UFW
+  ufw:
+    rule: allow
+    port: 22
+    proto: tcp
+  become: yes
+
+- name: Allow solana in UFW
+  ufw:
+    rule: allow
+    port: "{{ solana_port_range }}"
+    proto: udp
+  become: yes
+
+# # Not needed currently, running private local RPC
+# - name: Allow RPC in UFW
+#   ufw:
+#     rule: allow
+#     port: 8899
+#     proto: tcp
+#   become: yes
+
+- name: Set UFW default policy
+  ufw:
+    state: enabled
+    policy: allow
+  become: yes

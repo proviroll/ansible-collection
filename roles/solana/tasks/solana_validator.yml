@@ -1,0 +1,30 @@
+---
+## Set RPC Endpoint
+# The node communicates by default with 'mainnet-beta' endpoint. Ensure needed value is set
+- name: set solana config to use keypair
+  shell: solana config set --url {{ solana_api_url }}
+
+- name: set solana config to use keypair
+  shell: solana config set --keypair /home/devops/solana-validator/config/validator-keypair.json
+
+
+- name: enable solana system tuner service
+  shell: systemctl enable --now solana-sys-tuner
+  become: yes
+
+- name: enable solana validtor service
+  shell: systemctl enable sol
+  become: yes
+
+- name: start solana validtor service
+  shell: systemctl start sol
+  become: yes
+
+- name: Stop 'solana-exporter' container if already existing
+  shell:
+    "docker compose -f /home/devops/solana-exporter/exporter.docker-compose.yml down"
+  ignore_errors: yes
+
+- name: Start solana-exporter container
+  shell:
+    "docker compose -f /home/devops/solana-exporter/exporter.docker-compose.yml up -d"
