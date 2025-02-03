@@ -29,6 +29,28 @@
     shell: /bin/bash
     append: true
 
+- name: Allow users of {{ bootstrap_user }} group to sudo without a password
+  ansible.builtin.lineinfile:
+    dest: /etc/sudoers
+    state: present
+    regexp: ^%{{ bootstrap_user }}
+    line: "%{{ bootstrap_user }} ALL=(ALL) NOPASSWD: ALL"
+
+- name: Allow users of {{ backup_user }} group to sudo without a password
+  ansible.builtin.lineinfile:
+    dest: /etc/sudoers
+    state: present
+    regexp: ^%{{ backup_user }}
+    line: "%{{ backup_user }} ALL=(ALL) NOPASSWD: ALL"
+=======
+
+- name: Create user account for "{{ backup_user }}" and add it to groups
+  ansible.builtin.user:
+    name: "{{ backup_user }}"
+    groups: "{{ backup_user }},sudo"
+    shell: /bin/bash
+    append: true
+
 - name: Add SSH public keys to {{ bootstrap_user }} user
   loop: "{{ github_user_pubkeys }}"
   ansible.posix.authorized_key:
@@ -74,117 +96,3 @@
     state: present
   notify:
     - restart sshd
-
-# # Swap to 'root'
-# - name: Set ansible_ssh_user to root
-#   ansible.builtin.set_fact:
-#     ansible_ssh_user: root
-#   changed_when: false
-#   delegate_to: localhost
-#   run_once: true
-
-# # Create an 'application_user' group with the proper GID and UID
-# - name: Log out {{ ansible_user }} user
-#   ansible.builtin.command:
-#     cmd: pkill -u {{ ansible_user }}
-#   become: true
-#   ignore_errors: true
-
-# - name: Change GID and UID of {{ ansible_user }}
-#   block:
-#     - ansible.builtin.command:
-#         cmd: groupmod -g 62000 {{ ansible_user }}
-
-#     - ansible.builtin.command:
-#         cmd: usermod -u 62000 {{ ansible_user }}
-
-# # - name: Create '{{ application_user }}' group and user
-# #   # when: "'evmos_node' in group_names"
-# #   block:
-# #     - ansible.builtin.group:
-# #         name: '{{ application_user }}'
-# #         gid: 1000
-# #         state: present
-
-# #     - ansible.builtin.user:
-# #         name: '{{ application_user }}'
-# #         group: '{{ application_user }}'
-# #         shell: /bin/bash
-# #         uid: 1000
-# #         append: true
-
-# # Create users & configure SSH
-# - name: Create users, add SSH keys, and remove sudo passwd
-#   vars:
-#     users:
-#       - '{{ bootstrap_user }}'
-#       - '{{ backup_user }}'
-#   block:
-#     - name: Create user and add to '{{ application_user }}' group
-#       ansible.builtin.user:
-#         name: '{{ item }}'
-#         groups: '{{ application_user }},sudo'
-#         shell: /bin/bash
-#         append: true
-#       loop: '{{ users }}'
-
-#     - name: Add SSH keys for each user
-#       ansible.posix.authorized_key:
-#         user: '{{ item[0] }}'
-#         state: present
-#         key: https://github.com/{{ item[1] }}.keys
-#       with_nested:
-#         - '{{ users }}'
-#         - '{{ github_user_pubkeys }}'
-
-#     - name: Add each user to sudoers
-#       ansible.builtin.lineinfile:
-#         dest: /etc/sudoers
-#         state: present
-#         regexp: ^%{{ item }}
-#         line: '%{{ application_user }} ALL=(ALL) NOPASSWD: ALL'
-#       loop: '{{ users }}'
-
-# - name: Update SSH configuration
-#   block:
-#     - ansible.builtin.lineinfile:
-#         dest: /etc/ssh/sshd_config
-#         regexp: ^PermitRootLogin
-#         line: PermitRootLogin no
-#         state: present
-
-#     - ansible.builtin.lineinfile:
-#         dest: /etc/ssh/sshd_config
-#         regexp: ^PasswordAuthentication
-#         line: PasswordAuthentication no
-#         state: present
-#   notify:
-#     - Restart sshd
-
-# # Delete the initial 'ansible_user'
-# - name: Store initial ansible_user
-#   ansible.builtin.set_fact:
-#     initial_ansible_user: '{{ ansible_user }}'
-#   changed_when: false
-#   delegate_to: localhost
-#   run_once: true
-
-# - name: Set ansible_user to bootstrap_user
-#   ansible.builtin.set_fact:
-#     ansible_user: '{{ bootstrap_user }}'
-#   changed_when: false
-#   delegate_to: localhost
-#   run_once: true
-
-# - name: Log out {{ initial_ansible_user }} user
-#   ansible.builtin.command:
-#     cmd: pkill -u {{ initial_ansible_user }}
-#   become: true
-#   ignore_errors: true
-
-# - name: Delete initial ansible_user if it's not '{{ bootstrap_user }}'
-#   ansible.builtin.user:
-#     name: '{{ initial_ansible_user }}'
-#     state: absent
-#     remove: true
-#   when: initial_ansible_user != 'bootstrap_user'
