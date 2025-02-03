@@ -4,7 +4,6 @@ exec agave-validator \
     --vote-account /home/devops/solana-validator/config/vote-account-keypair.json \
     --ledger /home/devops/solana-validator/data/ledger \
     --accounts /home/devops/solana-validator/data/accounts \
-    --no-snapshot-fetch \
     --snapshots /home/devops/solana-validator/data \
     --maximum-full-snapshots-to-retain 1 \
     --maximum-incremental-snapshots-to-retain 2 \
@@ -24,3 +23,5 @@ exec agave-validator \
     --expected-genesis-hash 4uhcVJyU9pJkvQyS88uRDiswHXSCkY3zQawwpjk2NsNY \
     --wal-recovery-mode skip_any_corrupted_record \
     --limit-ledger-size
+
+#    --no-snapshot-fetch \
