@@ -1,5 +1,5 @@
 ---
-- hosts: solana*
+- hosts: all
   become: true
   roles:
     - bootstrap

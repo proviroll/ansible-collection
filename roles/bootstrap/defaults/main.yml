@@ -11,12 +11,6 @@ backup_user: loginbackup
 initial_remote_user: ubuntu
 
 ssh_port: 22 # NOTE: In case changing ssh port, consider updating 'geerlingguy.firewall' ports 
-ssh_users:
-  - "{{ bootstrap_user }}"
-  - "{{ backup_user }}"
-  - Abdelhadi
-  - Amine
-  - Zakaria
 
 #### firewall task vars ####
 setup_firewall: false
