@@ -300,6 +300,9 @@ curl -X POST -H "Content-Type: application/json" -d '{"jsonrpc":"2.0","id":1, "m
 curl -X POST -H "Content-Type: application/json" -d '{"jsonrpc":"2.0","id":1, "method":"getLeaderSchedule"}' http://api.testnet.solana.com | jq
 # Returns info about the current epoch. slotIndex should progress on subsequent calls.
 curl -X POST -H "Content-Type: application/json" -d '{"jsonrpc":"2.0","id":1, "method":"getEpochInfo"}' http://api.testnet.solana.com | jq
+
+# Current valdiator's block height
+curl -X POST http://127.0.0.1:8899 -H "Content-Type: application/json" -d '{"jsonrpc":"2.0","id":1, "method":"getBlockHeight"}' | jq
 ```
 
 ### Metrics

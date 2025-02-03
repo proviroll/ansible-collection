@@ -1,8 +1,12 @@
 ---
-- ansible.builtin.include_tasks: tasks/solana_install.yml
-- ansible.builtin.include_tasks: tasks/service.yml
-- ansible.builtin.include_tasks: tasks/tuning.yml
-- ansible.builtin.include_tasks: tasks/memory.yml
+# Will be removed after clean up user ubuntu 1000
+- set_fact:
+    ansible_user: devops
+
+# - ansible.builtin.include_tasks: tasks/solana_install.yml
+# - ansible.builtin.include_tasks: tasks/service.yml
+# - ansible.builtin.include_tasks: tasks/tuning.yml
+# - ansible.builtin.include_tasks: tasks/memory.yml
 - ansible.builtin.include_tasks: tasks/copy_files.yml
 - ansible.builtin.include_tasks: tasks/solana_validator.yml
-- ansible.builtin.include_tasks: tasks/firewall.yml
+# - ansible.builtin.include_tasks: tasks/firewall.yml

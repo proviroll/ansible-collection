@@ -7,13 +7,13 @@
     group: "{{ non_root_group }}"
     mode: "0755"
   loop:
-    - "/home/devops/solana-validator/config"
-    - "/home/devops/solana-validator/data"
-    - "/home/devops/solana-validator/data/ledger"
-    - "/home/devops/solana-exporter"
-    - "/home/devops/solana-exporter/data"
-    - "/home/devops/solana-exporter/exporter"
-  become: yes
+    - "{{ solana_validator_dir }}/config"
+    - "{{ solana_validator_dir }}/data"
+    - "{{ solana_validator_dir }}/data/ledger"
+    - "{{ solana_exporter_dir }}"
+    - "{{ solana_exporter_dir }}/data"
+    - "{{ solana_exporter_dir }}/exporter"
+  become: no
 
 - name: Update cache
   apt:

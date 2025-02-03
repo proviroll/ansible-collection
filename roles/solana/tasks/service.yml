@@ -15,10 +15,10 @@
       Restart=always
       RestartSec=1
       User=devops
-      LimitNOFILE=700000
+      LimitNOFILE=1000000
       LogRateLimitIntervalSec=0
       Environment="PATH={{ solana_binary_path }}"
-      ExecStart=/home/devops/solana-validator/config/validator.sh
+      ExecStart={{ solana_validator_dir }}/config/validator.sh
       [Install]
       WantedBy=multi-user.target
       EOF"

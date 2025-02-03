@@ -4,7 +4,7 @@
     cmd: |
       bash -c "cat >/etc/sysctl.d/20-solana-mmaps.conf <<EOF
       # Increase memory mapped files limit
-      vm.max_map_count = 700000
+      vm.max_map_count = 1000000
       EOF"
   become: yes
 
@@ -24,6 +24,6 @@
     cmd: |
       bash -c "cat >/etc/security/limits.d/90-solana-nofiles.conf <<EOF
       # Increase process file descriptor count limit
-      * - nofile 700000
+      * - nofile 1000000
       EOF"
   become: yes

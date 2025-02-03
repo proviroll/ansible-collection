@@ -1,14 +1,17 @@
 ---
 solana_version: "v2.0.24"
-solana_api_url: https://api.testnet.solana.com/
+solana_api_url: "https://api.{{ network_type }}.solana.com/"
 
-non_root_user: "1000"
-non_root_group: "1000"
-
-max_map_count: 1000000
-descriptor_nofile: 1000000
-solana_binary_path: /bin:/usr/bin:/home/devops/.local/share/solana/install/active_release/bin
-
+solana_validator_dir: /home/devops/solana-validator
+solana_exporter_dir: /home/devops/solana-exporter
 solana_port_range: "8000:8020"
+
+solana_exporter_container_name: "solana_exporter"
+solana_exporter_container_image_and_tag: "mcamou/solana-exporter:b8fcc7c170049d5c9c34ea57b9f2fcb3a0b5044d"
+
+non_root_user: "devops"
+non_root_group: "devops"
+
+solana_binary_path: /bin:/usr/bin:/home/devops/.local/share/solana/install/active_release/bin
 
 vote_account_pubkey: 8GG4mTYhjfoHsHUwvLdQzYjEkXVLxGDv1DPPkyWAJS54
