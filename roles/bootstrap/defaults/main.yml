@@ -5,9 +5,10 @@ github_user_pubkeys:
   - talbitalbi
 
 old_github_user_pubkeys: []
-ansible_user: ubuntu
+ansible_user: devops
 bootstrap_user: devops
 backup_user: loginbackup
+
 initial_remote_user: ubuntu
 
 ssh_port: 22 # NOTE: In case changing ssh port, consider updating 'geerlingguy.firewall' ports 

@@ -1,0 +1,28 @@
+---
+- name: Block ports on firewall
+  ansible.builtin.ufw:
+    rule: deny
+    port: "{{ item }}"
+    proto: any
+  with_items:
+    - "3000"
+    - "9090"
+    - "9093"
+
+- name: Ensure required ports are open
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: tcp
+  with_items:
+    - 22
+    - 80
+    - 443
+
+- name: Ensure UFW is enabled
+  ansible.builtin.ufw:
+    state: enabled
+
+- name: Reload UFW to apply rules
+  ansible.builtin.ufw:
+    state: reloaded

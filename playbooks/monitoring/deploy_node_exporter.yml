@@ -1,5 +1,5 @@
 ---
-- hosts: all
+- hosts: validator-01
   become: true
   roles:
     - node_exporter
