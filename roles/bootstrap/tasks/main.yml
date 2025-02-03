@@ -1,5 +1,6 @@
 ---
 - ansible.builtin.include_tasks: bootstrap_groups_and_users.yml
-- ansible.builtin.include_tasks: remove_ssh_keys.yml
+- ansible.builtin.include_tasks: ssh.yml
+- ansible.builtin.include_tasks: remove_user_and_ssh_keys.yml
 - ansible.builtin.include_tasks: set_hostname.yml
 - ansible.builtin.include_tasks: setup_firewall.yml

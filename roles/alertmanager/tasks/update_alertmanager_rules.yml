@@ -1,7 +1,7 @@
 ---
 - name: Copy alertmanager config
   ansible.builtin.template:
-    src: ./templates/{{ alertmanager_config_file }}
+    src: "./templates/{{ alertmanager_config_file }}"
     dest: "{{ alertmanager_config_dir }}/alertmanager.yml"
   notify:
     - reload alertmanager

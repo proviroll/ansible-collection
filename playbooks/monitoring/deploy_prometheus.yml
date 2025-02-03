@@ -1,5 +1,5 @@
 ---
-- hosts: metrics
+- hosts: monitoring-1
   become: true
   roles:
     - prometheus

@@ -1,9 +1,11 @@
 ---
-- hosts: all
+- hosts: monitoring-1
   become: true
   vars:
     grafana_docker_data_dir: /var/lib/grafana
-    prometheus_endpoint: https://prometheus.evmos.dev
+    prometheus_endpoint: http://{{ monitoring_server_address }}:9090/
+  vars_files:
+    - "{{ playbook_dir }}/../../vault.yml"
   gather_facts: false
   roles:
     - grafana
