@@ -1,0 +1,32 @@
+---
+# Setup SSL certificates & renewals
+- name: Install Certbot package
+  ansible.builtin.package:
+    name:
+      - certbot
+      - python3-certbot-dns-cloudflare
+    state: present
+
+- name: Create Cloudflare credentials file
+  ansible.builtin.copy:
+    dest: "{{ nginx_config_dir }}/cloudflare.ini"
+    content: |
+      cloudflare_api_token = "{{ cloudflare_token }}"
+
+# - name: Obtain SSL certificates
+#   ansible.builtin.command: >
+#     certbot certonly --dns-cloudflare --dns-cloudflare-credentials {{ nginx_config_dir }}/cloudflare.ini -d '{{ subdomain_template }},*.{{ subdomain_template }}' --non-interactive --agree-tos --email {{ cloudflare_email }} --expand
+
+- name: Remove Cloudflare credentials file
+  ansible.builtin.file:
+    path: "{{ nginx_config_dir }}/cloudflare.ini"
+    state: absent
+
+# Cron job for Certbot renewal
+- name: Add Certbot renewal cron job with NGINX reload
+  ansible.builtin.cron:
+    name: "{{ certbot_renewal_cron_name }}"
+    minute: "{{ certbot_renewal_cron_time.minute }}"
+    hour: "{{ certbot_renewal_cron_time.hour }}"
+    job: "/usr/bin/certbot renew --quiet && docker exec {{ nginx_container_name }} nginx -s reload"
+    state: present

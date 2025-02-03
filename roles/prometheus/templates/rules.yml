@@ -1,14 +1,4 @@
 groups:
-  - name: BlackboxExporter
-    rules:
-      - alert: NodeUnhealthy
-        expr: probe_success{job="blackbox"} == 0
-        for: 1m
-        labels:
-          severity: critical
-        annotations:
-          summary: Node is unhealthy
-          description: 'The node {{ $labels.instance }} is not healthy.'
 
   - name: AllInstances
     rules:

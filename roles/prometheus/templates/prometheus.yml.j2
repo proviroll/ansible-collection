@@ -6,8 +6,8 @@ scrape_configs:
   - job_name: 'metrics'
     honor_labels: true
     basic_auth:
-      username: "{{ metrics_auth_user }}" 
-      password: "{{ metrics_auth_password }}"
+      username: "{{ metrics_auth.user }}" 
+      password: "{{ metrics_auth.password }}"
 
     # Scrape every 2 slots on average. Use long timeout, to get metrics from overloaded nodes
     scrape_interval: 24s
@@ -19,25 +19,30 @@ scrape_configs:
       - files:
           - '{{ prometheus_config_container_dir }}/targets/*.yml'
 
-  - job_name: 'blackbox'
-    metrics_path: /probe
-    params:
-      module: [http_2xx]
+  - job_name: aztec
+    metrics_path: /metrics
     static_configs:
-     - targets: [{% for host in groups['evmos_node'] %}'http://{{ hostvars[host]['ansible_host'] }}:26657/health'{% if not loop.last %}, {% endif %}{% endfor %}, {% for host in groups['proxy'] %}'http://{{ hostvars[host]['ansible_host'] }}:42069/status'{% if not loop.last %}, {% endif %}{% endfor %}]
-    relabel_configs:
-      - source_labels: [__address__]
-        target_label: __param_target
-      - source_labels: [__param_target]
-        regex: 'http://(.*):(26657/health|42069/status)'
-        replacement: '$1'
-        target_label: instance
-      - target_label: __address__
-        replacement: 127.0.0.1:9115
 
-  - job_name: 'blackbox_exporter'
-    static_configs:
-      - targets: ['127.0.0.1:9115']
+      ###########
+      # TESTNET #
+      ###########
+
+      # node exporter
+      - targets:
+          - 65.109.93.168:9100
+        labels:
+          group: aztec
+          network: troll-turtle
+          app: nodeexporter
+          node: 'validator-01'
+      # OTEL
+      - targets:
+          - 65.109.93.168:8889
+        labels:
+          group: aztec
+          network: troll-turtle
+          app: validator
+          node: 'validator-01'
 
 alerting:
   alertmanagers:

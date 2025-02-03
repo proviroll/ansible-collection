@@ -1,0 +1,67 @@
+events {
+    worker_connections 1024;
+}
+
+http {
+    keepalive_timeout 65;
+    include /etc/nginx/conf.d/*.conf;
+    include /etc/nginx/sites-enabled/*;
+
+    # Redirect HTTP to HTTPS
+    server {
+        listen 80;
+
+        location /.well-known/acme-challenge/ {
+            root {{ webroot_dir }};
+        }
+
+        location / {
+            return 301 https://$host$request_uri;
+        }
+    }
+
+    # Grafana Subdomain (HTTPS)
+    server {
+        listen 443 ssl;
+        server_name grafana.{{ subdomain_template }};
+
+        ssl_certificate /etc/letsencrypt/live/{{ subdomain_template }}/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/{{ subdomain_template }}/privkey.pem;
+
+        location / {
+            proxy_pass {{ grafana_proxy_pass }}; # Ensure the protocol is correct
+            proxy_set_header Host $host;
+        }
+    }
+
+    # Prometheus Subdomain (HTTPS)
+    server {
+        listen 443 ssl;
+        server_name prometheus.{{ subdomain_template }};
+
+        ssl_certificate /etc/letsencrypt/live/{{ subdomain_template }}/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/{{ subdomain_template }}/privkey.pem;
+
+        location / {
+            proxy_pass {{ prometheus_proxy_pass }}; # Corrected to http
+            proxy_set_header Host $host;
+        }
+    }
+
+    # Alertmanager Subdomain (HTTPS)
+    server {
+        listen 443 ssl;
+        server_name alertmanager.{{ subdomain_template }};
+
+        ssl_certificate /etc/letsencrypt/live/{{ subdomain_template }}/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/{{ subdomain_template }}/privkey.pem;
+
+        auth_basic "Restricted Access";
+        auth_basic_user_file /etc/nginx/alertmanager.htpasswd;
+
+        location / {
+            proxy_pass {{ alertmanager_proxy_pass }}; # Corrected to http
+            proxy_set_header Host $host;
+        }
+    }
+}

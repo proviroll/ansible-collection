@@ -30,7 +30,7 @@
   notify:
     - Restart Grafana
 
-- name: Copy evmos dashboards
+- name: Copy dashboards
   ansible.builtin.copy:
     src: './dashboards/'
     dest: '{{ grafana_provisioning_dir }}/dashboards/'
@@ -71,3 +71,8 @@
       max-size: 30m
       mode: non-blocking
       max-buffer-size: 4m
+
+#! Setting password from the container as the password change on 'grafana.ini' does not affect
+- name: Reset Grafana admin password using docker exec
+  command: docker exec grafana /bin/bash -c "grafana cli admin reset-admin-password {{ grafana_web_admin_password }}"
+  become: true

@@ -3,8 +3,8 @@ container_names:
   prometheus: prometheus
 
 metrics_auth:
-  user: infra
-  password:
+  user: devops
+  password: P@ssword
 
 ports:
   prometheus_web: 9090
