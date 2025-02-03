@@ -8,20 +8,21 @@
     - "{{ bootstrap_user }}"
     - "{{ backup_user }}"
 
-- name: Ensure 'ssh' group exists
-  ansible.builtin.group:
-    name: ssh
-    state: present
+# 'Group allow' parameter not used currently
+# - name: Ensure 'ssh' group exists
+#   ansible.builtin.group:
+#     name: ssh
+#     state: present
 
-# For later use. 'Allowgroup ssh' Not active yet in 'sshd_config'
-- name: Add users to 'ssh' group
-  ansible.builtin.user:
-    name: "{{ item }}"
-    groups: ssh
-    append: true
-  loop:
-    - "{{ bootstrap_user }}"
-    - "{{ backup_user }}"
+# # For later use. 'Allowgroup ssh' Not active yet in 'sshd_config'
+# - name: Add users to 'ssh' group
+#   ansible.builtin.user:
+#     name: "{{ item }}"
+#     groups: ssh
+#     append: true
+#   loop:
+#     - "{{ bootstrap_user }}"
+#     - "{{ backup_user }}"
 
 - name: Add SSH public keys to {{ bootstrap_user }} user
   loop: "{{ github_user_pubkeys }}"
