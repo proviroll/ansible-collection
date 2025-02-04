@@ -11,14 +11,24 @@ http {
     server {
         listen 80;
 
-        location /.well-known/acme-challenge/ {
-            root {{ webroot_dir }};
-        }
-
         location / {
             return 301 https://$host$request_uri;
         }
     }
+
+    # Reject requests made to 'default_server'
+    server {
+        listen 443 ssl default_server;
+        listen [::]:443 ssl default_server;
+        server_name _;
+
+        ssl_reject_handshake on;
+
+        location / {
+            return 444;
+        }
+    }
+
 
     # Grafana Subdomain (HTTPS)
     server {
