@@ -19,7 +19,7 @@ scrape_configs:
       - files:
           - '{{ prometheus_config_container_dir }}/targets/*.yml'
 
-  - job_name: aztec
+  - job_name: demo
     metrics_path: /metrics
     static_configs:
 
@@ -31,18 +31,36 @@ scrape_configs:
       - targets:
           - 65.109.93.168:9100
         labels:
-          group: aztec
-          network: troll-turtle
+          group: demo
+          network: demo
           app: nodeexporter
           node: 'validator-01'
-      # OTEL
+
+  - job_name: solana
+    metrics_path: /metrics
+    static_configs:
+
+      ###########
+      # TESTNET #
+      ###########
+
+      # node exporter
       - targets:
-          - 65.109.93.168:8889
+          - 57.129.85.176:9100
         labels:
-          group: aztec
-          network: troll-turtle
-          app: validator
+          group: solana
+          network: testnet
+          app: nodeexporter
           node: 'validator-01'
+      # solana exporter
+      - targets:
+          - 57.129.85.176:9999
+        labels:
+          group: solana
+          network: testnet
+          app: solana-exporter
+          node: 'validator-01'
+
 
 alerting:
   alertmanagers:

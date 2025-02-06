@@ -38,13 +38,13 @@
     path: '{{ prometheus_config_dir }}/targets/{{ item }}'
     state: absent
 
-# - name: Template prometheus targets files
-#   ansible.builtin.template:
-#     src: ./templates/targets.yml.j2
-#     dest: '{{ prometheus_config_dir }}/targets/targets_{{ item }}.yml'
-#   with_items: "{{ groups['all'] }}"
-#   notify:
-#     - Reload prometheus
+- name: Template prometheus targets files
+  ansible.builtin.template:
+    src: ./templates/targets.yml.j2
+    dest: '{{ prometheus_config_dir }}/targets/targets_{{ item }}.yml'
+  with_items: "{{ groups['all'] }}"
+  notify:
+    - Reload prometheus
 
 - name: Template prometheus config file
   ansible.builtin.template:
@@ -69,6 +69,11 @@
     validate: promtool check rules %s
   notify:
     - Reload prometheus
+
+- name: Remove Prometheus container if running
+  community.docker.docker_container:
+    name: '{{ prometheus_container_name }}'
+    state: absent
 
 - name: Start prometheus
   community.docker.docker_container:
