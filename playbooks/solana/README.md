@@ -13,16 +13,16 @@ mkdir -p /home/devops/solana-validator/data/snapshots
 
 ## Install or update binary
 
->Using `agave-validator v2.0.24` as per the:  [Solana Discord Channel - latest testnet announcment](https://discordapp.com/channels/428295358100013066/594138785558691840/1334550076323794955)
+>Using `agave-validator v2.1.13` as per the:  [Solana Discord Channel - latest testnet announcment](https://discordapp.com/channels/428295358100013066/895740485140906054/1336553379169697872)
 
 ### Install :
 
 ```bash
-sh -c "$(curl -sSfL https://release.anza.xyz/v2.0.24/install)"
+sh -c "$(curl -sSfL https://release.anza.xyz/v2.1.13/install)"
 
 #Log out and in again, use 'source ~/.profile' or 'export PATH'. Output:
-downloading v2.0.24 installer
-  ✨ 2.0.24 initialized
+downloading v2.1.13 installer
+  ✨ 2.1.13 initialized
 Adding 
 export PATH="/home/devops/.local/share/solana/install/active_release/bin:$PATH" to /home/devops/.profile
 
@@ -36,7 +36,7 @@ export PATH="/home/devops/.local/share/solana/install/active_release/bin:$PATH"
 solana --version
 
 # Output
-solana-cli 2.0.24 (src:336796a7; feat:607245837, client:Agave)
+solana-cli 2.1.13 (src:336796a7; feat:607245837, client:Agave)
 ```
 
 - Update binary
@@ -303,6 +303,28 @@ curl -X POST -H "Content-Type: application/json" -d '{"jsonrpc":"2.0","id":1, "m
 
 # Current valdiator's block height
 curl -X POST http://127.0.0.1:8899 -H "Content-Type: application/json" -d '{"jsonrpc":"2.0","id":1, "method":"getBlockHeight"}' | jq
+```
+
+### Health and logs
+
+- Follow validator log file:
+```bash
+tail /home/devops/solana-validator/config/agave-validator.log -f
+```
+- The log ifle can get to 10Gb in less than one week. Temporary mesure for purging log file **without deleting it, otherwise will need to restart solana.service** to create it again:
+
+```bash
+# Creating a copy of the log file with current date
+cp agave-validator.log "agave-validator.log_$(date +%F)"
+
+# Reset file content
+echo "purged" > agave-validator.log
+```
+
+- Check if the validator is correctly syncing:
+
+```bash
+solana catchup --our-localhost 8899
 ```
 
 ### Metrics

@@ -19,9 +19,9 @@
 
 - name: Stop 'solana-exporter' container if already existing
   shell:
-    "docker compose -f {{ solana_exporter_dir }}/exporter.docker-compose.yml down"
+    "docker-compose -f {{ solana_exporter_dir }}/exporter.docker-compose.yml down"
   ignore_errors: yes
 
 - name: Start solana-exporter container
   shell:
-    "docker compose -f {{ solana_exporter_dir }}/exporter.docker-compose.yml up -d"
+    "docker-compose -f {{ solana_exporter_dir }}/exporter.docker-compose.yml up -d"
