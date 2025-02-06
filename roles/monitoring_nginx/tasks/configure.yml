@@ -13,4 +13,3 @@
 - name: Create Basic Auth file for AlertManager
   ansible.builtin.command:
     cmd: "htpasswd -bc {{ nginx_config_dir }}/alertmanager.htpasswd {{ vault_prometheus_alertmanager_user }} {{ vault_prometheus_alertmanager_password }}"
-    creates: /home/{{ ansible_user }}/nginx/alertmanager.htpasswd
