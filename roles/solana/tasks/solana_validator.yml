@@ -9,16 +9,12 @@
   shell: solana config set --keypair {{ solana_validator_dir }}/config/validator-keypair.json
   become: no
 
-- name: enable solana system tuner service
-  shell: systemctl enable --now solana-sys-tuner
-  become: yes
-
 - name: enable solana validator service
-  shell: systemctl enable sol
+  shell: systemctl enable solana.service
   become: yes
 
 - name: start solana validator service
-  shell: systemctl start sol
+  shell: systemctl start solana.service
   become: yes
 
 - name: Stop 'solana-exporter' container if already existing
