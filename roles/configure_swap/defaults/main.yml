@@ -1,0 +1,10 @@
+---
+swap_file_create_command: "dd if=/dev/zero of={{ swap_file_path }} bs=1M count={{ swap_file_size_mb }}"
+
+swap_test_mode: false
+
+# Provide the following variables if not already done in playbook level:
+swap_file_path:
+swap_file_size_mb:
+swap_swappiness:
+swap_file_state:

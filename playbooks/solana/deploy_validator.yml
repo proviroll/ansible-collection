@@ -1,0 +1,22 @@
+- name: Configur swap memory
+  hosts: all
+  vars:
+    swap_file_path: /swapfile
+    swap_file_size_mb: '65536'  # 64GB
+    swap_swappiness: '30'  # Reduced value
+    swap_file_state: present # present/absent to Creates/Remove swap file
+  become: true
+  roles:
+    - configure_swap
+
+- name: Deploy solana validator
+  hosts: all
+  environment:
+    PATH: /home/devops/.local/share/solana/install/active_release/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+  vars:
+    network: solana
+    network_type: testnet # Values : testnet, devnet, mainnet-beta
+    chain_id: 
+  become: true
+  roles:
+    - solana

@@ -1,0 +1,27 @@
+---
+# # Enable if needed. Keys are deposed manually on server
+# - name: copy identity key
+#   copy:
+#     src: files/validator-keypair.json
+#     dest: "{{ solana_validator_dir }}/config/validator-keypair.json"
+#   become: no
+
+# - name: copy vote key
+#   copy:
+#     src: files/vote-account-keypair.json
+#     dest: "{{ solana_validator_dir }}/config/vote-account-keypair.json"
+#   become: no
+
+- name: template validator start up script
+  template:
+    src: templates/validator.sh.j2
+    dest: "{{ solana_validator_dir }}/config/validator.sh"
+    owner: "{{ non_root_user }}"
+    group: "{{ non_root_group }}"
+    mode: "0755"
+  become: no
+
+- name: Copy 'solana-exporter' docker compose file
+  template:
+    src: templates/exporter.docker-compose.yml.j2
+    dest: "{{ solana_exporter_dir }}/exporter.docker-compose.yml"

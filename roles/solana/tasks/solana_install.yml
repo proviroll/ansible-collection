@@ -1,0 +1,37 @@
+---
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ non_root_user }}"
+    group: "{{ non_root_group }}"
+    mode: "0755"
+  loop:
+    - "{{ solana_validator_dir }}/config"
+    - "{{ solana_validator_dir }}/data"
+    - "{{ solana_validator_dir }}/data/ledger"
+    - "{{ solana_exporter_dir }}"
+    - "{{ solana_exporter_dir }}/data"
+    - "{{ solana_exporter_dir }}/exporter"
+  become: no
+
+- name: Update cache
+  apt:
+    update_cache: yes
+  become: yes
+
+## Exec Path
+- name: Download solana tool suite
+  shell: 'curl -sSfL https://release.anza.xyz/{{ solana_version|quote }}/install > /tmp/install.sh'
+  register: command_result
+
+- debug:
+    var: command_result
+
+- name: Make script executable
+  shell: chmod +x /tmp/install.sh
+  become: yes
+
+- name: Install solana tool suite (for non root user)
+  shell: /tmp/install.sh
+  become: no

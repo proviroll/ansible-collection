@@ -1,0 +1,29 @@
+---
+## Script and Exec Paths/vars
+- name: create solana service
+  shell:
+    cmd: |
+      bash -c "cat >/etc/systemd/system/solana.service <<EOF
+      [Unit]
+      Description=Solana Validator
+      After=network.target
+      StartLimitIntervalSec=0
+
+      [Service]
+      Type=simple
+      Restart=always
+      RestartSec=1
+      User=devops
+      LimitNOFILE=1000000
+      LogRateLimitIntervalSec=0
+      Environment="PATH={{ solana_binary_path }}"
+      ExecStart={{ solana_validator_dir }}/config/validator.sh
+      [Install]
+      WantedBy=multi-user.target
+      EOF"
+  become: yes
+
+- name: Restart systemctl daemon
+  shell:
+    cmd: systemctl daemon-reload
+  become: yes
