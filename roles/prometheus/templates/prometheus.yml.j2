@@ -44,21 +44,29 @@ scrape_configs:
       # TESTNET #
       ###########
 
-      # node exporter
-      - targets:
-          - 57.129.85.176:9100
-        labels:
-          group: solana
-          network: testnet
-          app: nodeexporter
-          node: 'validator-01'
       # solana exporter
       - targets:
-          - 57.129.85.176:9999
+          - 57.129.85.62:9999
         labels:
           group: solana
           network: testnet
           app: solana-exporter
+          node: 'validator-01'
+      # firedancer validator
+      - targets:
+          - 57.129.85.62:37999
+        labels:
+          group: solana
+          network: testnet
+          app: validator
+          node: 'validator-01'
+      # node exporter
+      - targets:
+          - 57.129.85.62:9100
+        labels:
+          group: solana
+          network: testnet
+          app: nodeexporter
           node: 'validator-01'
 
 
