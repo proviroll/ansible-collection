@@ -1,0 +1,37 @@
+- name: Install required packages
+  apt:
+    name:
+      - rust
+      - rustup
+      - cargo
+    state: present
+  become: yes
+
+- name: Clone Firedancer repository
+  shell: 'git clone --recurse-submodules {{ solana_validator_build_url }} {{ solana_validator_build_dir }}'
+  become: no
+
+- name: Checkout version
+  shell: 'git checkout {{ solana_version }}'
+  args:
+    chdir: "{{ solana_validator_build_dir }}"
+  become: no
+
+- name: Run dependency installation script
+  shell: 'export FD_AUTO_INSTALL_PACKAGES=1 && ./deps.sh'
+  args:
+    chdir: "{{ solana_validator_build_dir }}"
+  become: no
+
+- name: Make 'fdctl' and 'solana' binaries
+  shell: 'make -j fdctl solana'
+  args:
+    chdir: "{{ solana_validator_build_dir }}"
+  become: no
+
+- name: Ensure Firedancer build path is in PATH
+  lineinfile:
+    path: '~/.bashrc'
+    line: 'export PATH="$HOME/solana-firedancer/firedancer/build/native/gcc/bin:$PATH"'
+    create: yes
+  become: no

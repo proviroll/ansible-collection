@@ -1,0 +1,8 @@
+---
+- name: Template config file to server
+  ansible.builtin.template:
+    src: "templates/config-{{ network }}.toml.j2"
+    dest: "{{ solana_validator_config_dir }}/config.toml"
+
+- name: Start FD validator
+  shell: 'fdctl run --config {{ solana_validator_config_dir }}/config.toml'
