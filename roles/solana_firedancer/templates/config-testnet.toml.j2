@@ -25,7 +25,7 @@ user = "devops"
     enabled = false # Not producing snapshots
     maximum_full_snapshots_to_retain = 2
     maximum_incremental_snapshots_to_retain = 2
-    minimum_snapshot_download_speed = 41943040
+    minimum_snapshot_download_speed = 11943040
     path = "{{ solana_validator_data_dir }}/full-snapshots"
     incremental_path = "{{ solana_validator_data_dir }}/incremental-snapshots"
 
@@ -49,8 +49,9 @@ user = "devops"
     solana_metrics_config = "host=https://metrics.solana.com:8086,db=tds,u=testnet_write,p=c4fa841aa918bf8274e3e2a44d77568d9861b3ea"
 
 [layout]
-    affinity = "auto"
-    quic_tile_count = 2
-    verify_tile_count = 4
-    bank_tile_count = 6
-    agave_affinity = "auto"
+    affinity = "0-15"
+    quic_tile_count = 1
+    verify_tile_count = 1
+    bank_tile_count = 1
+    agave_affinity = "16-22"
+    shred_tile_count = 1
