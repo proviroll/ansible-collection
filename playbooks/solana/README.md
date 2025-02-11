@@ -67,5 +67,5 @@ sudo journalctl -xeu solana.service -f
 
     - Basic `firedancer` metrics:
     ```bash
-    curl http://localhost:7999/metrics
+    curl http://localhost:37999/metrics
     ```

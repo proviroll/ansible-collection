@@ -41,9 +41,9 @@ user = "devops"
     only_known = false
 
 [tiles.metric]
-    # URI 127.0.0.1:7999/metrics
-    prometheus_listen_address = "127.0.0.1"
-    prometheus_listen_port = 7999
+    # Default URI 127.0.0.1:7999/metrics
+    prometheus_listen_address = "0.0.0.0"
+    prometheus_listen_port = 37999
 
 [reporting]
     solana_metrics_config = "host=https://metrics.solana.com:8086,db=tds,u=testnet_write,p=c4fa841aa918bf8274e3e2a44d77568d9861b3ea"
