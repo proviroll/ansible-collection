@@ -8,8 +8,8 @@ user = "devops"
     ]
 
 [consensus]
-    identity_path = "{{ solana_validator_config_dir }}/identity-keypair.json"
-    vote_account_path = "{{ solana_validator_config_dir }}/vote-account-keypair.json"
+    identity_path = "{{ solana_validator_config_dir }}/validator-keypair.json"
+    vote_account_path = "2paKzeZKpPpSd5kJdoNZ9LTWhHMJXDL3bjMhfRa7xjus"
 
     known_validators = [
         "5D1fNXzvv5NjV1ysLjirC4WY92RNsVH18vjmcszZd8on",
@@ -25,7 +25,7 @@ user = "devops"
     enabled = false # Not producing snapshots
     maximum_full_snapshots_to_retain = 2
     maximum_incremental_snapshots_to_retain = 2
-    minimum_snapshot_download_speed = 10485760
+    minimum_snapshot_download_speed = 41943040
     path = "{{ solana_validator_data_dir }}/full-snapshots"
     incremental_path = "{{ solana_validator_data_dir }}/incremental-snapshots"
 
@@ -38,6 +38,7 @@ user = "devops"
     port = 8899
     full_api = true
     private = true
+    only_known = false
 
 [tiles.metric]
     # URI 127.0.0.1:7999/metrics
@@ -51,5 +52,5 @@ user = "devops"
     affinity = "auto"
     quic_tile_count = 2
     verify_tile_count = 4
-    bank_tile_count = 4
+    bank_tile_count = 6
     agave_affinity = "auto"

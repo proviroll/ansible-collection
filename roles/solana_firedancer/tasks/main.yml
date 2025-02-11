@@ -1,1 +1,10 @@
+---
+# Will be removed after clean up user ubuntu 1000
+- set_fact:
+    ansible_user: devops
+
 - ansible.builtin.include_tasks: solana_install.yml
+- ansible.builtin.include_tasks: copy_files.yml
+- ansible.builtin.include_tasks: service.yml
+- ansible.builtin.include_tasks: validator.yml
+# - ansible.builtin.include_tasks: firewall.lyml

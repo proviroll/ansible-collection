@@ -1,0 +1,13 @@
+services:
+  solana_exporter:
+    container_name: {{ solana_exporter_container_name }}
+    image: {{ solana_exporter_container_image_and_tag }}
+    network_mode: "host"
+    volumes:
+      - "{{ solana_exporter_dir }}/data:/root"
+      - "{{ solana_exporter_dir }}/exporter:/exporter"
+    command: >
+      --rpcURI=http://localhost:8899/
+      -votepubkey={{ vote_account_pubkey }}
+      -addr=:9999
+    restart: always

@@ -1,11 +1,38 @@
-- name: Install required packages
+---
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ non_root_user }}"
+    group: "{{ non_root_group }}"
+    mode: "0755"
+  loop:
+    - "{{ solana_validator_dir }}"
+    - "{{ solana_validator_config_dir }}"
+    - "{{ solana_validator_data_dir }}"
+    - "{{ solana_validator_data_dir }}/ledger"
+    - "{{ solana_validator_data_dir }}/accounts"
+    - "{{ solana_exporter_dir }}"
+    - "{{ solana_exporter_dir }}/data"
+    - "{{ solana_exporter_dir }}/exporter"
+  become: no
+
+# Install required packages
+- name: Update apt cache
   apt:
-    name:
-      - rust
-      - rustup
-      - cargo
-    state: present
+    update_cache: yes
   become: yes
+
+- name: install 'rust'
+  shell: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+  become: no
+
+- name: Ensure rustup path is in PATH
+  lineinfile:
+    path: '~/.bashrc'
+    line: 'export PATH="$HOME/.cargo/bin:$PATH"'
+    create: yes
+  become: no
 
 - name: Clone Firedancer repository
   shell: 'git clone --recurse-submodules {{ solana_validator_build_url }} {{ solana_validator_build_dir }}'
@@ -32,6 +59,6 @@
 - name: Ensure Firedancer build path is in PATH
   lineinfile:
     path: '~/.bashrc'
-    line: 'export PATH="$HOME/solana-firedancer/firedancer/build/native/gcc/bin:$PATH"'
+    line: 'export PATH="$HOME/solana-validator/firedancer/build/native/gcc/bin:$PATH"'
     create: yes
   become: no

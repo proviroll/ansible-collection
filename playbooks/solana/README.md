@@ -17,7 +17,7 @@ Configure the required parameters in your `config.toml` file by referring to the
 ### All Init steps at once
 
 ```bash
-sudo ./build/native/gcc/bin/fdctl configure init all --config ~/config.toml
+sudo ./build/native/gcc/bin/fdctl configure init all --config "PATH"/config.toml
 ```
 
 ### Init step by step
@@ -48,11 +48,24 @@ sudo fdctl configure init ethtool-loopback
 ## Start Validator
 
 ```bash
-fdctl run
+fdctl run --config "PATH"/config.toml
 ```
 
-## Metrics
+## Metrics & Logs
 
+- Logs:
 ```bash
-curl http://localhost:7999/metrics
+sudo journalctl -xeu solana.service -f
 ```
+
+- Metrics:
+
+    - `solana-exporter` metrics:
+    ```bash
+    curl http://localhost:9999/metrics
+    ```
+
+    - Basic `firedancer` metrics:
+    ```bash
+    curl http://localhost:7999/metrics
+    ```
