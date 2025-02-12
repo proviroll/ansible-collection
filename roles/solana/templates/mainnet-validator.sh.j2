@@ -1,0 +1,28 @@
+#!/bin/bash
+exec agave-validator \
+    --identity {{ solana_validator_dir }}/config/validator-keypair.json \
+    --vote-account {{ solana_validator_dir }}/config/vote-account-keypair.json \
+    --ledger {{ solana_validator_dir }}/data/ledger \
+    --accounts {{ solana_validator_dir }}/data/accounts \
+    --snapshots {{ solana_validator_dir }}/data \
+    --maximum-full-snapshots-to-retain 1 \
+    --maximum-incremental-snapshots-to-retain 2 \
+    --log {{ solana_validator_dir }}/config/agave-validator.log \
+    --rpc-port 8899 \
+    --private-rpc \
+    --full-rpc-api \
+    --known-validator 7Np41oeYqPefeNQEHSv1UDhYrehxin3NStELsSKCT4K2 \
+    --known-validator GdnSyH3YtwcxFvQrVVJMm1JhTS4QVX7MFsX56uJLUfiZ \
+    --known-validator DE1bawNcRJB9rVm3buyMVfr8mBEoyyu73NBovf2oXJsJ \
+    --known-validator CakcnaRDHka2gXyfbEd2d3xsvkJkqsLw2akB3zsN1D2S \
+    --only-known-rpc \
+    --dynamic-port-range 8000-8020 \
+    --entrypoint entrypoint.mainnet-beta.solana.com:8001 \
+    --entrypoint entrypoint2.mainnet-beta.solana.com:8001 \
+    --entrypoint entrypoint3.mainnet-beta.solana.com:8001 \
+    --entrypoint entrypoint4.mainnet-beta.solana.com:8001 \
+    --entrypoint entrypoint5.mainnet-beta.solana.com:8001 \
+    --expected-genesis-hash 5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpKuc147dw2N9d \
+    --wal-recovery-mode skip_any_corrupted_record \
+    --limit-ledger-size \
+    --no-os-network-limits-test

@@ -15,10 +15,9 @@
 - name: Allow solana in UFW
   ufw:
     rule: allow
-    port: "{{ item }}"
+    port: "{{ solana_port_range }}"
     proto: udp
   become: yes
-  loop: "{{ solana_port_range }}"
 
 - name: Set UFW default policy
   ufw:

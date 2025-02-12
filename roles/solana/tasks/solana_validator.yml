@@ -1,6 +1,5 @@
 ---
-## Set RPC Endpoint
-# The node communicates by default with 'mainnet-beta' endpoint. Ensuring needed value is set
+# Default endpoint URL is 'mainnet-beta'. Ensuring correct endpoint is set
 - name: set solana config to use keypair
   shell: solana config set --url {{ solana_api_url }}
   become: no

@@ -12,13 +12,10 @@
 #     dest: "{{ solana_validator_dir }}/config/vote-account-keypair.json"
 #   become: no
 
-- name: template validator start up script
-  template:
-    src: templates/{{ network_type }}-validator.sh.j2
-    dest: "{{ solana_validator_dir }}/config/validator.sh"
-    owner: "{{ non_root_user }}"
-    group: "{{ non_root_group }}"
-    mode: "0755"
+- name: Template config file to server
+  ansible.builtin.template:
+    src: "templates/config-{{ network_type }}.toml.j2"
+    dest: "{{ solana_validator_config_dir }}/config.toml"
   become: no
 
 - name: Copy 'solana-exporter' docker compose file

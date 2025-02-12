@@ -1,0 +1,37 @@
+---
+- name: create solana service
+  shell:
+    cmd: |
+      bash -c "cat >/etc/systemd/system/solana.service <<EOF
+      [Unit]
+
+      Description=Firedancer Validator Service
+      After=network.target
+
+      [Service]
+
+      ExecStartPre=sudo {{ solana_validator_binary_path}}/fdctl configure init all --config {{ solana_validator_config_dir }}/config.toml
+      ExecStart=sudo {{ solana_validator_binary_path }}/fdctl run --config {{ solana_validator_config_dir }}/config.toml
+      ExecStop=fdctl stop
+      Restart=on-failure
+      LimitNOFILE=100000
+      LimitNPROC=100000
+      LimitCORE=infinity
+      TimeoutSec=infinity
+
+      [Install]
+
+      WantedBy=multi-user.target
+      EOF"
+  become: yes
+
+- name: Restart systemctl daemon
+  shell:
+    cmd: systemctl daemon-reload
+  become: yes
+
+- name: Enable solana.service
+  systemd:
+    name: solana.service
+    enabled: yes
+  become: yes
