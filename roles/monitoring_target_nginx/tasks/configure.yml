@@ -6,7 +6,7 @@
 - name: Template NGINX config file
   ansible.builtin.template:
     src: "templates/nginx.conf.j2"
-    dest: "{{ nginx_config_dir }}/nginx-copy.conf"
+    dest: "{{ nginx_config_dir }}/nginx.conf"
 
 - name: Create Basic Auth file
   ansible.builtin.command:

@@ -10,6 +10,10 @@
   notify:
     - Restart NGINX container
 
+- name: Create Basic Auth file
+  ansible.builtin.command:
+    cmd: "htpasswd -bc {{ nginx_config_dir }}/nodeexporter.htpasswd {{ vault_nodeexporter_basic_auth_user }} {{ vault_nodeexporter_basic_auth_password }}"
+
 - name: Create Basic Auth file for AlertManager
   ansible.builtin.command:
     cmd: "htpasswd -bc {{ nginx_config_dir }}/alertmanager.htpasswd {{ vault_prometheus_alertmanager_user }} {{ vault_prometheus_alertmanager_password }}"
