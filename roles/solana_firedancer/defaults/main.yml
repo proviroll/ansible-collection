@@ -20,4 +20,4 @@ non_root_user: "devops"
 non_root_group: "devops"
 
 # Range not used yet
-solana_port_range: [8900-8920]
+solana_port_range: ["8001", "8900-8920"]
