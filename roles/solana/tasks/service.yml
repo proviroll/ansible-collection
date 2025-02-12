@@ -5,7 +5,7 @@
     cmd: |
       bash -c "cat >/etc/systemd/system/solana.service <<EOF
       [Unit]
-      Description=Solana Validator
+      Description=Solana Agave Validator
       After=network.target
       StartLimitIntervalSec=0
 
