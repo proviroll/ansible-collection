@@ -1,0 +1,12 @@
+# NGINX Config
+nginx_config_dir: "/home/{{ ansible_user }}/nginx"
+
+# NGINX Basic Auth credentials
+nginx_basic_auth_user: "{{ vault_nginx_basic_auth_user }}"
+nginx_basic_auth_password: "{{ vault_nginx_basic_auth_password }}"
+
+# NGINX container
+nginx_container_name: "nginx"
+nginx_image_and_tag: "nginx:alpine"
+nginx_volumes:
+  - "{{ nginx_config_dir }}:/etc/nginx"
