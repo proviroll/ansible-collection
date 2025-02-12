@@ -20,7 +20,6 @@
     update_cache: yes
   become: yes
 
-## Exec Path
 - name: Download solana tool suite
   shell: 'curl -sSfL https://release.anza.xyz/{{ solana_version|quote }}/install > /tmp/install.sh'
   register: command_result

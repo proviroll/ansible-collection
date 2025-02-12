@@ -14,7 +14,7 @@
 
 - name: template validator start up script
   template:
-    src: templates/validator.sh.j2
+    src: templates/{{ network_type }}-validator.sh.j2
     dest: "{{ solana_validator_dir }}/config/validator.sh"
     owner: "{{ non_root_user }}"
     group: "{{ non_root_group }}"
