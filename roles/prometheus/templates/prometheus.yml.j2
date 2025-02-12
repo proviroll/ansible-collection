@@ -1,26 +1,50 @@
+global:
+  scrape_interval: 24s
+  scrape_timeout: 24s
+
 # Rules and alerts are read from the specified file(s)
 rule_files:
   - '{{ prometheus_config_container_dir }}/rules.yml'
 
 scrape_configs:
-  - job_name: 'metrics'
-    honor_labels: true
+
+### Monitoring server self monitoring
+  - job_name: "{{ inventory_hostname }}"
+    metrics_path: /metrics
     basic_auth:
       username: "{{ metrics_auth.user }}" 
       password: "{{ metrics_auth.password }}"
+    static_configs:
+      - targets:
+          - 127.0.0.1:{{ node_exporter_port }}
+        labels:
+          group: monitoring
+          app: nodeexporter
+          node: "{{ inventory_hostname }}"
 
-    # Scrape every 2 slots on average. Use long timeout, to get metrics from overloaded nodes
-    scrape_interval: 24s
-    scrape_timeout: 24s
-    tls_config:
-      insecure_skip_verify: true
+### Monitoring other monitoring servers
+  {% for host in groups['monitoring'] if host != inventory_hostname %}
+  - job_name: "{{ hostvars[host]['ansible_host'] }}"
+    metrics_path: /metrics
+    basic_auth:
+      username: "{{ metrics_auth.user }}" 
+      password: "{{ metrics_auth.password }}"
+    static_configs:
+      - targets:
+          - "{{ hostvars[host]['ansible_host'] }}:{{ node_exporter_public_port }}"
+        labels:
+          group: monitoring
+          app: nodeexporter
+          node: "{{ hostvars[host]['ansible_host'] }}"
+  {% endfor %}
 
-    file_sd_configs:
-      - files:
-          - '{{ prometheus_config_container_dir }}/targets/*.yml'
+### Validators Jobs
 
   - job_name: demo
     metrics_path: /metrics
+    basic_auth:
+      username: "{{ metrics_auth.user }}" 
+      password: "{{ metrics_auth.password }}"
     static_configs:
 
       ###########
@@ -38,6 +62,9 @@ scrape_configs:
 
   - job_name: solana
     metrics_path: /metrics
+    basic_auth:
+      username: "{{ metrics_auth.user }}" 
+      password: "{{ metrics_auth.password }}"
     static_configs:
 
       ###########
@@ -46,7 +73,7 @@ scrape_configs:
 
       # solana exporter
       - targets:
-          - 57.129.85.62:9999
+          - 57.129.85.62:39999
         labels:
           group: solana
           network: testnet
@@ -62,7 +89,7 @@ scrape_configs:
           node: 'validator-01'
       # node exporter
       - targets:
-          - 57.129.85.62:9100
+          - 57.129.85.62:39100
         labels:
           group: solana
           network: testnet

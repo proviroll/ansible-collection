@@ -38,14 +38,6 @@
     path: '{{ prometheus_config_dir }}/targets/{{ item }}'
     state: absent
 
-- name: Template prometheus targets files
-  ansible.builtin.template:
-    src: ./templates/targets.yml.j2
-    dest: '{{ prometheus_config_dir }}/targets/targets_{{ item }}.yml'
-  with_items: "{{ groups['all'] }}"
-  notify:
-    - Reload prometheus
-
 - name: Template prometheus config file
   ansible.builtin.template:
     src: ./templates/prometheus.yml.j2
