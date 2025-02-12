@@ -1,0 +1,8 @@
+- ansible.builtin.include_tasks: "configure.yml"
+  when: "'monitoring' not in inventory_hostname"
+
+- ansible.builtin.include_tasks: "deploy.yml"
+  when: "'monitoring' not in inventory_hostname"
+
+- ansible.builtin.include_tasks: "firewall_rule.yml"
+  when: "'monitoring' not in inventory_hostname"

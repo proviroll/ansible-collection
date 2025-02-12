@@ -46,11 +46,16 @@
     dest: '{{ grafana_external_dashboards_dir }}'
   loop: '{{ grafana_dashboard_urls }}'
 
+- name: Remove Grafana container if running
+  community.docker.docker_container:
+    name: '{{ grafana_container_name }}'
+    state: absent
+
 - name: Start Grafana
   docker_container:
-    name: grafana
+    name: '{{ grafana_container_name }}'
     state: started
-    image: grafana/grafana:10.1.1
+    image: '{{grafana_container_image_and_tag}}'
     pull: true
 
     command: >

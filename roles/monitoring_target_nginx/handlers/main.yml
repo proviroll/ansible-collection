@@ -1,0 +1,4 @@
+- name: Restart NGINX container
+  community.docker.docker_container:
+    name: nginx
+    state: started
