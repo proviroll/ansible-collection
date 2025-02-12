@@ -1,3 +1,0 @@
----
-- name: Restart Nginx
-  ansible.builtin.command: docker restart nginx2
