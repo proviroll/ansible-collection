@@ -7,9 +7,10 @@
   shell:
     "solana config set --keypair{{ solana_validator_config_dir }}/validator-keypair.json"
 
-- name: Ensure irdma driver is disabled  
-  shell: rmmod irdma  
-  become: yes  
+# # Disable 'irdma' driver so that 'firedancer' starts correctly
+# - name: Ensure irdma driver is disabled  
+#   shell: rmmod irdma  
+#   become: yes  
 
 - name : start Solana valdiator service
   systemd:
