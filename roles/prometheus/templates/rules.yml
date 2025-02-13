@@ -86,6 +86,8 @@ groups:
           description: "Too many HTTP requests with status 5xx (> 5%)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
   - name: Solana validator
+    folder: Solana validator
+    interval: 5m
     rules:
       - uid: bda10f08-6985-4c4b-b805-e5cdb7d5f234
         title: Validator last vote compared to Cluster last vote
@@ -138,7 +140,6 @@ groups:
         execErrState: Error
         for: 5m
         isPaused: false
-
       - uid: ab58a9d1-2e55-44d3-8724-7320a719b2b3
         title: Solana fee payer balance (identity)
         condition: C
@@ -217,9 +218,8 @@ groups:
         execErrState: Error
         for: 5m
         isPaused: false
-
       - uid: cff0172b-9aab-4860-abb9-2509b8e1c8c8
-        title: Validator blockheight increasing
+        title: Solana FD - Validator blockheight progress
         condition: C
         data:
           - refId: A
@@ -296,7 +296,6 @@ groups:
         execErrState: Error
         for: 5m
         isPaused: false
-
       - uid: bfac9bd2-c797-4471-85eb-023a590943b9
         title: Validator is delinquent
         condition: C
@@ -375,7 +374,6 @@ groups:
         execErrState: Error
         for: 5m
         isPaused: false
-
       - uid: e92d389f-83d4-428a-a34e-7b25176ee685
         title: Active stake amount
         condition: C
@@ -431,8 +429,320 @@ groups:
               conditions:
                   - evaluator:
                       params:
-                          - 1000
+                          - 10000
                       type: lt
+                    operator:
+                      type: and
+                    query:
+                      params:
+                          - C
+                    reducer:
+                      params: []
+                      type: last
+                    type: query
+              datasource:
+                  type: __expr__
+                  uid: __expr__
+              expression: B
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: C
+              type: threshold
+        noDataState: NoData
+        execErrState: Error
+        for: 5m
+        isPaused: false
+      - uid: cf020d3d-b20f-48ec-92a5-17dfb60bfaf8
+        title: Solana FD - validator last vote progress
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus
+            model:
+              editorMode: code
+              expr: increase(solana_validator_last_vote{app="solana-exporter", group="solana", instance="57.129.85.62:39999", job="solana", network="testnet", node="validator-01", nodekey="EfeFqTrp6LMYGmL9KKMSTKg9Xtjxn8AJTcjTCaY7bo99", pubkey="2paKzeZKpPpSd5kJdoNZ9LTWhHMJXDL3bjMhfRa7xjus"}[10m])
+              instant: true
+              intervalMs: 1000
+              legendFormat: __auto
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                  - evaluator:
+                      params: []
+                      type: gt
+                    operator:
+                      type: and
+                    query:
+                      params:
+                          - B
+                    reducer:
+                      params: []
+                      type: last
+                    type: query
+              datasource:
+                  type: __expr__
+                  uid: __expr__
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              reducer: last
+              refId: B
+              type: reduce
+          - refId: C
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                  - evaluator:
+                      params:
+                          - 10
+                      type: lt
+                    operator:
+                      type: and
+                    query:
+                      params:
+                          - C
+                    reducer:
+                      params: []
+                      type: last
+                    type: query
+              datasource:
+                  type: __expr__
+                  uid: __expr__
+              expression: B
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: C
+              type: threshold
+        noDataState: NoData
+        execErrState: Error
+        for: 5m
+        isPaused: false
+      - uid: ce8be2c8-204d-4c01-9b1e-1b8f30129712
+        title: Solana FD - Is active
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus
+            model:
+              editorMode: code
+              expr: solana_active_validators{job="solana", state="delinquent"}
+              instant: true
+              intervalMs: 1000
+              legendFormat: __auto
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                  - evaluator:
+                      params: []
+                      type: gt
+                    operator:
+                      type: and
+                    query:
+                      params:
+                          - B
+                    reducer:
+                      params: []
+                      type: last
+                    type: query
+              datasource:
+                  type: __expr__
+                  uid: __expr__
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              reducer: last
+              refId: B
+              type: reduce
+          - refId: C
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                  - evaluator:
+                      params:
+                          - 0
+                      type: gt
+                    operator:
+                      type: and
+                    query:
+                      params:
+                          - C
+                    reducer:
+                      params: []
+                      type: last
+                    type: query
+              datasource:
+                  type: __expr__
+                  uid: __expr__
+              expression: B
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: C
+              type: threshold
+        noDataState: NoData
+        execErrState: Error
+        for: 5m
+        isPaused: false
+      - uid: e9438339-c8c2-4ccc-a0a1-fb5105560fb2
+        title: Solana FD - Is delinquent (should not be)
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus
+            model:
+              editorMode: code
+              expr: solana_validator_delinquent{job="solana"}
+              instant: true
+              intervalMs: 1000
+              legendFormat: __auto
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                  - evaluator:
+                      params: []
+                      type: gt
+                    operator:
+                      type: and
+                    query:
+                      params:
+                          - B
+                    reducer:
+                      params: []
+                      type: last
+                    type: query
+              datasource:
+                  type: __expr__
+                  uid: __expr__
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              reducer: last
+              refId: B
+              type: reduce
+          - refId: C
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                  - evaluator:
+                      params:
+                          - 0
+                      type: gt
+                    operator:
+                      type: and
+                    query:
+                      params:
+                          - C
+                    reducer:
+                      params: []
+                      type: last
+                    type: query
+              datasource:
+                  type: __expr__
+                  uid: __expr__
+              expression: B
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: C
+              type: threshold
+        noDataState: NoData
+        execErrState: Error
+        for: 5m
+        isPaused: false
+      - uid: ef409ee0-b562-4ad7-9b18-7696bcece680
+        title: Solana FD - Validator has skipped blocks
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus
+            model:
+              editorMode: code
+              expr: increase(solana_leader_slots_total{nodekey="EfeFqTrp6LMYGmL9KKMSTKg9Xtjxn8AJTcjTCaY7bo99",status="skipped"}[10m])
+              instant: true
+              intervalMs: 1000
+              legendFormat: __auto
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                  - evaluator:
+                      params: []
+                      type: gt
+                    operator:
+                      type: and
+                    query:
+                      params:
+                          - B
+                    reducer:
+                      params: []
+                      type: last
+                    type: query
+              datasource:
+                  type: __expr__
+                  uid: __expr__
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              reducer: last
+              refId: B
+              type: reduce
+          - refId: C
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                  - evaluator:
+                      params:
+                          - 0
+                      type: gt
                     operator:
                       type: and
                     query:
