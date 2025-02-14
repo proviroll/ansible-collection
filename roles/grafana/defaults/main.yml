@@ -4,5 +4,8 @@ prometheus:
   datasource_uid: prometheus
 
 metrics_auth:
-  user: admin
+  user: '{{ metrics_auth_user }}'
   password: '{{ prometheus_auth_password }}'
+
+grafana_container_name: grafana
+grafana_container_image_and_tag: grafana/grafana:10.1.1

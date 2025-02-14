@@ -1,25 +1,19 @@
 # NGINX Config
 nginx_config_dir: "/home/{{ ansible_user }}/nginx"
-nginx_conf_template: "./templates/nginx.conf.j2"
-nginx_basic_auth_prometheus: "{{ nginx_config_dir }}/prometheus.htpasswd"
+nginx_conf_template: "templates/nginx.conf.j2"
 nginx_basic_auth_alertmanager: "{{ nginx_config_dir }}/alertmanager.htpasswd"
 
 grafana_proxy_pass: "http://127.0.0.1:3000"
 prometheus_proxy_pass: "http://127.0.0.1:9090"
 alertmanager_proxy_pass: "http://127.0.0.1:9093"
 
-# NGINX Basic Auth credentials
-nginx_basic_auth_user: "{{ vault_nginx_basic_auth_user }}"
-nginx_basic_auth_password: "{{ vault_nginx_basic_auth_password }}"
-
-
 # NGINX container
 nginx_container_name: "nginx"
 nginx_image_and_tag: "nginx:alpine"
 nginx_volumes:
   - "{{ nginx_config_dir }}:/etc/nginx"
-  - "{{ certbot_cert_dir }}:/etc/letsencrypt"
-  - "{{ webroot_dir }}:/var/www/certbot"
+  - "/etc/letsencrypt:/etc/letsencrypt"
+  - "/var/www/certbot:/var/www/certbot"
 nginx_ports:
   - "80:80"
   - "443:443"
@@ -28,22 +22,10 @@ nginx_ports:
 cloudflare_token: "{{ vault_cloudflare_api_token }}"
 cloudflare_email: "devops@proviroll.io"
 subdomain_template: "proviroll.xyz"
-certbot_cert_dir: "/etc/letsencrypt"
-webroot_dir: "/var/www/certbot"
-staging: 1 # used in 'certbot' script. Set to '1' for testing and to '0' for production certificates generate
-
-# Certbot container
-certbot_init_container_name: certbot-init
-certbot_container_name: certbot
-certbot_image_and_tag: certbot/certbot:v2.11.0
-certbot_volumes:
-  - "{{ certbot_cert_dir }}:/etc/letsencrypt"
-  - "{{ webroot_dir }}:/var/www/certbot"
-  - "{{ nginx_config_dir }}:/etc/nginx"
 
 # Cron job for Certbot renewal
 certbot_renewal_cron_name: "Certbot Auto Renewal"
 certbot_renewal_cron_time:
   minute: "0"
   hour: "12"
-certbot_renewal_job: "/usr/bin/certbot renew --quiet"
+certbot_renewal_job: "/usr/bin/certbot renew --quiet && docker exec {{ nginx_container_name }} nginx -s reload"
