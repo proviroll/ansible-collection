@@ -1,3 +1,14 @@
+- name: Configur swap memory
+  hosts: all
+  vars:
+    swap_file_path: /swapfile
+    swap_file_size_mb: '65536'  # 64GB
+    swap_swappiness: '60'
+    swap_file_state: present # present/absent to Creates/Remove swap file
+  become: true
+  roles:
+    - configure_swap
+
 - name: System setup
   hosts: all
   become: true
