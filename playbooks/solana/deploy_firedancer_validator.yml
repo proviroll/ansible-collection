@@ -1,3 +1,4 @@
+---
 - name: Deploy solana firedancer validator
   hosts: all
   become: true
@@ -8,7 +9,7 @@
   roles:
     - solana_firedancer
 
-- name: System setup
+- name: Server setup
   hosts: all
   become: true
   vars_files:
