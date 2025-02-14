@@ -168,6 +168,60 @@ The snapshot finder tool tried to simplify the process (not very recommended):
 solana catchup --our-localhost 8899
 ```
 
+- Check **voting activity** and **how much credit is earned per epoch**
+
+```bash
+solana vote-account 2paKzeZKpPpSd5kJdoNZ9LTWhHMJXDL3bjMhfRa7xjus --output json
+
+# Output
+
+# Epoch and vote information
+{
+  "accountBalance": 108211850405,
+  "validatorIdentity": "EfeFqTrp6LMYGmL9KKMSTKg9Xtjxn8AJTcjTCaY7bo99",
+  "authorizedVoters": {
+    "748": "EfeFqTrp6LMYGmL9KKMSTKg9Xtjxn8AJTcjTCaY7bo99"
+  },
+  "authorizedWithdrawer": "A8GpR2QikRgbZ5Lo6Kq8nRHCpg4zRNB7SipCxyakdfeE",
+  "credits": 22970830,
+  "commission": 100,
+  "rootSlot": 317631440,
+  "recentTimestamp": {
+    "slot": 317631489,
+    "timestamp": 1739547836
+  },
+  "votes": [
+    {
+      "latency": 2,
+      "slot": 317631441,
+      "confirmationCount": 31
+    },
+    {
+      "latency": 1,
+      "slot": 317631448,
+  ### ... The rest of votes history
+
+  ### Information per epoch:
+    {
+      "epoch": 747,
+      "slotsInEpoch": 432000,
+      "creditsEarned": 4082554, # 4.08M Credit earned in Epoch 747
+      "credits": 22773993,
+      "prevCredits": 18691439,
+      "maxCreditsPerSlot": 16
+    },
+    {
+      "epoch": 748,
+      "slotsInEpoch": 432000,
+      "creditsEarned": 196837,
+      "credits": 22970830,
+      "prevCredits": 22773993,
+      "maxCreditsPerSlot": 16
+    }
+  ]
+}
+```
+
 ### Alerting
 
 As per our [monitoring setup](../monitoring/README.md), alerting is enabled on `Alertmanager` for critical events regarding the validator.
