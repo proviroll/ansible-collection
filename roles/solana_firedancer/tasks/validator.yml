@@ -12,7 +12,7 @@
 #   shell: rmmod irdma  
 #   become: yes  
 
-- name : start Solana valdiator service
+- name : start Solana validator service
   systemd:
     name: solana.service
     state: started

@@ -19,7 +19,7 @@
     chain_id: 
   become: true
   roles:
-    - solana
+    - solana_agave
 
 - name: System setup
   hosts: all
@@ -42,5 +42,6 @@
         host: "127.0.0.1"
 
   roles:
+    - node_exporter
     - monitoring_target_nginx
     - firewall
