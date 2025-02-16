@@ -1,31 +1,33 @@
+# Solana Firedancer validators
+
+This document outlines the binary installation and starting command of the `Firedancer validator client`.
+
+For the validator setup, please refere to the main document : [Solana validator setup](./README.md) 
+
 Ref : [Github](https://github.com/firedancer-io/firedancer) | [Firedancer.io - Docs](https://docs.firedancer.io/)
 
-- Install & Build.
+## Install Firedancer
+
+Ref : [Installing Firedancer](https://docs.firedancer.io/guide/getting-started.html#installing).
+
+- **Clone the repository and install dependencies**
 ```bash
-$ git clone --recurse-submodules https://github.com/firedancer-io/firedancer.git
-$ cd firedancer
-$ git checkout v0.305.20111 # Version required by latest delegation program announcment for Testnet validators
+git clone --recurse-submodules https://github.com/firedancer-io/firedancer.git
+cd firedancer
+git checkout v0.305.20111 # Testnet required version by delegation program February 2025
 
 # Run script to install system packages and compile library dependencies.
-$ ./deps.sh
+./deps.sh
 ```
 
-- Success output
-```bash
-...
-make: Leaving directory '/home/devops/solana-firedancer/firedancer/opt/git/s2n/x86'
-[+] Successfully installed s2n-bignum
-[~] Done!
-```
+- **Build the binaries Firedancer & Solana**
+**The build requires about 32GB free memory or can return errors**
 
->Note: For some reason, had to **install `rust`, `rustup` and `cargo`** and then build this latest version (after the execution of the dependencies install script)
-
-- Continue. **The build requires about 32GB free memory or can return errors**.
 ```bash
 $ make -j fdctl solana
 ```
 
-- Successful install & Check version
+- **Successful install & Check version**
 ```bash
 # Check Firedancer version
 $ ./build/native/gcc/bin/fdctl --version
@@ -40,8 +42,17 @@ $ ./build/native/gcc/bin/solana --version
 solana-cli 0.305.20111 (src:78eefec7; feat:3039680930, client:Firedancer)
 ```
 
-- Create config file :
+## Configure and start the validator
 
+### Configure
+
+For `Agave` validator, configurations are passed through multiple arguments to the starting command. For `Firedancer`, it's under a separate config file.
+
+- **Create config file**
+
+Refs : [Configuring Firedancer](https://docs.firedancer.io/guide/configuring.html)  | [GitHub fdctl config templates](https://github.com/firedancer-io/firedancer/tree/main/src/app/fdctl/config)  | [GitHub fdctl config parameters](https://docs.firedancer.io/guide/tuning.html)
+
+**`{validator_dir/config/config.toml}`:**
 ```conf
 user = "devops"
 
@@ -73,8 +84,9 @@ user = "devops"
     solana_metrics_config = "host=https://metrics.solana.com:8086,db=tds,u=testnet_write,p=c4fa841aa918bf8274e3e2a44d77568d9861b3ea"
 ```
 
-- Initialization:
+### Initialization
 
+- **Initialization**
 ```bash
 $ sudo ./build/native/gcc/bin/fdctl configure init all --config "PATH"/config.toml
 ```
@@ -82,38 +94,40 @@ $ sudo ./build/native/gcc/bin/fdctl configure init all --config "PATH"/config.to
 > **Firedancer requires priviledged right for some components.**
 >**Running any fdctl configure command may make permanent changes to the system.**
 
+Instead of running `fdctl init All`, you can run it's steps in separate commands:
 
-- Starting the validator
+- **hugetlbfs**: *Reserves pages for Firedancer (Must run after each reboot).  
+```bash
+sudo fdctl configure init hugetlbfs
+```
+
+- **sysctl**: Configures required kernel parameters for optimal performance.
+```bash  
+sudo fdctl configure init sysctl
+```
+
+- **ethtool-channels**: Sets the correct number of network channels on the device.
+```bash  
+sudo fdctl configure init ethtool-channels
+```
+
+- **ethtool-gro**: Disables generic-receive-offload on the network device.
+```bash  
+sudo fdctl configure init ethtool-gro
+```
+
+- **ethtool-loopback**: Disables tx-udp-segmentation on the loopback device.
+```bash  
+sudo fdctl configure init ethtool-loopback
+```
+
+### Start & Run
 
 ```bash
 sudo ./build/native/gcc/bin/fdctl run --config "PATH"/config.toml
 ```
 
+## Resources
 
-# Solana Validator Alerts Overview
-
-## **Validator Last Vote vs Cluster Last Vote**
-- **Formula**: `solana_cluster_last_vote - solana_validator_last_vote`
-- **Threshold**: Alerts if the difference is significant.
-- **Evaluation Time**: 5 minutes.
-
-## **Fee Payer Balance (Identity)**
-- **Formula**: `solana_account_balance{address="identity_account"}`
-- **Threshold**: Alerts if balance drops below 0.004 SOL.
-- **Evaluation Time**: Continuous (every few seconds).
-
-## **Validator Blockheight Increasing**
-- **Formula**: `rate(solana_node_block_height[5m])`
-- **Threshold**: Alerts if the block height is not increasing (rate <= 0).
-- **Evaluation Time**: 5 minutes.
-
-## **Validator is Delinquent**
-- **Formula**: `solana_validator_status{is_delinquent="true"}`
-- **Threshold**: Alerts if the validator is delinquent.
-- **Evaluation Time**: 5 minutes.
-
-## Other alerts Alerts:
-- **Missed Slots**: If missed slots exceed a threshold.
-- **Epoch Progress**: If epoch progress stagnates.
-- **Active Stake**: If active stake drops below a critical threshold (e.g., 10,000 SOL).
-- **Cluster Health**: Alerts if the validator's health status changes.
+- [Firedancer GitHub Repository](https://github.com/firedancer-io/firedancer)
+- [Firedancer Documentation](https://docs.firedancer.io/)
