@@ -17,7 +17,7 @@
     - "{{ solana_exporter_dir }}/exporter"
   become: no
 
-# Install required packages
+#Install required packages
 - name: Update apt cache
   apt:
     update_cache: yes
@@ -45,13 +45,13 @@
   become: no
 
 - name: Run dependency installation script
-  shell: 'export FD_AUTO_INSTALL_PACKAGES=1 && ./deps.sh'
+  shell: 'export FD_AUTO_INSTALL_PACKAGES=1 && yes | ./deps.sh'
   args:
     chdir: "{{ solana_validator_build_dir }}"
   become: no
 
 - name: Make 'fdctl' and 'solana' binaries
-  shell: 'make -j fdctl solana'
+  shell: 'export PATH="$HOME/.cargo/bin:$PATH" && make -j fdctl solana'
   args:
     chdir: "{{ solana_validator_build_dir }}"
   become: no
