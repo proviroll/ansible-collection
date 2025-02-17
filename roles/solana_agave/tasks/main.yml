@@ -9,4 +9,3 @@
 - ansible.builtin.include_tasks: tasks/memory.yml
 - ansible.builtin.include_tasks: tasks/copy_files.yml
 - ansible.builtin.include_tasks: tasks/solana_validator.yml
-- ansible.builtin.include_tasks: tasks/firewall.yml
