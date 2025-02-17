@@ -19,5 +19,5 @@ node_key: EfeFqTrp6LMYGmL9KKMSTKg9Xtjxn8AJTcjTCaY7bo99
 non_root_user: "devops"
 non_root_group: "devops"
 
-# Range not used yet
+# # Ports range not managed by firewall yet
 solana_port_range: ["8001", "8900-8920"]
