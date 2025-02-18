@@ -9,13 +9,6 @@ ansible_user: devops
 bootstrap_user: devops
 backup_user: loginbackup
 
-initial_remote_user: ubuntu
+initial_remote_user: devops
 
 ssh_port: 22 # NOTE: In case changing ssh port, consider updating 'geerlingguy.firewall' ports 
-
-#### firewall task vars ####
-setup_firewall: false
-# list of TCP ports to allow incoming traffic
-firewall_allowed_tcp_ports:
-  - 22
-firewall_allowed_udp_ports: []

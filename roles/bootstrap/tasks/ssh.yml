@@ -8,22 +8,6 @@
     - "{{ bootstrap_user }}"
     - "{{ backup_user }}"
 
-# 'Group allow' parameter not used currently
-# - name: Ensure 'ssh' group exists
-#   ansible.builtin.group:
-#     name: ssh
-#     state: present
-
-# # For later use. 'Allowgroup ssh' Not active yet in 'sshd_config'
-# - name: Add users to 'ssh' group
-#   ansible.builtin.user:
-#     name: "{{ item }}"
-#     groups: ssh
-#     append: true
-#   loop:
-#     - "{{ bootstrap_user }}"
-#     - "{{ backup_user }}"
-
 - name: Add SSH public keys to {{ bootstrap_user }} user
   loop: "{{ github_user_pubkeys }}"
   ansible.posix.authorized_key:
@@ -38,25 +22,7 @@
     state: present
     key: https://github.com/{{ item }}.keys
 
-# # disabled through sshd config file
-# - name: Disable root login over SSH
-#   ansible.builtin.lineinfile:
-#     dest: /etc/ssh/sshd_config
-#     regexp: ^PermitRootLogin
-#     line: PermitRootLogin no
-#     state: present
-#   notify:
-#     - restart sshd
-# # disabled through sshd config file
-# - name: Disable password login
-#   ansible.builtin.lineinfile:
-#     dest: /etc/ssh/sshd_config
-#     regexp: ^PasswordAuthentication
-#     line: PasswordAuthentication no
-#     state: present
-#   notify:
-#     - restart sshd
-
+# Double checking 'ssh' is allowed
 - name: check if ufw is installed
   shell: ufw status
   register: ufw_status
