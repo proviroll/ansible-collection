@@ -1,7 +1,0 @@
----
-- hosts: monitoring-1
-  become: true
-  vars_files:
-  - ../../vault.yml
-  roles:
-    - prometheus
