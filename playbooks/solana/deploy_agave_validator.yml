@@ -20,3 +20,28 @@
   become: true
   roles:
     - solana_agave
+
+- name: System setup
+  hosts: all
+  become: true
+  vars_files:
+    - "../../vault.yml"
+  vars:
+    firewall_ports:
+      - name: solana gossip
+        port: 8000:8020
+        proto: udp
+    metrics_apps:
+      - name: nodeexporter
+        port: "{{ nodeexporter_port }}"
+        public_port: "{{ nodeexporter_public_port }}"
+        host: "127.0.0.1"
+      - name: solana_exporter
+        port: 9999
+        public_port: 39999
+        host: "127.0.0.1"
+
+  roles:
+    - node_exporter
+    - monitoring_target_nginx
+    - firewall
