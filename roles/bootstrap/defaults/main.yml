@@ -11,4 +11,4 @@ backup_user: loginbackup
 
 initial_remote_user: devops
 
-ssh_port: 22 # NOTE: In case changing ssh port, consider updating 'geerlingguy.firewall' ports 
+ssh_port: 22
