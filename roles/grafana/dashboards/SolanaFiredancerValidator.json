@@ -209,7 +209,7 @@
         "orientation": "auto",
         "reduceOptions": {
           "calcs": [
-            "mean"
+            "last"
           ],
           "fields": "",
           "values": false
@@ -641,7 +641,7 @@
         "orientation": "auto",
         "reduceOptions": {
           "calcs": [
-            "lastNotNull"
+            "last"
           ],
           "fields": "",
           "values": false
@@ -663,7 +663,7 @@
           "refId": "A"
         }
       ],
-      "title": "Validator produced blocks",
+      "title": "Validator produced blocks (When it's leader)",
       "type": "stat"
     },
     {
@@ -725,7 +725,7 @@
           "refId": "A"
         }
       ],
-      "title": "Total Validator skipped blocks",
+      "title": "Total Validator skipped blocks (When it's leader)",
       "type": "stat"
     },
     {
@@ -792,7 +792,7 @@
           "refId": "A"
         }
       ],
-      "title": "Recent validator skipped blocks",
+      "title": "Recent validator skipped blocks (When it's leader)",
       "type": "stat"
     },
     {
@@ -1167,6 +1167,6 @@
   "timezone": "",
   "title": "Solana Firedancer Validator",
   "uid": "Proviroll",
-  "version": 13,
+  "version": 23,
   "weekStart": ""
 }
