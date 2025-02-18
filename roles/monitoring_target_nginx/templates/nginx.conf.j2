@@ -10,7 +10,7 @@ http {
     server {
         listen {{ app.public_port }};
         auth_basic "Restricted Access";
-        auth_basic_user_file /etc/nginx/nodeexporter.htpasswd;
+        auth_basic_user_file /etc/nginx/metrics.htpasswd;
         location / {
             proxy_pass http://{{ app.host }}:{{ app.port }};
         }

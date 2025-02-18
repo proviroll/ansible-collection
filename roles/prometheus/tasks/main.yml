@@ -20,24 +20,6 @@
     path: '{{ prometheus_config_dir }}'
     state: directory
 
-- name: Create prometheus targets dir
-  ansible.builtin.file:
-    path: '{{ prometheus_config_dir }}/targets'
-    state: directory
-
-- name: Find target files
-  ansible.builtin.find:
-    paths: '{{ prometheus_config_dir }}/targets'
-    recurse: true
-  register: target_files
-
-- name: Remove foreign target files
-  with_items: "{{ target_files.files | map(attribute='path') | map('basename') | list }}"
-  when: (item.split('.') | first) not in hostvars
-  ansible.builtin.file:
-    path: '{{ prometheus_config_dir }}/targets/{{ item }}'
-    state: absent
-
 - name: Template prometheus config file
   ansible.builtin.template:
     src: ./templates/prometheus.yml.j2
@@ -79,6 +61,7 @@
       --config.file={{ prometheus_config_container_dir }}/prometheus.yml --storage.tsdb.path=/prometheus --web.listen-address="0.0.0.0:{{ prometheus_web_port }}"
       --web.enable-lifecycle {% if prometheus_auth_enabled | bool %} --storage.tsdb.retention.time=30d --web.config.file={{ prometheus_config_container_dir }}/web-config.yml
       {% endif %}
+# --web.enable-admin-api (Enable if needed)
 
     volumes:
       - '{{ prometheus_config_dir }}:{{ prometheus_config_container_dir }}'
