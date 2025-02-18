@@ -1,0 +1,40 @@
+---
+- name: install ufw
+  apt:
+    name: ufw
+    state: present
+  become: yes
+
+- name: Allow SSH port
+  community.general.ufw:
+    rule: allow
+    port: 22
+    comment: "ssh"
+
+- name: Open validator ports
+  community.general.ufw:
+    rule: allow
+    port: "{{ item.port }}"
+    comment: "{{ item.name }}"
+    proto: "{{ item.proto | default('tcp') }}"
+  loop: "{{ firewall_ports | default([]) }}"
+
+- name: Open public metrics ports
+  community.general.ufw:
+    rule: allow
+    port: "{{ item.public_port }}"
+    comment: "{{ item.name }}"
+    proto: "{{ item.proto | default('tcp') }}"
+  loop: "{{ metrics_apps | default([]) }}"
+
+- name: Block private metrics ports
+  ansible.builtin.ufw:
+    rule: deny
+    port: "{{ item.port }}"
+    proto: any
+  loop: "{{ metrics_apps | default([]) }}"
+
+- name: Enable firewall
+  community.general.ufw:
+    state: enabled
+    default: deny

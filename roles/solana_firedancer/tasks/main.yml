@@ -7,4 +7,3 @@
 - ansible.builtin.include_tasks: copy_files.yml
 - ansible.builtin.include_tasks: service.yml
 - ansible.builtin.include_tasks: validator.yml
-# - ansible.builtin.include_tasks: firewall.yml
