@@ -10,7 +10,7 @@
   notify:
     - Restart NGINX container
 
-- name: Create Basic Auth file
+- name: Create Basic Auth file for metrics scapre job
   ansible.builtin.command:
     cmd: "htpasswd -bc {{ nginx_config_dir }}/metrics.htpasswd {{ vault_metrics_basic_auth_user }} {{ vault_metrics_basic_auth_password }}"
 

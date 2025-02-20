@@ -6,7 +6,7 @@ http {
     include /etc/nginx/conf.d/*.conf;
     include /etc/nginx/sites-enabled/*;
 
-    {% for app_name, app in metrics_apps.items() %}
+    {% for app in metrics_apps %}
     server {
         listen {{ app.public_port }};
         auth_basic "Restricted Access";

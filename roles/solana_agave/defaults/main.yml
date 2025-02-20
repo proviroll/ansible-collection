@@ -4,6 +4,7 @@ solana_api_url: "https://api.{{ network_type }}.solana.com/"
 
 solana_validator_dir: /home/devops/solana-validator
 solana_exporter_dir: /home/devops/solana-exporter
+# Ports range not managed by firewall yet
 solana_port_range: "8000:8020"
 
 solana_exporter_container_name: "solana_exporter"
