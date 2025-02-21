@@ -20,7 +20,7 @@
         host: "127.0.0.1"
       - name: prometheus
         port: "9090"
-        public_port: "" # Currently not exposed publicly
+        public_port: "" # not exposed
       - name: grafana
         port: "3000"
         public_port: "" # not exposed
@@ -34,4 +34,3 @@
     - node_exporter
     - monitoring_nginx
     - firewall
-   

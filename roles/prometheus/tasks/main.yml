@@ -1,16 +1,4 @@
 ---
-- name: Install dependencies
-  ansible.builtin.apt:
-    name: [prometheus]
-    state: latest
-    update_cache: true
-
-- name: Stop binary Prometheus service
-  ansible.builtin.service:
-    name: prometheus
-    state: stopped
-    enabled: no
-
 - name: Create docker volume prometheus_data
   community.docker.docker_volume:
     name: prometheus_data
