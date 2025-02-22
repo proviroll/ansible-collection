@@ -23,19 +23,19 @@
     key: https://github.com/{{ item }}.keys
 
 # Double checking 'ssh' is allowed
-- name: check if ufw is installed
+- name: Check if ufw is installed
   shell: ufw status
   register: ufw_status
   ignore_errors: true
   changed_when: false
   check_mode: false
 
-- name: if ufw is installed, allow ssh
+- name: If ufw is installed, allow ssh
   community.general.ufw:
     rule: allow
     port: "{{ ssh_port }}"
     comment: "ssh"
-  when: ufw_status.failed is not defined or (ufw_status.rc is defined and ufw_status.rc != 0)
+  when: ufw_status.rc == 0
 
 - name: Installing hardened SSH configuration 
   template:
