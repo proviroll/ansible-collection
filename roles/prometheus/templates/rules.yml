@@ -30,6 +30,15 @@ groups:
           summary: Host out of memory (instance {{ $labels.instance }})
           description: "Node memory is filling up (< 10% left)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
+      - alert: HostSwapIsFillingUp
+        expr: node_memory_SwapTotal_bytes > 0 and (1 - (node_memory_SwapFree_bytes / node_memory_SwapTotal_bytes)) * 100 > 80
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: Host swap is filling up (instance {{ $labels.instance }})
+          description: Swap is filling up (>80%)\n  VALUE = {{ $value }}
+
       - alert: HostDiskWillFillIn24Hours
         expr: (node_filesystem_avail_bytes * 100) / node_filesystem_size_bytes < 10 and ON (instance, device, mountpoint) predict_linear(node_filesystem_avail_bytes{fstype!~"tmpfs"}[1h], 24 * 3600) < 0 and ON (instance, device, mountpoint) node_filesystem_readonly == 0
         for: 5m
@@ -38,6 +47,33 @@ groups:
         annotations:
           summary: Host disk will fill in 24 hours (instance {{ $labels.instance }})
           description: "Filesystem is predicted to run out of space within the next 24 hours at current write rate\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+      - alert: HostOutOfDiskSpace
+        expr: (node_filesystem_avail_bytes * 100) / node_filesystem_size_bytes <= 20 and ON (instance, device, mountpoint) node_filesystem_readonly == 0
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: Host out of disk space (instance {{ $labels.instance }})
+          description: Disk is almost full (≤ 20% left)\n  VALUE = {{ $value }}
+
+      - alert: HostHighCpuLoad
+        expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[2m])) * 100) > 90
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: Host high CPU load (instance {{ $labels.instance }})
+          description: CPU load is > 90%\n  VALUE = {{ $value }}
+
+      - alert: HostPhysicalComponentTooHot
+        expr: node_hwmon_temp_celsius > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Host physical component too hot (instance {{ $labels.instance }})
+          description: Physical hardware component too hot\n  VALUE = {{ $value }}
 
       - alert: HostOOMKillDetected
         expr: increase(node_vmstat_oom_kill[1m]) > 0
@@ -169,7 +205,7 @@ groups:
         annotations:
             summary: "Firedancer Validator is not active (instance {{ $labels.instance }})"
             description: "The validator is not active or has an unexpected state.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
-  
+
       - alert: Firedancer Validator Is Delinquent (Should Not Be)
         expr: solana_validator_delinquent{job="solana"} > 0
         for: 5m
@@ -187,3 +223,75 @@ groups:
         annotations:
           summary: "Firedancer Validator has skipped blocks (instance {{ $labels.instance }})"
           description: "The validator has skipped blocks.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - name: FuelValidatorAlerts
+    rules:
+      # Alert if peer send bytes total is not increasing
+      - alert: FuelValidatorPeerSendNotIncreasing
+        expr: delta(cometbft_p2p_peer_send_bytes_total{group="fuel"}[5m]) == 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "No outgoing peer traffic detected on {{ $labels.instance }}"
+          description: "Peer send bytes have not increased in the last 5 minutes for {{ $labels.instance }}."
+
+      # Alert if peer receive bytes total is not increasing
+      - alert: FuelValidatorPeerReceiveNotIncreasing
+        expr: delta(cometbft_p2p_peer_receive_bytes_total{group="fuel"}[5m]) == 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "No incoming peer traffic detected on {{ $labels.instance }}"
+          description: "Peer receive bytes have not increased in the last 5 minutes for {{ $labels.instance }}."
+
+      # Alert if consensus height is not increasing
+      - alert: FuelValidatorConsensusHeightNotIncreasing
+        expr: increase(cometbft_consensus_height{group="fuel"}[5m]) == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Consensus height is not increasing on {{ $labels.instance }}"
+          description: "The consensus height has not moved in the last 5 minutes for {{ $labels.instance }}. Current height: {{ $value }}."
+
+      # Alert if peer count is below or equal to 20
+      - alert: FuelValidatorLowPeers
+        expr: (cometbft_p2p_peers{group="fuel"}) <= 20
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Low peer count detected on {{ $labels.instance }}"
+          description: "The number of peers has dropped to {{ $value }} or below on {{ $labels.instance }}."
+
+      # Alert if number of transactions is zero
+      - alert: FuelValidatorZeroTransactions
+        expr: (cometbft_consensus_num_txs{group="fuel"}) == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "No transactions detected on {{ $labels.instance }}"
+          description: "The number of transactions is zero on {{ $labels.instance }}."
+
+      # Alert if active validators increase
+      - alert: FuelValidatorActiveValidatorsIncreased
+        expr: sum(delta(cosmos_validators_active{group="fuel"}[5m])) > 0
+        for: 5m
+        labels:
+          severity: info
+        annotations:
+          summary: "Active validators count increased on {{ $labels.instance }}"
+          description: "The number of active validators has increased in the last 5 minutes on {{ $labels.instance }}. Current count: {{ $value }}."
+
+      # Alert if active validators decrease
+      - alert: FuelValidatorActiveValidatorsDecreased
+        expr: sum(delta(cosmos_validators_active{group="fuel"}[5m])) < 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Active validators count decreased on {{ $labels.instance }}"
+          description: "The number of active validators has decreased in the last 5 minutes on {{ $labels.instance }}. Current count: {{ $value }}."
