@@ -228,23 +228,23 @@ groups:
     rules:
       # Alert if peer send bytes total is not increasing
       - alert: FuelValidatorPeerSendNotIncreasing
-        expr: delta(cometbft_p2p_peer_send_bytes_total{group="fuel"}[5m]) == 0
+        expr: sum(rate(cometbft_p2p_peer_send_bytes_total{group="fuel"}[15m])) == 0
         for: 5m
         labels:
           severity: warning
         annotations:
           summary: "No outgoing peer traffic detected on {{ $labels.instance }}"
-          description: "Peer send bytes have not increased in the last 5 minutes for {{ $labels.instance }}."
+          description: "Peer send bytes have not increased in the last 15 minutes for {{ $labels.instance }}."
 
       # Alert if peer receive bytes total is not increasing
       - alert: FuelValidatorPeerReceiveNotIncreasing
-        expr: delta(cometbft_p2p_peer_receive_bytes_total{group="fuel"}[5m]) == 0
+        expr: sum(rate(cometbft_p2p_peer_receive_bytes_total{group="fuel"}[15m])) == 0
         for: 5m
         labels:
           severity: warning
         annotations:
           summary: "No incoming peer traffic detected on {{ $labels.instance }}"
-          description: "Peer receive bytes have not increased in the last 5 minutes for {{ $labels.instance }}."
+          description: "Peer receive bytes have not increased in the last 15 minutes for {{ $labels.instance }}."
 
       # Alert if consensus height is not increasing
       - alert: FuelValidatorConsensusHeightNotIncreasing
