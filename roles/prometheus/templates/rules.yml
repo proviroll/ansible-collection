@@ -226,26 +226,6 @@ groups:
 
   - name: FuelValidatorAlerts
     rules:
-      # Alert if peer send bytes total is not increasing
-      - alert: FuelValidatorPeerSendNotIncreasing
-        expr: sum(rate(cometbft_p2p_peer_send_bytes_total{group="fuel"}[15m])) == 0
-        for: 5m
-        labels:
-          severity: warning
-        annotations:
-          summary: "No outgoing peer traffic detected on {{ $labels.instance }}"
-          description: "Peer send bytes have not increased in the last 15 minutes for {{ $labels.instance }}."
-
-      # Alert if peer receive bytes total is not increasing
-      - alert: FuelValidatorPeerReceiveNotIncreasing
-        expr: sum(rate(cometbft_p2p_peer_receive_bytes_total{group="fuel"}[15m])) == 0
-        for: 5m
-        labels:
-          severity: warning
-        annotations:
-          summary: "No incoming peer traffic detected on {{ $labels.instance }}"
-          description: "Peer receive bytes have not increased in the last 15 minutes for {{ $labels.instance }}."
-
       # Alert if consensus height is not increasing
       - alert: FuelValidatorConsensusHeightNotIncreasing
         expr: increase(cometbft_consensus_height{group="fuel"}[5m]) == 0
@@ -256,9 +236,9 @@ groups:
           summary: "Consensus height is not increasing on {{ $labels.instance }}"
           description: "The consensus height has not moved in the last 5 minutes for {{ $labels.instance }}. Current height: {{ $value }}."
 
-      # Alert if peer count is below or equal to 20
+      # Alert if peer count is below or equal to 10
       - alert: FuelValidatorLowPeers
-        expr: (cometbft_p2p_peers{group="fuel"}) <= 20
+        expr: (cometbft_p2p_peers{group="fuel"}) <= 10
         for: 5m
         labels:
           severity: critical
@@ -276,22 +256,22 @@ groups:
           summary: "No transactions detected on {{ $labels.instance }}"
           description: "The number of transactions is zero on {{ $labels.instance }}."
 
-      # Alert if active validators increase
-      - alert: FuelValidatorActiveValidatorsIncreased
-        expr: sum(delta(cosmos_validators_active{group="fuel"}[5m])) > 0
-        for: 5m
+      # Alert if the validator is jailed
+      - alert: FuelValidatorJailed
+        expr: cosmos_validator_jailed{group="fuel"} == 1
+        for: 1m
         labels:
-          severity: info
+          severity: critical
         annotations:
-          summary: "Active validators count increased on {{ $labels.instance }}"
-          description: "The number of active validators has increased in the last 5 minutes on {{ $labels.instance }}. Current count: {{ $value }}."
+          summary: "Validator is jailed on {{ $labels.instance }}"
+          description: "The validator with instance {{ $labels.instance }} has been jailed."
 
-      # Alert if active validators decrease
-      - alert: FuelValidatorActiveValidatorsDecreased
-        expr: sum(delta(cosmos_validators_active{group="fuel"}[5m])) < 0
+      # Alert if the wallet balance drops below 50
+      - alert: FuelWalletBalanceLow
+        expr: cosmos_wallet_balance{group="fuel"} < 50
         for: 5m
         labels:
-          severity: warning
+          severity: critical
         annotations:
-          summary: "Active validators count decreased on {{ $labels.instance }}"
-          description: "The number of active validators has decreased in the last 5 minutes on {{ $labels.instance }}. Current count: {{ $value }}."
+          summary: "Wallet balance is below 50 on {{ $labels.instance }}"
+          description: "The wallet balance for {{ $labels.instance }} is less than 50."
