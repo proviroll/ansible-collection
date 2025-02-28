@@ -8,22 +8,6 @@
     - "{{ bootstrap_user }}"
     - "{{ backup_user }}"
 
-# 'Group allow' parameter not used currently
-# - name: Ensure 'ssh' group exists
-#   ansible.builtin.group:
-#     name: ssh
-#     state: present
-
-# # For later use. 'Allowgroup ssh' Not active yet in 'sshd_config'
-# - name: Add users to 'ssh' group
-#   ansible.builtin.user:
-#     name: "{{ item }}"
-#     groups: ssh
-#     append: true
-#   loop:
-#     - "{{ bootstrap_user }}"
-#     - "{{ backup_user }}"
-
 - name: Add SSH public keys to {{ bootstrap_user }} user
   loop: "{{ github_user_pubkeys }}"
   ansible.posix.authorized_key:
@@ -38,38 +22,20 @@
     state: present
     key: https://github.com/{{ item }}.keys
 
-# # disabled through sshd config file
-# - name: Disable root login over SSH
-#   ansible.builtin.lineinfile:
-#     dest: /etc/ssh/sshd_config
-#     regexp: ^PermitRootLogin
-#     line: PermitRootLogin no
-#     state: present
-#   notify:
-#     - restart sshd
-# # disabled through sshd config file
-# - name: Disable password login
-#   ansible.builtin.lineinfile:
-#     dest: /etc/ssh/sshd_config
-#     regexp: ^PasswordAuthentication
-#     line: PasswordAuthentication no
-#     state: present
-#   notify:
-#     - restart sshd
-
-- name: check if ufw is installed
+# Double checking 'ssh' is allowed
+- name: Check if ufw is installed
   shell: ufw status
   register: ufw_status
   ignore_errors: true
   changed_when: false
   check_mode: false
 
-- name: if ufw is installed, allow ssh
+- name: If ufw is installed, allow ssh
   community.general.ufw:
     rule: allow
     port: "{{ ssh_port }}"
     comment: "ssh"
-  when: ufw_status.failed is not defined or (ufw_status.rc is defined and ufw_status.rc != 0)
+  when: ufw_status.rc == 0
 
 - name: Installing hardened SSH configuration 
   template:

@@ -99,6 +99,9 @@ scrape_configs:
 
 alerting:
   alertmanagers:
-    - scheme: http
+    - scheme: https
       static_configs:
         - targets: ['{{ alertmanager_url }}']
+      basic_auth:
+        username: "{{ vault_prometheus_alertmanager_user }}"
+        password: "{{ vault_prometheus_alertmanager_password }}"

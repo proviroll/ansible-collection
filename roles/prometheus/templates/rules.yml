@@ -85,15 +85,35 @@ groups:
           summary: Nginx high HTTP 5xx error rate (instance {{ $labels.instance }})
           description: "Too many HTTP requests with status 5xx (> 5%)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
-  - name: Solana validator
+  - name: SolanaValidatorAlerts
     rules:
+      # Alert for increased stake
+      - alert: SolanaFireDancerActiveStakeAmountIncreased
+        expr: delta(solana_validator_activated_stake[10m]) / 1000000000 > 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Fire Dancer validator - Active Stake amount has increased by {{ $value }} for {{ $labels.job }} instance {{ $labels.instance }}"
+          description: "Stake amount has increased in the last 10 minutes."
+
+      # Alert for decreased stake
+      - alert: SolanaFireDancerActiveStakeAmountDecreased
+        expr: delta(solana_validator_activated_stake[10m]) / 1000000000 < 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Fire Dancer validator - Active Stake amount has decreased by {{ $value }} for {{ $labels.job }} instance {{ $labels.instance }}"
+          description: "Stake amount has decreased in the last 10 minutes."
+
       - alert: Agave Validator Last Vote Compared to Cluster Last Vote
         expr: round(solana_cluster_last_vote{job="solana"} - on(node, instance, network) solana_validator_last_vote{job="solana"}, 2) > 100
         for: 5m
         labels:
           severity: critical
         annotations:
-          summary: Agave Validator last vote compared to Cluster last vote (instance {{ $labels.instance }})
+          summary: "Agave Validator last vote compared to Cluster last vote (instance {{ $labels.instance }})"
           description: "The difference between the validator's last vote and the cluster's last vote is greater than 100.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
       - alert: Agave Validator Fee Payer Balance (Identity)
@@ -102,7 +122,7 @@ groups:
         labels:
           severity: critical
         annotations:
-          summary: Agave Validator fee payer balance (identity) (instance {{ $labels.instance }})
+          summary: "Agave Validator fee payer balance (identity) (instance {{ $labels.instance }})"
           description: "The fee payer balance for the validator is less than 1.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
       - alert: Firedancer Validator Blockheight Progress
@@ -111,7 +131,7 @@ groups:
         labels:
           severity: critical
         annotations:
-          summary: Firedancer Validator blockheight progress (instance {{ $labels.instance }})
+          summary: "Firedancer Validator blockheight progress (instance {{ $labels.instance }})"
           description: "The blockheight progress rate for the validator is less than 0.5.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
       - alert: Agave Validator Is Delinquent
@@ -120,7 +140,7 @@ groups:
         labels:
           severity: critical
         annotations:
-          summary: Agave Validator is delinquent (instance {{ $labels.instance }})
+          summary: "Agave Validator is delinquent (instance {{ $labels.instance }})"
           description: "The validator is delinquent.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
       - alert: Agave Validator Active Stake Amount
@@ -129,7 +149,7 @@ groups:
         labels:
           severity: critical
         annotations:
-          summary: Agave Validator active stake amount (instance {{ $labels.instance }})
+          summary: "Agave Validator active stake amount (instance {{ $labels.instance }})"
           description: "The active stake amount for the validator is less than 10000.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
       - alert: Firedancer Validator Last Vote Progress
@@ -138,25 +158,25 @@ groups:
         labels:
           severity: critical
         annotations:
-          summary: Firedancer Validator last vote progress (instance {{ $labels.instance }})
+          summary: "Firedancer Validator last vote progress (instance {{ $labels.instance }})"
           description: "The last vote progress for the validator is less than 10.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
       - alert: Firedancer Validator Is Active
-        expr: sum(solana_active_validators{job="solana", state=~"current|delinquent"}) by (instance) > 0
+        expr: sum(solana_active_validators{job="solana", state=~"current|delinquent"}) by (instance) == 0
         for: 5m
         labels:
-          severity: critical
+            severity: critical
         annotations:
-          summary: Firedancer Validator is active (instance {{ $labels.instance }})
-          description: "The validator is active but should not be.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
-
+            summary: "Firedancer Validator is not active (instance {{ $labels.instance }})"
+            description: "The validator is not active or has an unexpected state.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+  
       - alert: Firedancer Validator Is Delinquent (Should Not Be)
         expr: solana_validator_delinquent{job="solana"} > 0
         for: 5m
         labels:
           severity: critical
         annotations:
-          summary: Firedancer Validator is delinquent (should not be) (instance {{ $labels.instance }})
+          summary: "Firedancer Validator is delinquent (should not be) (instance {{ $labels.instance }})"
           description: "The validator is delinquent but should not be.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
       - alert: Firedancer Validator Has Skipped Blocks
@@ -165,5 +185,5 @@ groups:
         labels:
           severity: critical
         annotations:
-          summary: Firedancer Validator has skipped blocks (instance {{ $labels.instance }})
+          summary: "Firedancer Validator has skipped blocks (instance {{ $labels.instance }})"
           description: "The validator has skipped blocks.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"

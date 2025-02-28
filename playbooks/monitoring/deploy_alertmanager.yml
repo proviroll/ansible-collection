@@ -1,5 +1,0 @@
----
-- hosts: monitoring-1
-  become: true
-  roles:
-    - alertmanager
