@@ -672,7 +672,7 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
-      "description": "Producing blocks is rotative between validators each X slots (4 slots usually). The schedule of blocks producing is distributes by the leader of Epoch. When the validator has no blocks scheduled to produce, and is doing other duties (voting), this metric has no data.",
+      "description": "Producing blocks is rotative between validators. The schedule of blocks producing is distributes by the leader of Epoch. When the validator has no blocks scheduled to produce, and is doing other duties (voting), this metric has no data. Check schedure : 'solana leader-schedule | grep EfeFqTrp6LMYGmL9KKMSTKg9Xtjxn8AJTcjTCaY7bo99' , check current slot : 'solana slot'.",
       "fieldConfig": {
         "defaults": {
           "mappings": [],
