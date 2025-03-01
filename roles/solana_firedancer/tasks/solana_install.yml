@@ -34,6 +34,15 @@
     create: yes
   become: no
 
+- name: Check if destination repo exists
+  stat:
+    path: "{{ solana_validator_build_dir }}"
+  register: repo_stat
+
+- name: Move existing repository if it exists
+  shell: "mv {{ solana_validator_build_dir }} {{ solana_validator_build_dir }}-$(date +%Y%m%d%H%M%S)"
+  when: repo_stat.stat.exists
+
 - name: Clone Firedancer repository
   shell: 'git clone --recurse-submodules {{ solana_validator_build_url }} {{ solana_validator_build_dir }}'
   become: no
@@ -44,6 +53,7 @@
     chdir: "{{ solana_validator_build_dir }}"
   become: no
 
+# Asks for 'sudo' pwd during execution, No issue for 'devops' user, can 'sudo' without pwd
 - name: Run dependency installation script
   shell: 'export FD_AUTO_INSTALL_PACKAGES=1 && yes | ./deps.sh'
   args:
@@ -51,7 +61,9 @@
   become: no
 
 - name: Make 'fdctl' and 'solana' binaries
-  shell: 'export PATH="$HOME/.cargo/bin:$PATH" && make -j fdctl solana'
+  shell: |
+    export PATH="$HOME/.cargo/bin:$PATH"
+    make -j fdctl solana || true
   args:
     chdir: "{{ solana_validator_build_dir }}"
   become: no

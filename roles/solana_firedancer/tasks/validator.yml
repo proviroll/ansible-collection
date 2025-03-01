@@ -1,21 +1,28 @@
 ---
 - name: Set network endpoint
   shell:
-    "solana config set --url https://api.{{ network_type }}.solana.com/"
+    "{{ solana_validator_binary_path }}/solana config set --url https://api.{{ network_type }}.solana.com/"
 
 - name: Set keypair
   shell:
-    "solana config set --keypair{{ solana_validator_config_dir }}/validator-keypair.json"
+    "{{ solana_validator_binary_path }}/solana config set --keypair {{ solana_validator_config_dir }}/validator-keypair.json"
 
 # # Disable 'irdma' driver so that 'firedancer' starts correctly
 # - name: Ensure irdma driver is disabled  
 #   shell: rmmod irdma  
 #   become: yes  
 
-- name : start Solana validator service
+- name: Stop Solana validator service
+  systemd:
+    name: solana.service
+    state: stopped
+  become: yes
+
+- name: Start Solana validator service
   systemd:
     name: solana.service
     state: started
+  become: yes
 
 - name: Copy 'solana-exporter' docker compose file
   template:
