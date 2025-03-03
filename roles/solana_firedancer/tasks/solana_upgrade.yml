@@ -1,0 +1,125 @@
+---
+- name: Show current versions - before upgrade
+  shell: |
+    echo "fdctl version :"
+    ./fdctl --version
+    echo "solana version :"
+    ./solana --version
+  args:
+    chdir: "{{ solana_validator_binary_path }}"
+
+- name: Upgrade information
+  pause:
+    prompt:
+      "This playbook is about to upgrade Solana Firedancer to version {{ solana_version }}. Press Enter to continue or Ctrl+C to abort."
+
+# Install required packages
+- name: Update apt cache
+  apt:
+    update_cache: yes
+  become: yes
+
+# Build binaries
+- name: Clone Firedancer repository
+  shell: 'git clone --recurse-submodules {{ solana_validator_build_url }} {{ solana_validator_upgrade_dir }}'
+  become: no
+
+- name: Checkout version
+  shell: 'git checkout {{ solana_version }}'
+  args:
+    chdir: "{{ solana_validator_upgrade_dir }}"
+  become: no
+
+- name: Run dependency installation script
+  shell: 'export FD_AUTO_INSTALL_PACKAGES=1 && yes | ./deps.sh'
+  args:
+    chdir: "{{ solana_validator_upgrade_dir }}"
+  become: no
+
+- name: Make 'fdctl' and 'solana' binaries
+  shell: |
+    export PATH="$HOME/.cargo/bin:$PATH"
+    make -j fdctl solana || true
+  args:
+    chdir: "{{ solana_validator_upgrade_dir }}"
+  become: no
+
+- name: Ensure Firedancer build path is in PATH
+  lineinfile:
+    path: '~/.bashrc'
+    line: 'export PATH="$HOME/solana-validator/firedancer/build/native/gcc/bin:$PATH"'
+    create: yes
+  become: no
+
+- name: Show fdctl version
+  shell: "{{ solana_validator_upgrade_dir }}/build/native/gcc/bin/fdctl --version"
+  register: fdctl_version
+  become: no
+
+- name: Show solana version
+  shell: "{{ solana_validator_upgrade_dir }}/build/native/gcc/bin/solana --version"
+  register: solana_version_output
+  become: no
+
+- name: Display new built versions
+  debug:
+    msg:
+      - "fdctl version: {{ fdctl_version.stdout }}"
+      - "solana version: {{ solana_version_output.stdout }}"
+
+- name: Prompt to confirm upgrade
+  pause:
+    prompt: "Versions above are the ones that will be applied. Do you want to perform the upgrade? (y/n)"
+  register: user_confirmation
+
+- name: Fail if upgrade not confirmed
+  fail:
+    msg: "Upgrade aborted by the user."
+  when: user_confirmation.user_input not in ['y', 'Y', 'yes', 'Yes', 'YES']
+
+  # Restart validator service with new built version
+- name: Stop Solana validator service
+  systemd:
+    name: solana.service
+    state: stopped
+  become: yes
+
+- name: Rename previous build with timestamp
+  shell: "mv {{ solana_validator_build_dir }} {{ solana_validator_build_dir }}-{{ solana_previous_version }}-$(date +%Y%m%d%H%M%S)"
+  become: no
+
+- name: Move new build to active
+  shell: "mv {{ solana_validator_upgrade_dir }} {{ solana_validator_build_dir }}"
+  become: no
+
+- name: Show current versions - After upgrade
+  shell: |
+    echo "fdctl version :"
+    ./fdctl --version
+    echo "solana version :"
+    ./solana --version
+  args:
+    chdir: "{{ solana_validator_binary_path }}"
+
+- name: Template config file to server
+  ansible.builtin.template:
+    src: "templates/config-{{ network_type }}.toml.j2"
+    dest: "{{ solana_validator_config_dir }}/config.toml"
+  become: no
+
+- name: Check 'run_to_be_deleted' directory presence
+  stat:
+    path: "{{ solana_validator_data_dir }}/accounts/run_to_be_deleted"
+  register: dir_status
+
+- name: Purge 'run_to_be_deleted' directory if it exists
+  file:
+    path: "{{ solana_validator_data_dir }}/accounts/run_to_be_deleted"
+    state: absent
+  when: dir_status.stat.exists
+
+- name: Start Solana validator service
+  systemd:
+    name: solana.service
+    state: started
+  become: yes

@@ -17,11 +17,14 @@
     name: solana.service
     state: stopped
   become: yes
+  failed_when: false
 
-- name: Start Solana validator service
+
+- name: Start and enable Solana validator service
   systemd:
     name: solana.service
     state: started
+    enabled: yes
   become: yes
 
 - name: Copy 'solana-exporter' docker compose file
