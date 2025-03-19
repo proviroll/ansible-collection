@@ -84,6 +84,9 @@
     state: stopped
   become: yes
 
+- name: Endure permissions 777 on /mnt/.fd and its content
+  command: chmod -R 777 /mnt
+
 - name: Rename previous build with timestamp
   shell: "mv {{ solana_validator_build_dir }} {{ solana_validator_build_dir }}-{{ solana_previous_version }}-$(date +%Y%m%d%H%M%S)"
   become: no

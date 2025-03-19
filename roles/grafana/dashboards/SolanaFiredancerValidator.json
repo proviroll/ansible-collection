@@ -209,7 +209,7 @@
         "orientation": "auto",
         "reduceOptions": {
           "calcs": [
-            "mean"
+            "last"
           ],
           "fields": "",
           "values": false
@@ -267,7 +267,7 @@
               }
             ]
           },
-          "unit": "percent"
+          "unit": "none"
         },
         "overrides": []
       },
@@ -599,6 +599,7 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
+      "description": "Producing blocks is rotative between validators each X slots (4 slots usually). The schedule of blocks producing is distributes by the leader of Epoch. When the validator has no blocks scheduled to produce, and is doing other duties (voting), this metric has no data.",
       "fieldConfig": {
         "defaults": {
           "mappings": [
@@ -641,7 +642,7 @@
         "orientation": "auto",
         "reduceOptions": {
           "calcs": [
-            "lastNotNull"
+            "last"
           ],
           "fields": "",
           "values": false
@@ -663,7 +664,7 @@
           "refId": "A"
         }
       ],
-      "title": "Validator produced blocks",
+      "title": "Validator produced blocks (When it's producing)",
       "type": "stat"
     },
     {
@@ -671,6 +672,7 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
+      "description": "Producing blocks is rotative between validators each X slots (4 slots usually). The schedule of blocks producing is distributes by the leader of Epoch. When the validator has no blocks scheduled to produce, and is doing other duties (voting), this metric has no data.",
       "fieldConfig": {
         "defaults": {
           "mappings": [],
@@ -725,7 +727,7 @@
           "refId": "A"
         }
       ],
-      "title": "Total Validator skipped blocks",
+      "title": "Total Validator skipped blocks (When it's procuding)",
       "type": "stat"
     },
     {
@@ -733,6 +735,7 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
+      "description": "Producing blocks is rotative between validators each X slots (4 slots usually). The schedule of blocks producing is distributes by the leader of Epoch. When the validator has no blocks scheduled to produce, and is doing other duties (voting), this metric has no data.",
       "fieldConfig": {
         "defaults": {
           "mappings": [],
@@ -792,7 +795,7 @@
           "refId": "A"
         }
       ],
-      "title": "Recent validator skipped blocks",
+      "title": "Recent validator skipped blocks (When it's producing)",
       "type": "stat"
     },
     {
@@ -1148,7 +1151,7 @@
     ]
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-15m",
     "to": "now"
   },
   "timepicker": {
@@ -1167,6 +1170,6 @@
   "timezone": "",
   "title": "Solana Firedancer Validator",
   "uid": "Proviroll",
-  "version": 13,
+  "version": 26,
   "weekStart": ""
 }
