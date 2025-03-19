@@ -1,7 +1,0 @@
-- hosts: monitoring-1
-  become: true
-  vars_files:
-    - "{{ playbook_dir }}/../../vault.yml"
-  gather_facts: false
-  roles:
-    - monitoring_nginx

@@ -1,0 +1,36 @@
+---
+# - name: Setup server
+#   hosts: monitoring-1
+#   become: true
+#   roles:
+#     - bootstrap
+#     - install_packages
+
+- name: Deploy monitoring
+  hosts: monitoring-1
+  become: true
+  vars_files:
+  - ../../vault.yml
+  vars:
+    grafana_docker_data_dir: /var/lib/grafana
+    metrics_apps:
+      - name: nodeexporter
+        port: "{{ nodeexporter_port }}"
+        public_port: "{{ nodeexporter_public_port }}"
+        host: "127.0.0.1"
+      - name: prometheus
+        port: "9090"
+        public_port: "" # not exposed
+      - name: grafana
+        port: "3000"
+        public_port: "" # not exposed
+      - name: alertmanager
+        port: "9093"
+        public_port: "" # not exposed
+  roles:
+    - prometheus
+    - grafana
+    - alertmanager
+    - node_exporter
+    - monitoring_nginx
+    - firewall
