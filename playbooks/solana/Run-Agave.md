@@ -24,7 +24,7 @@ solana --version
 solana-cli 2.1.13 (src:336796a7; feat:607245837, client:Agave)
 ```
 
-### Update Agave
+### Upgrade Agave
 
 **Make sure you're target version is the one currently recommended by the network**.
 Or you can simply run the same previous `**Install**` process, with the new version tag.

@@ -21,6 +21,7 @@ These are specifications for February 2025 and might change. You can check here 
     - [Balance & Vote Account](#balance--vote-account)
   - [Publish Validator Information](#publish-validator-information)
 - [Start the Validator 🚀](#start-the-validator)
+- [Upgrade the validator](#upgrade-the-validator)
 - [State-sync 🔄](#state-sync)
 - [Health & Monitoring 📊](#health--monitoring)
   - [Alerting](#alerting)
@@ -158,6 +159,15 @@ The snapshot finder tool tried to simplify the process (not very recommended):
 
 - Ref : https://github.com/c29r3/solana-snapshot-finder
 
+## Upgrade the validator
+
+#### To Upgrade Agave client
+
+Follow this section : [Here](./Run-Agave.md#upgrade-agave)
+
+#### To Upgrade Firedancer client
+
+Follow this section : [Here](./Run-Firedancer.md#upgrade-firedancer)
 
 ## Health & Monitoring
 

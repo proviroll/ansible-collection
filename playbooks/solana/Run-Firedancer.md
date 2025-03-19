@@ -127,6 +127,105 @@ sudo fdctl configure init ethtool-loopback
 sudo ./build/native/gcc/bin/fdctl run --config "PATH"/config.toml
 ```
 
+## Logs & Troubbleshooting
+
+#### Logs
+
+- Firedancer service logs
+
+```bash
+sudo journalctl -xeu solana.service -f
+```
+
+- Solana exporter logs
+
+```bash
+curl http://localhost:9999/metrics
+```
+
+## Upgrade Firedancer
+
+The playbook [Upgrade Firedancer validator](./upgrade_firedancer_validator.yml) Is designed to :
+
+- Display current Firedancer (fdctl) and Solana clients
+- Clone and make (build) target version for the upgrade
+- Stop the Solana.service
+- Rename the previous clients version
+- Make the new built version the active ones
+- Start solana service
+
+To launch the playbook, execute:
+
+1. Fill in the following variables in the playbook level:
+
+```yaml
+# The playbook will show the current version before upgrade, this variable is only used to rename the old build dir properly
+solana_previous_version : "v0.305.20111"
+
+# This is the target upgrade version, playbook will "checkout" to it for the build
+# Make sure you update it in 'solana_firedancer' role as well for future installations
+solana_version: "v0.403.20113"
+
+# Select deployment type
+deployment_type: upgrade
+```
+2. Launch the 
+
+```bash
+ansible-playbook -i hosts.ini -l validator-1  playbooks/solana/upgrade_firedancer_validator.yml -v
+```
+
+## Troubbleshoot
+
+- Error : **Validator stopped voting**
+
+    - Check logs of Solana service and solana-exporter
+    - Check fee payer balance, if not enough fees, validator will not vote
+
+    ```bash
+    # From server
+    solana balance
+
+    # From trusted computer
+    ## Testnet
+    solana balance {fee-payer address / identity_pubkey} --url https://api.testnet.solana.com/
+    ## Mainnet-Beta
+    solana balance {fee-payer address / identity_pubkey} --url https://api.mainnet-beta.solana.com/
+    ```
+
+- Error: **Validator skipped blocks**
+
+    - Check network interface errors
+    ```bash
+    # Get network errors metric
+    curl http://localhost:9100/metrics | grep -i node_network_receive_errs_total
+
+    # Example errors
+
+    node_network_receive_errs_total{device="docker0"} 0
+    node_network_receive_errs_total{device="enp8s0f0"} 1789
+    node_network_receive_errs_total{device="enp8s0f1"} 0
+    node_network_receive_errs_total{device="lo"} 0
+    ```
+
+    - RDMA driver should be disabled
+
+        - Handled through ansible task:
+        ```yaml
+        - name: Ensure irdma driver is disabled  
+          shell: rmmod irdma  
+          become: yes  
+        ```
+        - Example if not disabled (Validator wouldn't start)
+        ```bash
+        # Commands for interface enp8s0f0
+        sudo dmesg -T | grep -i 'enp8s0f0'
+        sudo journalctl -k | grep -i 'enp8s0f0'
+
+        # Example error if any
+        [Tue Feb 11 15:00:21 2025] ice 0000:08:00.0 enp8s0f0: Cannot change channels when RDMA is active
+        ```
+
 ## Resources
 
 - [Firedancer GitHub Repository](https://github.com/firedancer-io/firedancer)

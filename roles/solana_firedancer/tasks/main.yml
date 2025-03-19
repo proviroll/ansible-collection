@@ -3,7 +3,12 @@
 - set_fact:
     ansible_user: devops
 
-- ansible.builtin.include_tasks: solana_install.yml
-- ansible.builtin.include_tasks: copy_files.yml
-- ansible.builtin.include_tasks: service.yml
-- ansible.builtin.include_tasks: validator.yml
+- block:
+    - ansible.builtin.include_tasks: solana_install.yml
+    - ansible.builtin.include_tasks: copy_files.yml
+    - ansible.builtin.include_tasks: service.yml
+    - ansible.builtin.include_tasks: validator.yml
+  when: deployment_type == 'install'
+
+- ansible.builtin.include_tasks: solana_upgrade.yml
+  when: deployment_type == 'upgrade'
