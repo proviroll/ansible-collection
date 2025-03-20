@@ -1,0 +1,38 @@
+# /bin/bash
+
+# Set Variables
+VALIDATOR_IDENTITY="{{ node_key }}"
+OUTPUT_PROM_FILE="{{ metrics_prom_dir }}/additional-metrics.prom"
+
+# Get balance
+# This assumes that the server has already the correct solana  network's endpoint set (Doesn't need '--url' arg)
+BALANCE=$(solana balance $VALIDATOR_IDENTITY 2>/dev/null | awk '{print $1}')
+
+# Check if balance retrieval was successful
+if [[ -z "$BALANCE" ]]; then
+    echo "Error: Failed to retrieve balance for $VALIDATOR_IDENTITY"
+    exit 1
+fi
+
+# Get skip rate (remove warning sign if any)
+SKIP_RATE=$(solana validators | grep "$VALIDATOR_IDENTITY" | sed 's/⚠️//g' | awk '{print $16}' | tr -d '()%')
+
+# Check if skip rate was successfully extracted
+if [[ -z "$SKIP_RATE" ]]; then
+    echo "Error: Failed to retrieve skip rate for $VALIDATOR_IDENTITY"
+    exit 1
+fi
+
+# Write values to Prom metrics file
+cat <<EOF > "$OUTPUT_PROM_FILE"
+# HELP solana_validator_balance Solana balance for the validator (in SOL).
+# TYPE solana_validator_balance gauge
+solana_account_balance{identity="$VALIDATOR_IDENTITY"} $BALANCE
+
+# HELP solana_validator_skip_rate Solana validator skip rate (percentage).
+# TYPE solana_validator_skip_rate gauge
+solana_validator_skip_rate{identity="$VALIDATOR_IDENTITY"} $SKIP_RATE
+EOF
+
+# Enable if debug needed
+# echo "metrics written to $OUTPUT_PROM_FILE"

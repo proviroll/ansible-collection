@@ -96,13 +96,13 @@ groups:
           summary: Agave Validator last vote compared to Cluster last vote (instance {{ $labels.instance }})
           description: "The difference between the validator's last vote and the cluster's last vote is greater than 100.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
-      - alert: Agave Validator Fee Payer Balance (Identity)
+      - alert: Validator Fee Payer Balance (Identity, both Agave & Firedancer)
         expr: solana_account_balance{job="solana", network="testnet", node="validator-01", address="EfeFqTrp6LMYGmL9KKMSTKg9Xtjxn8AJTcjTCaY7bo99"} < 1
         for: 5m
         labels:
           severity: critical
         annotations:
-          summary: Agave Validator fee payer balance (identity) (instance {{ $labels.instance }})
+          summary: Validator fee payer balance (identity) threshold (instance {{ $labels.instance }})
           description: "The fee payer balance for the validator is less than 1.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
       - alert: Firedancer Validator Blockheight Progress
