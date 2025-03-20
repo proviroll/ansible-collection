@@ -30,6 +30,15 @@ groups:
           summary: Host out of memory (instance {{ $labels.instance }})
           description: "Node memory is filling up (< 10% left)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
+      - alert: HostSwapIsFillingUp
+        expr: node_memory_SwapTotal_bytes > 0 and (1 - (node_memory_SwapFree_bytes / node_memory_SwapTotal_bytes)) * 100 > 80
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: Host swap is filling up (instance {{ $labels.instance }})
+          description: Swap is filling up (>80%)\n  VALUE = {{ $value }}
+
       - alert: HostDiskWillFillIn24Hours
         expr: (node_filesystem_avail_bytes * 100) / node_filesystem_size_bytes < 10 and ON (instance, device, mountpoint) predict_linear(node_filesystem_avail_bytes{fstype!~"tmpfs"}[1h], 24 * 3600) < 0 and ON (instance, device, mountpoint) node_filesystem_readonly == 0
         for: 5m
@@ -38,6 +47,33 @@ groups:
         annotations:
           summary: Host disk will fill in 24 hours (instance {{ $labels.instance }})
           description: "Filesystem is predicted to run out of space within the next 24 hours at current write rate\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+      - alert: HostOutOfDiskSpace
+        expr: (node_filesystem_avail_bytes * 100) / node_filesystem_size_bytes <= 20 and ON (instance, device, mountpoint) node_filesystem_readonly == 0
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: Host out of disk space (instance {{ $labels.instance }})
+          description: Disk is almost full (≤ 20% left)\n  VALUE = {{ $value }}
+
+      - alert: HostHighCpuLoad
+        expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[2m])) * 100) > 90
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: Host high CPU load (instance {{ $labels.instance }})
+          description: CPU load is > 90%\n  VALUE = {{ $value }}
+
+      - alert: HostPhysicalComponentTooHot
+        expr: node_hwmon_temp_celsius > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Host physical component too hot (instance {{ $labels.instance }})
+          description: Physical hardware component too hot\n  VALUE = {{ $value }}
 
       - alert: HostOOMKillDetected
         expr: increase(node_vmstat_oom_kill[1m]) > 0
@@ -85,15 +121,35 @@ groups:
           summary: Nginx high HTTP 5xx error rate (instance {{ $labels.instance }})
           description: "Too many HTTP requests with status 5xx (> 5%)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
-  - name: Solana validator
+  - name: SolanaValidatorAlerts
     rules:
+      # Alert for increased stake
+      - alert: SolanaFireDancerActiveStakeAmountIncreased
+        expr: delta(solana_validator_activated_stake[10m]) / 1000000000 > 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Fire Dancer validator - Active Stake amount has increased by {{ $value }} for {{ $labels.job }} instance {{ $labels.instance }}"
+          description: "Stake amount has increased in the last 10 minutes."
+
+      # Alert for decreased stake
+      - alert: SolanaFireDancerActiveStakeAmountDecreased
+        expr: delta(solana_validator_activated_stake[10m]) / 1000000000 < 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Fire Dancer validator - Active Stake amount has decreased by {{ $value }} for {{ $labels.job }} instance {{ $labels.instance }}"
+          description: "Stake amount has decreased in the last 10 minutes."
+
       - alert: Agave Validator Last Vote Compared to Cluster Last Vote
         expr: round(solana_cluster_last_vote{job="solana"} - on(node, instance, network) solana_validator_last_vote{job="solana"}, 2) > 100
         for: 5m
         labels:
           severity: critical
         annotations:
-          summary: Agave Validator last vote compared to Cluster last vote (instance {{ $labels.instance }})
+          summary: "Agave Validator last vote compared to Cluster last vote (instance {{ $labels.instance }})"
           description: "The difference between the validator's last vote and the cluster's last vote is greater than 100.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
       - alert: Validator Fee Payer Balance (Identity, both Agave & Firedancer)
@@ -111,7 +167,7 @@ groups:
         labels:
           severity: critical
         annotations:
-          summary: Firedancer Validator blockheight progress (instance {{ $labels.instance }})
+          summary: "Firedancer Validator blockheight progress (instance {{ $labels.instance }})"
           description: "The blockheight progress rate for the validator is less than 0.5.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
       - alert: Agave Validator Is Delinquent
@@ -120,7 +176,7 @@ groups:
         labels:
           severity: critical
         annotations:
-          summary: Agave Validator is delinquent (instance {{ $labels.instance }})
+          summary: "Agave Validator is delinquent (instance {{ $labels.instance }})"
           description: "The validator is delinquent.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
       - alert: Agave Validator Active Stake Amount
@@ -129,7 +185,7 @@ groups:
         labels:
           severity: critical
         annotations:
-          summary: Agave Validator active stake amount (instance {{ $labels.instance }})
+          summary: "Agave Validator active stake amount (instance {{ $labels.instance }})"
           description: "The active stake amount for the validator is less than 10000.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
       - alert: Firedancer Validator Last Vote Progress
@@ -138,17 +194,17 @@ groups:
         labels:
           severity: critical
         annotations:
-          summary: Firedancer Validator last vote progress (instance {{ $labels.instance }})
+          summary: "Firedancer Validator last vote progress (instance {{ $labels.instance }})"
           description: "The last vote progress for the validator is less than 10.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
       - alert: Firedancer Validator Is Active
-        expr: sum(solana_active_validators{job="solana", state=~"current|delinquent"}) by (instance) > 0
+        expr: sum(solana_active_validators{job="solana", state=~"current|delinquent"}) by (instance) == 0
         for: 5m
         labels:
-          severity: critical
+            severity: critical
         annotations:
-          summary: Firedancer Validator is active (instance {{ $labels.instance }})
-          description: "The validator is active but should not be.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+            summary: "Firedancer Validator is not active (instance {{ $labels.instance }})"
+            description: "The validator is not active or has an unexpected state.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
       - alert: Firedancer Validator Is Delinquent (Should Not Be)
         expr: solana_validator_delinquent{job="solana"} > 0
@@ -156,7 +212,7 @@ groups:
         labels:
           severity: critical
         annotations:
-          summary: Firedancer Validator is delinquent (should not be) (instance {{ $labels.instance }})
+          summary: "Firedancer Validator is delinquent (should not be) (instance {{ $labels.instance }})"
           description: "The validator is delinquent but should not be.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
       - alert: Firedancer Validator Has Skipped Blocks
@@ -165,5 +221,57 @@ groups:
         labels:
           severity: critical
         annotations:
-          summary: Firedancer Validator has skipped blocks (instance {{ $labels.instance }})
+          summary: "Firedancer Validator has skipped blocks (instance {{ $labels.instance }})"
           description: "The validator has skipped blocks.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - name: FuelValidatorAlerts
+    rules:
+      # Alert if consensus height is not increasing
+      - alert: FuelValidatorConsensusHeightNotIncreasing
+        expr: increase(cometbft_consensus_height{group="fuel"}[5m]) == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Consensus height is not increasing on {{ $labels.instance }}"
+          description: "The consensus height has not moved in the last 5 minutes for {{ $labels.instance }}. Current height: {{ $value }}."
+
+      # Alert if peer count is below or equal to 10
+      - alert: FuelValidatorLowPeers
+        expr: (cometbft_p2p_peers{group="fuel"}) <= 10
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Low peer count detected on {{ $labels.instance }}"
+          description: "The number of peers has dropped to {{ $value }} or below on {{ $labels.instance }}."
+
+      # Alert if number of transactions is zero
+      - alert: FuelValidatorZeroTransactions
+        expr: (cometbft_consensus_num_txs{group="fuel"}) == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "No transactions detected on {{ $labels.instance }}"
+          description: "The number of transactions is zero on {{ $labels.instance }}."
+
+      # Alert if the validator is jailed
+      - alert: FuelValidatorJailed
+        expr: cosmos_validator_jailed{group="fuel"} == 1
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Validator is jailed on {{ $labels.instance }}"
+          description: "The validator with instance {{ $labels.instance }} has been jailed."
+
+      # Alert if the wallet balance drops below 50
+      - alert: FuelWalletBalanceLow
+        expr: cosmos_wallet_balance{group="fuel"} < 50
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Wallet balance is below 50 on {{ $labels.instance }}"
+          description: "The wallet balance for {{ $labels.instance }} is less than 50."

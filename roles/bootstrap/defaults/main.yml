@@ -9,4 +9,6 @@ ansible_user: devops
 bootstrap_user: devops
 backup_user: loginbackup
 
-initial_remote_user: ubuntu
+initial_remote_user: devops
+
+ssh_port: 22

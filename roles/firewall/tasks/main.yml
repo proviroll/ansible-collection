@@ -19,13 +19,15 @@
     proto: "{{ item.proto | default('tcp') }}"
   loop: "{{ firewall_ports | default([]) }}"
 
-- name: Open public metrics ports
+# Warning: The task has condition "And lenght > 0", without it, and empty 'public_port' variable will result in 'Allow any to any'
+- name: Open public metrics ports (if public port is specified)
   community.general.ufw:
     rule: allow
     port: "{{ item.public_port }}"
     comment: "{{ item.name }}"
     proto: "{{ item.proto | default('tcp') }}"
   loop: "{{ metrics_apps | default([]) }}"
+  when: item.public_port is defined and item.public_port | string | length > 0
 
 - name: Block private metrics ports
   ansible.builtin.ufw:

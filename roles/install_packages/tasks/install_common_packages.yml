@@ -7,7 +7,7 @@
 
 - name: Install common apt packages
   ansible.builtin.apt:
-    name: [git, nano, htop, gnupg, python3, apache2-utils, rclone, aria2, jq, python3-pip]
+    name: [git, nano, htop, gnupg, python3, apache2-utils, rclone, aria2, jq, python3-pip, cron]
     state: latest
     update_cache: true
 
