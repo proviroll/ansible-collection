@@ -3,10 +3,11 @@
 # Set Variables
 VALIDATOR_IDENTITY="{{ node_key }}"
 OUTPUT_PROM_FILE="{{ metrics_prom_dir }}/additional-metrics.prom"
+SOLANA="{{ solana_validator_binary_path }}/solana"
 
 # Get balance
 # This assumes that the server has already the correct solana  network's endpoint set (Doesn't need '--url' arg)
-BALANCE=$(solana balance $VALIDATOR_IDENTITY 2>/dev/null | awk '{print $1}')
+BALANCE=$($SOLANA balance $VALIDATOR_IDENTITY 2>/dev/null | awk '{print $1}')
 
 # Check if balance retrieval was successful
 if [[ -z "$BALANCE" ]]; then
@@ -15,7 +16,7 @@ if [[ -z "$BALANCE" ]]; then
 fi
 
 # Get skip rate (remove warning sign if any)
-SKIP_RATE=$(solana validators | grep "$VALIDATOR_IDENTITY" | sed 's/⚠️//g' | awk '{print $16}' | tr -d '()%')
+SKIP_RATE=$($SOLANA validators | grep "$VALIDATOR_IDENTITY" | sed 's/⚠️//g' | awk '{print $16}' | tr -d '()%')
 
 # Check if skip rate was successfully extracted
 if [[ -z "$SKIP_RATE" ]]; then

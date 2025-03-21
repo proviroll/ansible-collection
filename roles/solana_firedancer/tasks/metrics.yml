@@ -17,7 +17,7 @@
   become: true
   cron:
     name: "fetch solana validator metrics"
-    minute: "5"
+    minute: "*"
     hour: "*"
-    job: "/bin/bash -lc 'cd {{ metrics_prom_dir }} && ./additional-metrics.sh' && chmod -R 755 {{ metrics_prom_dir }}"
+    job: "/bin/bash {{ metrics_prom_dir }}/additional-metrics.sh 2>> {{ metrics_prom_dir }}/additional_metrics_cron_errors.log"
     user: "{{ ansible_user }}"
