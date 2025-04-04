@@ -738,6 +738,7 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
+      "description": "Base on created variable :\n\"current_epoch\" from metric : solana_confirmed_epoch_number\n\n\nAnd calculated from metrics:\n\nsolana_leader_slots_by_epoch{status=\"skipped\"}\nVS\nsolana_leader_slots_by_epoch{status=\"valid\"}\n",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -791,24 +792,14 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "100 * sum({app=\"solana-exporter\", job=\"solana\", status=\"skipped\", nodekey=\"EfeFqTrp6LMYGmL9KKMSTKg9Xtjxn8AJTcjTCaY7bo99\"}) \n/ (sum({app=\"solana-exporter\", job=\"solana\", status=\"valid\", nodekey=\"EfeFqTrp6LMYGmL9KKMSTKg9Xtjxn8AJTcjTCaY7bo99\"}) \n+ sum({app=\"solana-exporter\", job=\"solana\", status=\"skipped\", nodekey=\"EfeFqTrp6LMYGmL9KKMSTKg9Xtjxn8AJTcjTCaY7bo99\"}))",
+          "expr": "100 * sum(solana_leader_slots_by_epoch{epoch=\"$current_epoch\", nodekey=\"EfeFqTrp6LMYGmL9KKMSTKg9Xtjxn8AJTcjTCaY7bo99\", status=\"skipped\"})\n/\n(\n  sum(solana_leader_slots_by_epoch{epoch=\"$current_epoch\", nodekey=\"EfeFqTrp6LMYGmL9KKMSTKg9Xtjxn8AJTcjTCaY7bo99\", status=\"valid\"}) +\n  sum(solana_leader_slots_by_epoch{epoch=\"$current_epoch\", nodekey=\"EfeFqTrp6LMYGmL9KKMSTKg9Xtjxn8AJTcjTCaY7bo99\", status=\"skipped\"})\n)\n",
           "interval": "",
           "legendFormat": "My skip rate",
           "range": true,
           "refId": "A"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "expr": "sol_pctTotSkipped",
-          "interval": "",
-          "legendFormat": "Cluster skip rate",
-          "refId": "B"
         }
       ],
-      "title": "Skip rate - testing accuracy",
+      "title": "Current Epoch skip rate",
       "type": "stat"
     },
     {
@@ -816,7 +807,7 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
-      "description": "Based on Solana endpoint , command:\n---\nsolana validators | grep EfeFqTrp6LMYGmL9KKMSTKg9Xtjxn8AJTcjTCaY7bo99 | awk '{print $16}' | tr -d '()%'\n---",
+      "description": "Based on Solana RPC endpoint , command:\n---\nsolana validators | grep EfeFqTrp6LMYGmL9KKMSTKg9Xtjxn8AJTcjTCaY7bo99 | awk '{print $16}' | tr -d '()%'\n---",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1086,11 +1077,39 @@
         "skipUrlSync": false,
         "sort": 0,
         "type": "query"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "767",
+          "value": "767"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "definition": "query_result(solana_confirmed_epoch_number{job=\"$job\", node=\"$node\"})",
+        "description": "Querying Current Epochs' Number to use in skip rate calculation per Epoch",
+        "hide": 2,
+        "includeAll": false,
+        "label": "Current Epoch",
+        "multi": false,
+        "name": "current_epoch",
+        "options": [],
+        "query": {
+          "query": "query_result(solana_confirmed_epoch_number{job=\"$job\", node=\"$node\"})",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "/}\\s*(\\d+)/",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
       }
     ]
   },
   "time": {
-    "from": "now-12h",
+    "from": "now-5m",
     "to": "now"
   },
   "timepicker": {
@@ -1109,6 +1128,6 @@
   "timezone": "",
   "title": "Solana Firedancer Validator",
   "uid": "Proviroll",
-  "version": 30,
+  "version": 36,
   "weekStart": ""
 }
