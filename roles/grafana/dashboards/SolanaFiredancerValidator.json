@@ -18,11 +18,9 @@
   "description": "Solana Validator Dashboard",
   "editable": true,
   "fiscalYearStartMonth": 0,
-  "gnetId": 14625,
   "graphTooltip": 0,
   "id": 18,
   "links": [],
-  "liveNow": false,
   "panels": [
     {
       "datasource": {
@@ -40,8 +38,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               }
             ]
           }
@@ -60,6 +57,7 @@
         "graphMode": "none",
         "justifyMode": "auto",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -67,9 +65,11 @@
           "fields": "/^value$/",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "10.1.1",
+      "pluginVersion": "11.6.1",
       "targets": [
         {
           "datasource": {
@@ -112,8 +112,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "#69f5ff",
-                "value": null
+                "color": "#69f5ff"
               }
             ]
           }
@@ -122,7 +121,7 @@
       },
       "gridPos": {
         "h": 5,
-        "w": 3,
+        "w": 4,
         "x": 3,
         "y": 0
       },
@@ -132,6 +131,7 @@
         "graphMode": "none",
         "justifyMode": "auto",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -139,9 +139,11 @@
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "10.1.1",
+      "pluginVersion": "11.6.1",
       "targets": [
         {
           "datasource": {
@@ -157,6 +159,378 @@
         }
       ],
       "title": "Epoch",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "options": {
+                "0": {
+                  "text": "Validating"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#69f5ff"
+              }
+            ]
+          },
+          "unit": "SOL"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 5,
+        "x": 7,
+        "y": 0
+      },
+      "id": 12,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.6.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "solana_validator_activated_stake{job=\"$job\", network=\"$network\", node=\"$node\"} / 1000000000",
+          "interval": "",
+          "legendFormat": "",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Active stake",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 3,
+          "links": [],
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          },
+          "unit": "SOL"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "credits"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#69f5ff",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 12,
+        "y": 0
+      },
+      "id": 14,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.6.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "solana_account_balance{job=\"$job\", network=\"$network\", node=\"$node\"}",
+          "interval": "",
+          "legendFormat": "credits",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Account balance",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "description": "Total valid blocks produced by the monitored validator",
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "options": {
+                "0": {
+                  "index": 0,
+                  "text": "0 - Validating"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#69f5ff"
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 16,
+        "y": 0
+      },
+      "id": 21,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "last"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.6.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "solana_leader_slots_total{nodekey=\"EfeFqTrp6LMYGmL9KKMSTKg9Xtjxn8AJTcjTCaY7bo99\",status=\"valid\"}",
+          "interval": "",
+          "legendFormat": "",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Total produced blocks (valid)",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "description": "Total skipped production blocks (hat should have been valid, but are skipped) by the validator IN ALL EPOCHES HISTORY",
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [],
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#69f5ff"
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 20,
+        "y": 0
+      },
+      "id": 25,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.6.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "solana_leader_slots_total{nodekey=\"EfeFqTrp6LMYGmL9KKMSTKg9Xtjxn8AJTcjTCaY7bo99\",status=\"skipped\"}",
+          "interval": "",
+          "legendFormat": "",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Total skipped blocks",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "options": {
+                "0": {
+                  "index": 0,
+                  "text": "False"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "semi-dark-red",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 0,
+        "y": 5
+      },
+      "id": 11,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.6.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "solana_validator_delinquent{}",
+          "interval": "",
+          "legendFormat": "",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Is delinquent",
       "type": "stat"
     },
     {
@@ -187,8 +561,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "#69f5ff",
-                "value": null
+                "color": "#69f5ff"
               }
             ]
           }
@@ -198,8 +571,8 @@
       "gridPos": {
         "h": 5,
         "w": 4,
-        "x": 6,
-        "y": 0
+        "x": 4,
+        "y": 5
       },
       "id": 6,
       "options": {
@@ -207,6 +580,7 @@
         "graphMode": "none",
         "justifyMode": "auto",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "last"
@@ -214,9 +588,11 @@
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "10.1.1",
+      "pluginVersion": "11.6.1",
       "targets": [
         {
           "datasource": {
@@ -232,82 +608,6 @@
         }
       ],
       "title": "Is active",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "mappings": [
-            {
-              "options": {
-                "0": {
-                  "index": 0,
-                  "text": "False"
-                }
-              },
-              "type": "value"
-            }
-          ],
-          "max": 100,
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "semi-dark-red",
-                "value": 1
-              }
-            ]
-          },
-          "unit": "none"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 5,
-        "w": 4,
-        "x": 10,
-        "y": 0
-      },
-      "id": 11,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "auto"
-      },
-      "pluginVersion": "10.1.1",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "editorMode": "code",
-          "expr": "solana_validator_delinquent{}",
-          "interval": "",
-          "legendFormat": "",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "Is delinquent",
       "type": "stat"
     },
     {
@@ -332,8 +632,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "#69f5ff",
-                "value": null
+                "color": "#69f5ff"
               }
             ]
           }
@@ -342,9 +641,9 @@
       },
       "gridPos": {
         "h": 5,
-        "w": 4,
-        "x": 14,
-        "y": 0
+        "w": 8,
+        "x": 8,
+        "y": 5
       },
       "id": 10,
       "options": {
@@ -352,6 +651,7 @@
         "graphMode": "area",
         "justifyMode": "auto",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -359,9 +659,11 @@
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "10.1.1",
+      "pluginVersion": "11.6.1",
       "targets": [
         {
           "datasource": {
@@ -384,6 +686,140 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
+      "description": "Total valid blocks produced by the validator IN THE CURRENT EPOCH",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#69f5ff"
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 16,
+        "y": 5
+      },
+      "id": 24,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "last"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.6.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "solana_leader_slots_by_epoch{epoch=\"$current_epoch\", nodekey=\"EfeFqTrp6LMYGmL9KKMSTKg9Xtjxn8AJTcjTCaY7bo99\", status=\"valid\"}",
+          "interval": "",
+          "legendFormat": "",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Current Epoch produced blocks (block status : \"valid\")",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "description": "Total skipped blocks (that should have been produced with status \"valid\", but are in status \"skipped\") by the  validator IN THE CURRENT EPOCH",
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [],
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#69f5ff"
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 20,
+        "y": 5
+      },
+      "id": 22,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.6.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "solana_leader_slots_by_epoch{epoch=\"$current_epoch\", nodekey=\"EfeFqTrp6LMYGmL9KKMSTKg9Xtjxn8AJTcjTCaY7bo99\", status=\"skipped\"}",
+          "interval": "",
+          "legendFormat": "",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Current Epoch skipped blocks",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "description": "Base on created variable :\n\"current_epoch\" from metric : solana_confirmed_epoch_number\n\n\nAnd calculated from metrics:\n\nsolana_leader_slots_by_epoch{status=\"skipped\"}\nVS\nsolana_leader_slots_by_epoch{status=\"valid\"}\n",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -395,43 +831,31 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
               }
             ]
           },
-          "unit": "SOL"
+          "unit": "percent"
         },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "credits"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "#69f5ff",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          }
-        ]
+        "overrides": []
       },
       "gridPos": {
-        "h": 10,
-        "w": 6,
-        "x": 18,
-        "y": 0
+        "h": 6,
+        "w": 5,
+        "x": 0,
+        "y": 10
       },
-      "id": 14,
+      "id": 17,
       "options": {
         "colorMode": "value",
         "graphMode": "area",
         "justifyMode": "auto",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -439,9 +863,11 @@
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "10.1.1",
+      "pluginVersion": "11.6.1",
       "targets": [
         {
           "datasource": {
@@ -449,14 +875,14 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "solana_validator_activated_stake{job=\"$job\", network=\"$network\", node=\"$node\"} / 1000000000",
+          "expr": "100 * sum(solana_leader_slots_by_epoch{epoch=\"$current_epoch\", nodekey=\"EfeFqTrp6LMYGmL9KKMSTKg9Xtjxn8AJTcjTCaY7bo99\", status=\"skipped\"})\n/\n(\n  sum(solana_leader_slots_by_epoch{epoch=\"$current_epoch\", nodekey=\"EfeFqTrp6LMYGmL9KKMSTKg9Xtjxn8AJTcjTCaY7bo99\", status=\"valid\"}) +\n  sum(solana_leader_slots_by_epoch{epoch=\"$current_epoch\", nodekey=\"EfeFqTrp6LMYGmL9KKMSTKg9Xtjxn8AJTcjTCaY7bo99\", status=\"skipped\"})\n)\n",
           "interval": "",
-          "legendFormat": "credits",
+          "legendFormat": "My skip rate",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "My Credits",
+      "title": "Current Epoch skip rate",
       "type": "stat"
     },
     {
@@ -464,245 +890,44 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
+      "description": "Based on Solana RPC endpoint , command:\n---\nsolana validators | grep EfeFqTrp6LMYGmL9KKMSTKg9Xtjxn8AJTcjTCaY7bo99 | awk '{print $16}' | tr -d '()%'\n---",
       "fieldConfig": {
         "defaults": {
-          "mappings": [
-            {
-              "options": {
-                "0": {
-                  "text": "Validating"
-                }
-              },
-              "type": "value"
-            }
-          ],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "#69f5ff",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 5,
-        "w": 3,
-        "x": 0,
-        "y": 5
-      },
-      "id": 8,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "auto"
-      },
-      "pluginVersion": "10.1.1",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
+          "color": {
+            "mode": "thresholds"
           },
-          "expr": "sol_leaderSlots",
-          "interval": "",
-          "legendFormat": "",
-          "refId": "A"
-        }
-      ],
-      "title": "Leaderslots this epoch",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "mappings": [
-            {
-              "options": {
-                "0": {
-                  "text": "Validating"
-                }
-              },
-              "type": "value"
-            }
-          ],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "#69f5ff",
-                "value": null
-              }
-            ]
-          },
-          "unit": "SOL"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 5,
-        "w": 3,
-        "x": 3,
-        "y": 5
-      },
-      "id": 12,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "auto"
-      },
-      "pluginVersion": "10.1.1",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "editorMode": "code",
-          "expr": "solana_validator_activated_stake{job=\"$job\", network=\"$network\", node=\"$node\"} / 1000000000",
-          "interval": "",
-          "legendFormat": "",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "Active stake",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "description": "Producing blocks is rotative between validators each X slots (4 slots usually). The schedule of blocks producing is distributes by the leader of Epoch. When the validator has no blocks scheduled to produce, and is doing other duties (voting), this metric has no data.",
-      "fieldConfig": {
-        "defaults": {
-          "mappings": [
-            {
-              "options": {
-                "0": {
-                  "index": 0,
-                  "text": "0 - Validating"
-                }
-              },
-              "type": "value"
-            }
-          ],
-          "max": 100,
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "#69f5ff",
-                "value": null
-              }
-            ]
-          },
-          "unit": "none"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 5,
-        "w": 4,
-        "x": 6,
-        "y": 5
-      },
-      "id": 21,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "last"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "auto"
-      },
-      "pluginVersion": "10.1.1",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "editorMode": "code",
-          "expr": "solana_leader_slots_total{nodekey=\"EfeFqTrp6LMYGmL9KKMSTKg9Xtjxn8AJTcjTCaY7bo99\",status=\"valid\"}",
-          "interval": "",
-          "legendFormat": "",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "Validator produced blocks (When it's producing)",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "description": "Producing blocks is rotative between validators each X slots (4 slots usually). The schedule of blocks producing is distributes by the leader of Epoch. When the validator has no blocks scheduled to produce, and is doing other duties (voting), this metric has no data.",
-      "fieldConfig": {
-        "defaults": {
+          "decimals": 3,
+          "links": [],
           "mappings": [],
-          "max": 100,
-          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "#69f5ff",
-                "value": null
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
               }
             ]
           },
-          "unit": "none"
+          "unit": "percent"
         },
         "overrides": []
       },
       "gridPos": {
-        "h": 5,
-        "w": 4,
-        "x": 10,
-        "y": 5
+        "h": 6,
+        "w": 5,
+        "x": 5,
+        "y": 10
       },
-      "id": 22,
+      "id": 23,
       "options": {
         "colorMode": "value",
-        "graphMode": "none",
+        "graphMode": "area",
         "justifyMode": "auto",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -710,9 +935,11 @@
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "10.1.1",
+      "pluginVersion": "11.6.1",
       "targets": [
         {
           "datasource": {
@@ -720,14 +947,14 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "solana_leader_slots_total{nodekey=\"EfeFqTrp6LMYGmL9KKMSTKg9Xtjxn8AJTcjTCaY7bo99\",status=\"skipped\"}",
+          "expr": "solana_validator_skip_rate{job=\"$job\", network=\"$network\", node=\"$node\"}",
           "interval": "",
-          "legendFormat": "",
+          "legendFormat": "My skip rate",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Total Validator skipped blocks (When it's procuding)",
+      "title": "Skip rate",
       "type": "stat"
     },
     {
@@ -735,7 +962,7 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
-      "description": "Producing blocks is rotative between validators each X slots (4 slots usually). The schedule of blocks producing is distributes by the leader of Epoch. When the validator has no blocks scheduled to produce, and is doing other duties (voting), this metric has no data.",
+      "description": "Count of blocks skipped by the validator in the last 10 minutes (should be but haven't been produced dur to network, performance, downtime or other technical cause)",
       "fieldConfig": {
         "defaults": {
           "mappings": [],
@@ -743,8 +970,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "#EAB839",
@@ -760,10 +986,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 5,
-        "w": 4,
-        "x": 14,
-        "y": 5
+        "h": 6,
+        "w": 6,
+        "x": 10,
+        "y": 10
       },
       "id": 20,
       "options": {
@@ -771,6 +997,7 @@
         "graphMode": "none",
         "justifyMode": "auto",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -778,9 +1005,11 @@
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "10.1.1",
+      "pluginVersion": "11.6.1",
       "targets": [
         {
           "datasource": {
@@ -795,151 +1024,7 @@
           "refId": "A"
         }
       ],
-      "title": "Recent validator skipped blocks (When it's producing)",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "mappings": [
-            {
-              "options": {
-                "0": {
-                  "text": "Validating"
-                }
-              },
-              "type": "value"
-            }
-          ],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "#69f5ff",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 5,
-        "w": 3,
-        "x": 0,
-        "y": 10
-      },
-      "id": 15,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "auto"
-      },
-      "pluginVersion": "10.1.1",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "expr": "sol_nodes",
-          "interval": "",
-          "legendFormat": "",
-          "refId": "A"
-        }
-      ],
-      "title": "Total Nodes",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "links": [],
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "percent"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 5,
-        "w": 6,
-        "x": 3,
-        "y": 10
-      },
-      "id": 17,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "auto"
-      },
-      "pluginVersion": "10.1.1",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "editorMode": "code",
-          "expr": "100 * sum({app=\"solana-exporter\", job=\"solana\", status=\"skipped\", nodekey=\"EfeFqTrp6LMYGmL9KKMSTKg9Xtjxn8AJTcjTCaY7bo99\"}) \n/ (sum({app=\"solana-exporter\", job=\"solana\", status=\"valid\", nodekey=\"EfeFqTrp6LMYGmL9KKMSTKg9Xtjxn8AJTcjTCaY7bo99\"}) \n+ sum({app=\"solana-exporter\", job=\"solana\", status=\"skipped\", nodekey=\"EfeFqTrp6LMYGmL9KKMSTKg9Xtjxn8AJTcjTCaY7bo99\"}))",
-          "interval": "",
-          "legendFormat": "My skip rate",
-          "range": true,
-          "refId": "A"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "expr": "sol_pctTotSkipped",
-          "interval": "",
-          "legendFormat": "Cluster skip rate",
-          "refId": "B"
-        }
-      ],
-      "title": "Skip rate - testing accuracy",
+      "title": "Recent skipped blocks",
       "type": "stat"
     },
     {
@@ -960,8 +1045,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "#69f5ff",
-                "value": null
+                "color": "#69f5ff"
               },
               {
                 "color": "#EAB839",
@@ -979,15 +1063,23 @@
       },
       "gridPos": {
         "h": 6,
-        "w": 6,
-        "x": 18,
+        "w": 8,
+        "x": 16,
         "y": 10
       },
       "id": 19,
       "options": {
         "displayMode": "lcd",
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "maxVizHeight": 300,
         "minVizHeight": 10,
         "minVizWidth": 0,
+        "namePlacement": "auto",
         "orientation": "horizontal",
         "reduceOptions": {
           "calcs": [
@@ -997,9 +1089,10 @@
           "values": false
         },
         "showUnfilled": true,
+        "sizing": "auto",
         "valueMode": "color"
       },
-      "pluginVersion": "10.1.1",
+      "pluginVersion": "11.6.1",
       "targets": [
         {
           "datasource": {
@@ -1060,18 +1153,18 @@
           "refId": "D"
         }
       ],
+      "title": "",
       "type": "bargauge"
     }
   ],
+  "preload": false,
   "refresh": "10s",
-  "schemaVersion": 38,
-  "style": "dark",
+  "schemaVersion": 41,
   "tags": [],
   "templating": {
     "list": [
       {
         "current": {
-          "selected": false,
           "text": "solana",
           "value": "solana"
         },
@@ -1080,25 +1173,17 @@
           "uid": "prometheus"
         },
         "definition": "label_values(node_uname_info, job)",
-        "hide": 0,
         "includeAll": false,
         "label": "job",
-        "multi": false,
         "name": "job",
         "options": [],
         "query": "label_values(node_uname_info, job)",
         "refresh": 1,
         "regex": "",
-        "skipUrlSync": false,
-        "sort": 0,
-        "tagValuesQuery": "",
-        "tagsQuery": "",
-        "type": "query",
-        "useTags": false
+        "type": "query"
       },
       {
         "current": {
-          "selected": false,
           "text": "testnet",
           "value": "testnet"
         },
@@ -1107,9 +1192,7 @@
           "uid": "prometheus"
         },
         "definition": "label_values(network)",
-        "hide": 0,
         "includeAll": false,
-        "multi": false,
         "name": "network",
         "options": [],
         "query": {
@@ -1118,13 +1201,10 @@
         },
         "refresh": 1,
         "regex": "",
-        "skipUrlSync": false,
-        "sort": 0,
         "type": "query"
       },
       {
         "current": {
-          "selected": false,
           "text": "validator-01",
           "value": "validator-01"
         },
@@ -1133,9 +1213,7 @@
           "uid": "prometheus"
         },
         "definition": "label_values(node)",
-        "hide": 0,
         "includeAll": false,
-        "multi": false,
         "name": "node",
         "options": [],
         "query": {
@@ -1144,8 +1222,30 @@
         },
         "refresh": 1,
         "regex": "",
-        "skipUrlSync": false,
-        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "777",
+          "value": "777"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "definition": "query_result(solana_confirmed_epoch_number{job=\"$job\", node=\"$node\"})",
+        "description": "Querying Current Epochs' Number to use in skip rate calculation per Epoch",
+        "hide": 2,
+        "includeAll": false,
+        "label": "Current Epoch",
+        "name": "current_epoch",
+        "options": [],
+        "query": {
+          "query": "query_result(solana_confirmed_epoch_number{job=\"$job\", node=\"$node\"})",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "/}\\s*(\\d+)/",
         "type": "query"
       }
     ]
@@ -1170,6 +1270,5 @@
   "timezone": "",
   "title": "Solana Firedancer Validator",
   "uid": "Proviroll",
-  "version": 26,
-  "weekStart": ""
+  "version": 40
 }
