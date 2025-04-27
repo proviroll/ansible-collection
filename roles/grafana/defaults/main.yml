@@ -8,4 +8,4 @@ metrics_auth:
   password: '{{ prometheus_auth_password }}'
 
 grafana_container_name: grafana
-grafana_container_image_and_tag: grafana/grafana:10.1.1
+grafana_container_image_and_tag: grafana/grafana:11.6.1
