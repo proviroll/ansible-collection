@@ -40,25 +40,26 @@ scrape_configs:
 
 ### Validators Jobs
 
-  - job_name: demo
-    metrics_path: /metrics
-    basic_auth:
-      username: "{{ metrics_auth.user }}" 
-      password: "{{ metrics_auth.password }}"
-    static_configs:
-
-      ###########
-      # TESTNET #
-      ###########
-
-      # node exporter
-      - targets:
-          - 65.109.93.168:9100
-        labels:
-          group: demo
-          network: demo
-          app: nodeexporter
-          node: 'validator-01'
+# # Server "demo" out of production
+#  - job_name: demo
+#    metrics_path: /metrics
+#    basic_auth:
+#      username: "{{ metrics_auth.user }}" 
+#      password: "{{ metrics_auth.password }}"
+#    static_configs:
+#
+#      ###########
+#      # TESTNET #
+#      ###########
+#
+#      # node exporter
+#      - targets:
+#          - 65.109.93.168:9100
+#        labels:
+#          group: demo
+#          network: demo
+#          app: nodeexporter
+#          node: 'validator-01'
 
   - job_name: solana
     metrics_path: /metrics
@@ -95,59 +96,6 @@ scrape_configs:
           network: testnet
           app: nodeexporter
           node: 'validator-01'
-
-  - job_name: fuel
-    metrics_path: /metrics
-    basic_auth:
-      username: "{{ metrics_auth.user }}" 
-      password: "{{ metrics_auth.password }}"
-    static_configs:
-
-      ###########
-      # MAINNET #
-      ###########
-
-      # node exporter
-      - targets:
-          - 35.226.58.47:39100
-        labels:
-          group: fuel
-          network: mainnet
-          app: nodeexporter
-          node: 'validator-01'
-      # validator
-      - targets:
-          - 35.226.58.47:36660
-        labels:
-          group: fuel
-          network: mainnet
-          app: validator
-          node: 'validator-01'
-      # cosmos exporter
-      - targets:
-          - 35.226.58.47:39300
-        labels:
-          group: fuel
-          network: mainnet
-          app: cosmos-exporter
-          node: 'validator-01'
-
-  - job_name: fuelvalidators
-    metrics_path: /metrics/validators
-    basic_auth:
-      username: "{{ metrics_auth.user }}" 
-      password: "{{ metrics_auth.password }}"
-    static_configs:
-
-      # cosmos exporter - validators (2nd metrics_path)
-      - targets:
-          - 35.226.58.47:39300
-        labels:
-          group: fuelvalidators
-          network: mainnet
-          app: cosmos-exporter
-          node: 'validator-01'
-
 
 alerting:
   alertmanagers:
