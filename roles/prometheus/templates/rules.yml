@@ -121,6 +121,9 @@ groups:
           summary: Nginx high HTTP 5xx error rate (instance {{ $labels.instance }})
           description: "Too many HTTP requests with status 5xx (> 5%)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
+    ################
+    #### SOLANA ####
+    ################
   - name: SolanaValidatorAlerts
     rules:
       # Alert for increased stake
@@ -143,7 +146,7 @@ groups:
           summary: "Fire Dancer validator - Active Stake amount has decreased by {{ $value }} for {{ $labels.job }} instance {{ $labels.instance }}"
           description: "Stake amount has decreased in the last 10 minutes."
 
-      - alert: Agave Validator Last Vote Compared to Cluster Last Vote
+      - alert: AgaveValidatorLastVote
         expr: round(solana_cluster_last_vote{job="solana"} - on(node, instance, network) solana_validator_last_vote{job="solana"}, 2) > 100
         for: 5m
         labels:
@@ -223,6 +226,90 @@ groups:
         annotations:
           summary: "Firedancer Validator has skipped blocks (instance {{ $labels.instance }})"
           description: "The validator has skipped blocks.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+    ################
+    #### NAMADA ####
+    ################
+
+  - name: NamadaValidatorAlerts
+    rules:
+      # Alert if validator state is different than "1 - Active"
+      - alert: NamadaValidatorState
+        expr: namada_validator_state{group="namada"} != 1
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Validator is not active on {{ $labels.instance }}"
+          description: |
+            "The validator with instance {{ $labels.instance }} is not active, it's state is : {{ $value }}.
+            Possible states : 0 - unknown, 1 - active consensus set, 2 - active below capacity set, 3 - active below threshold set, 4 - jailed, 5 - inactive."
+
+      # Alert if consensus height is not increasing
+      - alert: NamadaLatestBlockNotIncreasing
+        expr: increase(namada_node_latest_block{group="namada"}[5m]) == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Consensus height is not increasing on {{ $labels.instance }}"
+          description: "The consensus height has not moved in the last 5 minutes for {{ $labels.instance }}. Current height: {{ $value }}."
+
+      # Alert if uptime is low
+      - alert: NamadaValidatorLowUpTime
+        expr: (namada_validator_uptime_percentage{group="namada"}) <= 90
+        for: 15m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Low uptime on {{ $labels.instance }}"
+          description: "The uptime has dropped to {{ $value }} or below, on {{ $labels.instance }}."
+
+      # Alert of missed blocks
+      - alert: NamadaMissedBlocksIncreasing
+        expr: increase(namada_validator_missed_blocks{group="namada"}[10m]) >= 7
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Missed blocks in the last  {{ $labels.instance }}"
+          description: "The validator has missed {{ $value }} blocks on {{ $labels.instance }}."
+
+      # Alert if peer count is below or equal to 10
+      - alert: NamadaValidatorLowPeers
+        expr: (namada_tm_p2p_peers{group="namada"}) <= 10
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Low peer count detected on {{ $labels.instance }}"
+          description: "The number of peers has dropped to {{ $value }} or below, on {{ $labels.instance }}."
+
+      # Alert if the node is not synced for long
+      - alert: NamadaValidatorNotSynced
+        expr: namada_node_catch_up{group="namada"} == 1
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Namada validator is not synced, has been trying to catch up for more than 30 minutes on {{ $labels.instance }}"
+          description: "The validator is not synced for the last 30 minutes on {{ $labels.instance }}."
+
+      # Alert if Rank changes significantly
+      - alert: NamadaValidatorRank
+        expr: (namada_validator_active_set_rank{group="namada"}) >= 150
+        for: 1h
+        labels:
+          severity: warning
+        annotations:
+          summary: "Namada validator Rank is {{ $value }} for the node {{ $labels.instance }}."
+          description: |
+            "Check the current value of {namada_network_active_set_size} and {namada_network_stake_threshold},
+             to estimate if any action is needed to keep the validator in active set."
+
+    ################
+    #### COSMOS ####
+    ################
 
   - name: FuelValidatorAlerts
     rules:
