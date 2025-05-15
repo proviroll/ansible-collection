@@ -267,12 +267,12 @@ groups:
 
       # Alert of missed blocks
       - alert: NamadaMissedBlocksIncreasing
-        expr: increase(namada_validator_missed_blocks{group="namada"}[10m]) >= 7
+        expr: increase(namada_validator_missed_blocks{group="namada"}[10m]) >= 15
         for: 1m
         labels:
           severity: warning
         annotations:
-          summary: "Missed blocks in the last  {{ $labels.instance }}"
+          summary: "Missed blocks in the last minutes on {{ $labels.instance }}"
           description: "The validator has missed {{ $value }} blocks on {{ $labels.instance }}."
 
       # Alert if peer count is below or equal to 10
