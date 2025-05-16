@@ -1,0 +1,23 @@
+---
+- name: Create metrics prom directory
+  ansible.builtin.file:
+    path: '{{ metrics_prom_dir }}'
+    state: directory
+    mode: '0755'
+  become: no
+
+- name: Template metrics script to server
+  ansible.builtin.template:
+    src: "templates/additional-metrics.sh.j2"
+    dest: "{{ metrics_prom_dir }}/additional-metrics.sh"
+    mode: '0755'
+  become: no
+
+- name: Set up cronjobs for metrics fetch
+  become: true
+  cron:
+    name: "fetch solana validator metrics"
+    minute: "*"
+    hour: "*"
+    job: "/bin/bash {{ metrics_prom_dir }}/additional-metrics.sh 2>> {{ metrics_prom_dir }}/additional_metrics_cron_errors.log"
+    user: "{{ ansible_user }}"
