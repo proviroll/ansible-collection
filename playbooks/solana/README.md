@@ -365,3 +365,8 @@ Join the Solana ecosystem through various platforms:
 - 🔎 **[Solana Explorer](https://explorer.solana.com/)**
 - 📖 **[Agave - GitHub repository](https://github.com/anza-xyz/agave)** | **[Agave Docs by Anza.xyz](https://docs.anza.xyz/operations/)**
 - 🔥 **[Firedancer GitHub](https://github.com/firedancer-io/firedancer)**
+
+Track validators voting and other stats:
+
+- **[Svt one - Validator Toolkit](https://svt.one/dashboard/2paKzeZKpPpSd5kJdoNZ9LTWhHMJXDL3bjMhfRa7xjus?cluster=testnet)** : If you connect wallet on the website (**We have Not done that**), you can track voting compensation (each time SFDP sends SOL back to cover the voting fees spent)
+  [Source - Discord - Delegation Prodram chanel](https://discordapp.com/channels/428295358100013066/849749936916267029/1357496427231711434)

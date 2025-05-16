@@ -4,8 +4,8 @@
   become: true
   vars:
     network: solana
-    solana_previous_version : "v0.403.20113"
-    solana_version: "v0.407.20113" # Must be updated on 'solana_firedancer' role as well
+    solana_previous_version : "v0.501.20212"
+    solana_version: "v0.503.20214" # Must be updated on 'solana_firedancer' role as well
     deployment_type: upgrade
     network_type: testnet # Values : testnet, devnet, mainnet-beta
   roles:

@@ -2,7 +2,7 @@
 - name: Show current versions - before upgrade
   shell: |
     echo "fdctl version :"
-    ./fdctl --version
+    ./fdctl version
     echo "solana version :"
     ./solana --version
   args:
@@ -52,7 +52,7 @@
   become: no
 
 - name: Show fdctl version
-  shell: "{{ solana_validator_upgrade_dir }}/build/native/gcc/bin/fdctl --version"
+  shell: "{{ solana_validator_upgrade_dir }}/build/native/gcc/bin/fdctl version"
   register: fdctl_version
   become: no
 
