@@ -265,16 +265,15 @@ groups:
           summary: "Low uptime on {{ $labels.instance }}"
           description: "The uptime has dropped to {{ $value }} or below, on {{ $labels.instance }}."
 
-      # # Dispose of this alert and keep Uptime alert only for now
-      # # Alert of missed blocks
-      # - alert: NamadaMissedBlocksIncreasing
-      #   expr: increase(namada_validator_missed_blocks{group="namada"}[10m]) >= 15
-      #   for: 1m
-      #   labels:
-      #     severity: warning
-      #   annotations:
-      #     summary: "Missed blocks in the last minutes on {{ $labels.instance }}"
-      #     description: "The validator has missed {{ $value }} blocks on {{ $labels.instance }}."
+      # Alert of missed blocks
+      - alert: NamadaMissedBlocksIncreasing
+        expr: increase(namada_validator_missed_blocks{group="namada"}[10m]) >= 15
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Missed blocks in the last minutes on {{ $labels.instance }}"
+          description: "The validator has missed blocks in the last minutes on {{ $labels.instance }}."
 
       # Alert if peer count is below or equal to 10
       - alert: NamadaValidatorLowPeers
