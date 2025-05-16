@@ -97,6 +97,42 @@ scrape_configs:
           app: nodeexporter
           node: 'validator-01'
 
+  - job_name: namada
+    metrics_path: /metrics
+    basic_auth:
+      username: "{{ metrics_auth.user }}" 
+      password: "{{ metrics_auth.password }}"
+    static_configs:
+
+      ###########
+      # TESTNET #
+      ###########
+
+      # validator
+      - targets:
+          - 34.124.165.201:36660
+        labels:
+          group: namada
+          network: housefire
+          app: validator
+          node: 'validator-01'
+      # namada exporter
+      - targets:
+          - 34.124.165.201:39091
+        labels:
+          group: namada
+          network: housefire
+          app: namada-exporter
+          node: 'validator-01'
+      # node exporter
+      - targets:
+          - 34.124.165.201:39100
+        labels:
+          group: namada
+          network: housefire
+          app: nodeexporter
+          node: 'validator-01'
+
 alerting:
   alertmanagers:
     - scheme: https
