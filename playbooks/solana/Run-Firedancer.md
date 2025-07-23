@@ -52,6 +52,8 @@ For `Agave` validator, configurations are passed through multiple arguments to t
 
 Refs : [Configuring Firedancer](https://docs.firedancer.io/guide/configuring.html)  | [GitHub fdctl config templates](https://github.com/firedancer-io/firedancer/tree/main/src/app/fdctl/config)  | [GitHub fdctl config parameters](https://docs.firedancer.io/guide/tuning.html)
 
+**Additional Ref**. Activating Jito is required by the foundation, **beware of inconsistent addresses, it's a known issue that causes errors, these errors are safely ignored for testnet currently**: [GitHub - Firedancer testnet-jito in config.toml](https://github.com/firedancer-io/firedancer/blob/main/src/app/fdctl/config/testnet-jito.toml)
+
 **`{validator_dir/config/config.toml}`:**
 ```conf
 user = "devops"
@@ -170,6 +172,31 @@ solana_version: "v0.403.20113"
 deployment_type: upgrade
 ```
 2. Launch the upgrade playbook
+
+- Best practice:
+
+**Try to perform the upgrade during a time where your validator is not the leader**:
+
+- Check during which slots your validator will be Epoch Leader:
+```bash
+# This will show slots where your validator is the scheduled leader :
+solana leader-schedule | grep EfeFqTrp6LMYGmL9KKMSTKg9Xtjxn8AJTcjTCaY7bo99
+
+# This will show the current slot:
+solana slot
+```
+Testnet progresses with 10 to 20 slots per second. With the commands above, you have an estimation of when your validator is going to **lead the epoch**.
+
+If you upgrade during those times, it has more impact, as the validator will not produce the blocks it is supposed to.
+
+Useful metrics on Firedancer Grafana dashboard:
+```bash
+solana_leader_slots_by_epoch{epoch="$current_epoch", nodekey="EfeFqTrp6LMYGmL9KKMSTKg9Xtjxn8AJTcjTCaY7bo99", status="skipped"}
+# and
+solana_leader_slots_by_epoch{epoch="$current_epoch", nodekey="EfeFqTrp6LMYGmL9KKMSTKg9Xtjxn8AJTcjTCaY7bo99", status="valid"}
+```
+
+- **Launch the playbook**
 
 ```bash
 ansible-playbook -i hosts.ini -l validator-1  playbooks/solana/upgrade_firedancer_validator.yml -v
