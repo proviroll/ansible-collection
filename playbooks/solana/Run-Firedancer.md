@@ -243,7 +243,20 @@ sudo journalctl -xeu solana.service -f | grep snapshot
 solana catchup --our-localhost
 EfeFqTrp6LMYGmL9KKMSTKg9Xtjxn8AJTcjTCaY7bo99 has caught up (us:347139538 them:347139537)
 ```
+
 >This command won't work if RPC endpoint of validator is not up yet, in this case, keep checking `solana.service` logs
+
+- Download snapshot manually:
+
+```bash
+# Find a validator that runs same version, and has an open RPC port (not 'none'):
+solana gossip
+
+# download both full and incremental snapshot from chosen validator
+
+wget -O /full-snapshot-path-in-config-file/snapshot.tar.zst http://144.168.47.202:8899/snapshot.tar.zst
+wget -O /incremental-snapshot-path-in-config-file/incremental-snapshot.tar.zst http://144.168.47.202:8899/incremental-snapshot.tar.zst
+```
 
 ## Troubbleshoot
 
