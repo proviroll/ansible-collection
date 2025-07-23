@@ -166,14 +166,57 @@ solana_previous_version : "v0.305.20111"
 # Make sure you update it in 'solana_firedancer' role as well for future installations
 solana_version: "v0.403.20113"
 
-# Select deployment type
+# Keep deployment type as 'upgrade'
 deployment_type: upgrade
 ```
-2. Launch the 
+2. Launch the upgrade playbook
 
 ```bash
 ansible-playbook -i hosts.ini -l validator-1  playbooks/solana/upgrade_firedancer_validator.yml -v
 ```
+
+>The execution will build new version, and request engineer validation before making the new version active on the validator.
+
+3. Monitor
+
+**RPC endpoint of the validator will be down for minutes = no metrics**
+
+We need to query the Network for metrics:
+
+- Check if the validator has resumed voting:
+
+```bash
+solana vote-account 2paKzeZKpPpSd5kJdoNZ9LTWhHMJXDL3bjMhfRa7xjus --output json
+
+# And look for the current epoch's earnings
+
+    {
+      "epoch": 816,
+      "slotsInEpoch": 432000,
+      "creditsEarned": 2260709, # << Here
+      "credits": 435666207,
+      "prevCredits": 433405498,
+      "maxCreditsPerSlot": 16
+    }
+  ]
+}
+
+# They should increase every 10 seconds. If not, validator has not yet resumed voting
+# If the validator is synced, and not voting : that's an issue
+```
+
+- Check if the validator has found and downloaded a snapshot, it keeps trying until success:
+```bash
+sudo journalctl -xeu solana.service -f | grep snapshot
+```
+
+- Check if the validator has synced (caught up):
+
+```bash
+solana catchup --our-localhost
+EfeFqTrp6LMYGmL9KKMSTKg9Xtjxn8AJTcjTCaY7bo99 has caught up (us:347139538 them:347139537)
+```
+>This command won't work if RPC endpoint of validator is not up yet, in this case, keep checking `solana.service` logs
 
 ## Troubbleshoot
 
