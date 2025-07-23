@@ -199,7 +199,7 @@ solana_leader_slots_by_epoch{epoch="$current_epoch", nodekey="EfeFqTrp6LMYGmL9KK
 - **Launch the playbook**
 
 ```bash
-ansible-playbook -i hosts.ini -l validator-1  playbooks/solana/upgrade_firedancer_validator.yml -v
+ansible-playbook -i hosts.ini -l solana-testnet-validator-1  playbooks/solana/upgrade_firedancer_validator.yml -v
 ```
 
 >The execution will build new version, and request engineer validation before making the new version active on the validator.

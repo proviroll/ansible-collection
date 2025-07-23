@@ -98,7 +98,7 @@
 - name: Show current versions - After upgrade
   shell: |
     echo "fdctl version :"
-    ./fdctl --version
+    ./fdctl version
     echo "solana version :"
     ./solana --version
   args:
