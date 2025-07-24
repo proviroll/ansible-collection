@@ -34,7 +34,7 @@
 
 - name: stop solana-exporter container if existing
   shell:
-    "docker-compose -f {{ solana_exporter_dir }}/exporter.docker-compose.yml up -d"
+    "docker-compose -f {{ solana_exporter_dir }}/exporter.docker-compose.yml down"
 
 - name: Start solana-exporter container
   shell:

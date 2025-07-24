@@ -52,6 +52,8 @@ For `Agave` validator, configurations are passed through multiple arguments to t
 
 Refs : [Configuring Firedancer](https://docs.firedancer.io/guide/configuring.html)  | [GitHub fdctl config templates](https://github.com/firedancer-io/firedancer/tree/main/src/app/fdctl/config)  | [GitHub fdctl config parameters](https://docs.firedancer.io/guide/tuning.html)
 
+**Additional Ref**. Activating Jito is required by the foundation, **beware of inconsistent addresses, it's a known issue that causes errors, these errors are safely ignored for testnet currently**: [GitHub - Firedancer testnet-jito in config.toml](https://github.com/firedancer-io/firedancer/blob/main/src/app/fdctl/config/testnet-jito.toml)
+
 **`{validator_dir/config/config.toml}`:**
 ```conf
 user = "devops"
@@ -166,13 +168,94 @@ solana_previous_version : "v0.305.20111"
 # Make sure you update it in 'solana_firedancer' role as well for future installations
 solana_version: "v0.403.20113"
 
-# Select deployment type
+# Keep deployment type as 'upgrade'
 deployment_type: upgrade
 ```
-2. Launch the 
+2. Launch the upgrade playbook
+
+- Best practice:
+
+**Try to perform the upgrade during a time where your validator is not the leader**:
+
+- Check during which slots your validator will be Epoch Leader:
+```bash
+# This will show slots where your validator is the scheduled leader :
+solana leader-schedule | grep EfeFqTrp6LMYGmL9KKMSTKg9Xtjxn8AJTcjTCaY7bo99
+
+# This will show the current slot:
+solana slot
+```
+Testnet progresses with 10 to 20 slots per second. With the commands above, you have an estimation of when your validator is going to **lead the epoch**.
+
+If you upgrade during those times, it has more impact, as the validator will not produce the blocks it is supposed to.
+
+Useful metrics on Firedancer Grafana dashboard:
+```bash
+solana_leader_slots_by_epoch{epoch="$current_epoch", nodekey="EfeFqTrp6LMYGmL9KKMSTKg9Xtjxn8AJTcjTCaY7bo99", status="skipped"}
+# and
+solana_leader_slots_by_epoch{epoch="$current_epoch", nodekey="EfeFqTrp6LMYGmL9KKMSTKg9Xtjxn8AJTcjTCaY7bo99", status="valid"}
+```
+
+- **Launch the playbook**
 
 ```bash
-ansible-playbook -i hosts.ini -l validator-1  playbooks/solana/upgrade_firedancer_validator.yml -v
+ansible-playbook -i hosts.ini -l solana-testnet-validator-1  playbooks/solana/upgrade_firedancer_validator.yml -v
+```
+
+>The execution will build new version, and request engineer validation before making the new version active on the validator.
+
+3. Monitor
+
+**RPC endpoint of the validator will be down for minutes = no metrics**
+
+We need to query the Network for metrics:
+
+- Check if the validator has resumed voting:
+
+```bash
+solana vote-account 2paKzeZKpPpSd5kJdoNZ9LTWhHMJXDL3bjMhfRa7xjus --output json
+
+# And look for the current epoch's earnings
+
+    {
+      "epoch": 816,
+      "slotsInEpoch": 432000,
+      "creditsEarned": 2260709, # << Here
+      "credits": 435666207,
+      "prevCredits": 433405498,
+      "maxCreditsPerSlot": 16
+    }
+  ]
+}
+
+# They should increase every 10 seconds. If not, validator has not yet resumed voting
+# If the validator is synced, and not voting : that's an issue
+```
+
+- Check if the validator has found and downloaded a snapshot, it keeps trying until success:
+```bash
+sudo journalctl -xeu solana.service -f | grep snapshot
+```
+
+- Check if the validator has synced (caught up):
+
+```bash
+solana catchup --our-localhost
+EfeFqTrp6LMYGmL9KKMSTKg9Xtjxn8AJTcjTCaY7bo99 has caught up (us:347139538 them:347139537)
+```
+
+>This command won't work if RPC endpoint of validator is not up yet, in this case, keep checking `solana.service` logs
+
+- Download snapshot manually:
+
+```bash
+# Find a validator that runs same version, and has an open RPC port (not 'none'):
+solana gossip
+
+# download both full and incremental snapshot from chosen validator
+
+wget -O /full-snapshot-path-in-config-file/snapshot.tar.zst http://144.168.47.202:8899/snapshot.tar.zst
+wget -O /incremental-snapshot-path-in-config-file/incremental-snapshot.tar.zst http://144.168.47.202:8899/incremental-snapshot.tar.zst
 ```
 
 ## Troubbleshoot
