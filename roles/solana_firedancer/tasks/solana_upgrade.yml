@@ -20,9 +20,20 @@
   become: yes
 
 # Build binaries
+- name: Check if upgrade directory already exists
+  stat:
+    path: "{{ solana_validator_upgrade_dir }}"
+  register: upgrade_dir_stat
+
 - name: Clone Firedancer repository
   shell: 'git clone --recurse-submodules {{ solana_validator_build_url }} {{ solana_validator_upgrade_dir }}'
   become: no
+  when: not upgrade_dir_stat.stat.exists
+
+- name: Inform that directory already exists
+  debug:
+    msg: "Upgrade directory {{ solana_validator_upgrade_dir }} already exists, skipping git clone"
+  when: upgrade_dir_stat.stat.exists
 
 - name: Checkout version
   shell: 'git checkout {{ solana_version }}'
