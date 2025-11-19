@@ -10,7 +10,7 @@ user = "devops"
 [consensus]
     identity_path = "{{ solana_validator_config_dir }}/validator-keypair.json"
     vote_account_path = "2paKzeZKpPpSd5kJdoNZ9LTWhHMJXDL3bjMhfRa7xjus"
-
+    # snapshot_fetch = false
     known_validators = [
         "5D1fNXzvv5NjV1ysLjirC4WY92RNsVH18vjmcszZd8on",
         "dDzy5SR3AXdYWVqbDEkVFdvSPCtS9ihF5kJkHCtXoFs",
@@ -25,7 +25,7 @@ user = "devops"
     enabled = false # Not producing snapshots
     maximum_full_snapshots_to_retain = 2
     maximum_incremental_snapshots_to_retain = 2
-    minimum_snapshot_download_speed = 11943040
+    minimum_snapshot_download_speed = 5000000
     path = "{{ solana_validator_data_dir }}/full-snapshots"
     incremental_path = "{{ solana_validator_data_dir }}/incremental-snapshots"
 
