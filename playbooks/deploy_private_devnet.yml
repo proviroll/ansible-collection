@@ -1,0 +1,11 @@
+---
+- name: Deploy Private Solana Devnet
+  hosts: solana
+  become: yes
+  vars:
+    # Example variables - these should ideally be in group_vars or host_vars
+    solana_bootstrap_ip: "{{ hostvars['bootstrap-node']['ansible_host'] }}"
+    solana_known_validators:
+      - "{{ hostvars['bootstrap-node']['solana_identity_pubkey'] }}"
+  roles:
+    - agave_private_devnet
