@@ -1,5 +1,5 @@
 ---
-solana_version: "v2.1.13"
+solana_version: "v3.1.7"
 solana_api_url: "https://api.{{ network_type }}.solana.com/"
 
 solana_validator_dir: /home/devops/solana-validator
