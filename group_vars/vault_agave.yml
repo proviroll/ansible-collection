@@ -1,0 +1,8 @@
+---
+vault_solana_become_password: "omaribn12"
+
+# You can put actual key JSON contents here to override auto-generation
+vault_solana_identity_key: ""
+vault_solana_vote_key: ""
+vault_solana_stake_key: ""
+vault_solana_faucet_key: ""
