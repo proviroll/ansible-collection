@@ -4,10 +4,10 @@ Solana validator runs under different clients that you can choose from. Mainly [
 
 Also, participants of Solana Delegation Foundation have more specific version requirements, including the validator's client and version, which results in our current setup:
 
-- Version required for Testnet : `Firedancer v0.305.20111`.
+- Version required for Testnet : `Agave v3.0.14` | `Firedancer v0.808.30014`.
 - Version required for Mainnet-Beta : `Agave v2.1.13`.
 
-These are specifications for February 2025 and might change. You can check here the latest [Solana Foundation Announcements](https://discordapp.com/channels/428295358100013066/895740485140906054).
+These are specifications for January 2026 and might change. You can check here the latest [Solana Foundation Announcements](https://discordapp.com/channels/428295358100013066/895740485140906054).
 
 ## Table of Contents
 
@@ -370,3 +370,5 @@ Track validators voting and other stats:
 
 - **[Svt one - Validator Toolkit](https://svt.one/dashboard/2paKzeZKpPpSd5kJdoNZ9LTWhHMJXDL3bjMhfRa7xjus?cluster=testnet)** : If you connect wallet on the website (**We have Not done that**), you can track voting compensation (each time SFDP sends SOL back to cover the voting fees spent)
   [Source - Discord - Delegation Prodram chanel](https://discordapp.com/channels/428295358100013066/849749936916267029/1357496427231711434)
+- **[SFDP Required Versions](https://api.solana.org/api/community/v1/sfdp_required_versions?cluster=testnet)** : API endpoint for Solana Foundation Delegation Program version requirements.
+- **[SFDP Participants](https://api.solana.org/api/community/v1/sfdp_participants)** : API endpoint for list of SFDP participants.
