@@ -1,0 +1,70 @@
+@startuml
+skinparam handwritten false
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam defaultFontName "Verdana"
+
+title Solana Validator Infrastructure & Observability Stack
+
+node "Bare Metal Server (Solana Validator)" #LightBlue {
+    package "Validator Clients" {
+        [Firedancer (v0.811.30108)] <<Binary>> as FD
+        [Agave (v3.1.8)] <<Binary>> as Agave
+    }
+    
+    package "Exporters" {
+        [Node Exporter (9100)] as NodeExp
+        [Solana Exporter (9999)] as SolExp
+        [FD Metrics (7999)] as FDMetrics
+    }
+    
+    package "OTel Agent" #Yellow {
+        [OTel Collector Agent] as OTelAgent
+    }
+}
+
+cloud "Public Internet" {
+    [HTTPS (TLS + Basic Auth)] as Internet
+}
+
+node "Google Kubernetes Engine (GKE)" #LightGreen {
+    package "Ingress Layer" {
+        [Traefik Ingress] as Ingress
+        [BasicAuth Middleware] as Auth
+    }
+    
+    package "Observability Namespace" {
+        [VictoriaMetrics (TSDB)] as VM
+        [Grafana (UI)] as Grafana
+        [Loki (Logs)] as Loki
+    }
+    
+    package "Secret Management" {
+        [External Secrets Operator] as ExtSecrets
+        [Kubernetes Secret] as K8sSecret
+    }
+}
+
+database "GCP Secret Manager" as GCPSecrets #Gold
+
+' Connections
+FD -right-> FDMetrics
+Agave -right-> SolExp
+
+OTelAgent ..> NodeExp : Scrape
+OTelAgent ..> SolExp : Scrape
+OTelAgent ..> FDMetrics : Scrape
+
+OTelAgent -down-> Internet : Push Metrics
+Internet -down-> Ingress : Remote Write
+
+Ingress -right-> Auth : Authenticate
+Auth -down-> K8sSecret : Verify Credentials
+ExtSecrets -up-> GCPSecrets : Sync
+ExtSecrets -down-> K8sSecret : Create
+
+Ingress -down-> VM : Store Metrics
+Grafana -left-> VM : Query
+Grafana -right-> Loki : Query
+
+@enduml
