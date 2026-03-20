@@ -162,11 +162,11 @@ To launch the playbook, execute:
 
 ```yaml
 # The playbook will show the current version before upgrade, this variable is only used to rename the old build dir properly
-solana_previous_version : "v0.305.20111"
+solana_previous_version : "v0.808.30014"
 
 # This is the target upgrade version, playbook will "checkout" to it for the build
 # Make sure you update it in 'solana_firedancer' role as well for future installations
-solana_version: "v0.403.20113"
+solana_version: "v0.811.30108"
 
 # Keep deployment type as 'upgrade'
 deployment_type: upgrade

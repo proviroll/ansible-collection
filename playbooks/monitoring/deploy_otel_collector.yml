@@ -1,0 +1,8 @@
+---
+- name: Deploy OTel Collector
+  hosts: solana
+  become: true
+  vars_files:
+    - "../../vault.yml"
+  roles:
+    - otel_collector
