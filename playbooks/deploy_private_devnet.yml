@@ -1,0 +1,12 @@
+---
+- name: Deploy Private Solana Devnet
+  hosts: private_devnet
+  become: yes
+  vars:
+    # Dynamically find the bootstrap host from the inventory group
+    bootstrap_host: "{{ groups['private_devnet'] | select('match', '.*bootstrap.*') | first | default(groups['private_devnet'][0]) }}"
+    solana_bootstrap_ip: "{{ hostvars[bootstrap_host]['ansible_host'] }}"
+    solana_known_validators:
+      - "{{ hostvars[bootstrap_host]['solana_identity_pubkey_fact'] | default('') }}"
+  roles:
+    - agave_private_devnet

@@ -1,0 +1,7 @@
+[private_devnet]
+bootstrap-node ansible_host=X.X.X.X solana_role=bootstrap
+follower-node  ansible_host=Y.Y.Y.Y solana_role=follower
+
+[private_devnet:vars]
+ansible_user=your_ssh_user
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'

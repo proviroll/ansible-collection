@@ -1,0 +1,7 @@
+# Identity will be automatically discovered via Ansible facts if left empty
+solana_bootstrap_ip: "X.X.X.X"
+solana_expected_genesis_hash: ""
+
+# Optional: Override QUIC ports for specific node types
+# solana_quic_port: 30455
+# solana_dynamic_port_range: "30000-30020"
