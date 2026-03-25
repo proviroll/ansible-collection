@@ -4,7 +4,7 @@ Solana validator runs under different clients that you can choose from. Mainly [
 
 Also, participants of Solana Delegation Foundation have more specific version requirements, including the validator's client and version, which results in our current setup:
 
-- Version required for Testnet : `Agave v3.1.8` | `Firedancer v0.811.30108`.
+- Version required for Testnet : `Agave v4.0.0-beta.4` | `Firedancer v0.902.40002`.
 - Version required for Mainnet-Beta : `Agave v2.1.13`.
 
 These are specifications for January 2026 and might change. You can check here the latest [Solana Foundation Announcements](https://discordapp.com/channels/428295358100013066/895740485140906054).
