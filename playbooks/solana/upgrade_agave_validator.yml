@@ -5,6 +5,7 @@
   vars:
     network: solana
     network_type: testnet # Values : testnet, devnet, mainnet-beta
+    solana_previous_version: "v3.1.8"
     solana_version: "v3.1.10"
     deployment_type: upgrade
   

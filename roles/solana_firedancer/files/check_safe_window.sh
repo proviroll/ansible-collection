@@ -3,7 +3,8 @@
 # --- Solana Safe-Window Auditor (Ansible Edition) ---
 # Usage: ./check_safe_window.sh <VALIDATOR_IDENTITY> [SOLANA_BIN_PATH]
 
-VALIDATOR_IDENTITY=${1:-"EfeFqTrp6LMYGmL9KKMSTKg9Xtjxn8AJTcjTCaY7bo99"}
+VALIDATOR_IDENTITY=$1
+if [ -z "$VALIDATOR_IDENTITY" ]; then echo "Usage: $0 <VALIDATOR_IDENTITY> [SOLANA_BIN_PATH]"; exit 1; fi
 PREFERED_BIN_PATH=$2
 MIN_GAP_SIZE=10000  # Minimum slots (~1 hour)
 SLOT_DURATION=0.45  # Average Testnet slot time
