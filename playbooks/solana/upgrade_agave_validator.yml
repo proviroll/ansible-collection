@@ -9,6 +9,11 @@
     deployment_type: upgrade
   
   tasks:
+    - name: Perform pre-upgrade safe window audit
+      include_role:
+        name: solana_agave
+        tasks_from: check_window.yml
+
     - name: Stop solana service
       systemd:
         name: solana
