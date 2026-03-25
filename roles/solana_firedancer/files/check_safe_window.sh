@@ -1,20 +1,26 @@
 #!/bin/bash
 
 # --- Solana Safe-Window Auditor (Ansible Edition) ---
-# Usage: ./check_safe_window.sh <VALIDATOR_IDENTITY>
+# Usage: ./check_safe_window.sh <VALIDATOR_IDENTITY> [SOLANA_BIN_PATH]
 
 VALIDATOR_IDENTITY=${1:-"EfeFqTrp6LMYGmL9KKMSTKg9Xtjxn8AJTcjTCaY7bo99"}
+PREFERED_BIN_PATH=$2
 MIN_GAP_SIZE=10000  # Minimum slots (~1 hour)
 SLOT_DURATION=0.45  # Average Testnet slot time
 
 # 1. Identify the solana binary
-SOLANA_PATH=$(which solana 2>/dev/null)
-if [ -z "$SOLANA_PATH" ]; then
-    SOLANA_PATH=$(find /home -name solana -type f -executable | grep bin/solana | head -n 1)
+if [ -n "$PREFERED_BIN_PATH" ] && [ -x "$PREFERED_BIN_PATH/solana" ]; then
+    SOLANA_PATH="$PREFERED_BIN_PATH/solana"
+else
+    SOLANA_PATH=$(which solana 2>/dev/null)
+    if [ -z "$SOLANA_PATH" ]; then
+        # Fallback to home search only if absolutely necessary
+        SOLANA_PATH=$(find /home -name solana -type f -executable | grep bin/solana | head -n 1)
+    fi
 fi
 
 if [ -z "$SOLANA_PATH" ]; then
-    echo "Error: Solana CLI not found in PATH or home directories."
+    echo "Error: Solana CLI not found."
     exit 1
 fi
 
@@ -79,7 +85,7 @@ done
 
 if [ "$FOUND_GAP" -eq 0 ]; then
     echo "CRITICAL: No gaps larger than 1 hour detected in the remaining epoch."
-    exit 1 # Halt the Ansible playbook
+    exit 1
 else
-    exit 0 # Allow the Ansible playbook to continue
+    exit 0
 fi
