@@ -1,4 +1,7 @@
 ---
+- name: Perform pre-upgrade safe window audit
+  include_tasks: check_window.yml
+
 - name: Show current versions - before upgrade
   shell: |
     echo "fdctl version :"
