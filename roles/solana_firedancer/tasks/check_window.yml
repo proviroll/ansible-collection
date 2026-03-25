@@ -11,6 +11,7 @@
   ansible.builtin.command: "/bin/bash {{ solana_validator_dir }}/check_safe_window.sh {{ node_key }}"
   register: safe_window_output
   changed_when: false
+  failed_when: safe_window_output.rc != 0
 
 - name: DISPLAY SAFE UPGRADE WINDOWS
   ansible.builtin.debug:

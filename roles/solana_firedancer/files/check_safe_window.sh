@@ -7,7 +7,7 @@ VALIDATOR_IDENTITY=${1:-"EfeFqTrp6LMYGmL9KKMSTKg9Xtjxn8AJTcjTCaY7bo99"}
 MIN_GAP_SIZE=10000  # Minimum slots (~1 hour)
 SLOT_DURATION=0.45  # Average Testnet slot time
 
-# 1. Identify the solana binary (checking common paths)
+# 1. Identify the solana binary
 SOLANA_PATH=$(which solana 2>/dev/null)
 if [ -z "$SOLANA_PATH" ]; then
     SOLANA_PATH=$(find /home -name solana -type f -executable | grep bin/solana | head -n 1)
@@ -78,5 +78,8 @@ for SLOT in $SCHEDULE; do
 done
 
 if [ "$FOUND_GAP" -eq 0 ]; then
-    echo "No gaps larger than 1 hour detected in the remaining epoch."
+    echo "CRITICAL: No gaps larger than 1 hour detected in the remaining epoch."
+    exit 1 # Halt the Ansible playbook
+else
+    exit 0 # Allow the Ansible playbook to continue
 fi
