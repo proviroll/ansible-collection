@@ -1,0 +1,21 @@
+---
+- name: Deploy Safe-Window Auditor script
+  ansible.builtin.copy:
+    src: check_safe_window.sh
+    dest: "{{ solana_validator_dir }}/check_safe_window.sh"
+    owner: "{{ non_root_user }}"
+    group: "{{ non_root_group }}"
+    mode: '0755'
+
+- name: Identify Safe Windows for Upgrade
+  ansible.builtin.command: "/bin/bash {{ solana_validator_dir }}/check_safe_window.sh {{ node_key }} {{ solana_validator_binary_path }}"
+  register: safe_window_output
+  changed_when: false
+  # The Emergency Bypass: Only fail if ignore_safe_window is false
+  failed_when: 
+    - safe_window_output.rc != 0
+    - not (ignore_safe_window | default(false) | bool)
+
+- name: DISPLAY SAFE UPGRADE WINDOWS
+  ansible.builtin.debug:
+    msg: "{{ safe_window_output.stdout_lines }}"

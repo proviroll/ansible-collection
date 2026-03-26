@@ -10,7 +10,7 @@ solana_port_range: "8000:8020"
 solana_exporter_container_name: "solana_exporter"
 solana_exporter_container_image_and_tag: "mcamou/solana-exporter:b8fcc7c170049d5c9c34ea57b9f2fcb3a0b5044d"
 vote_account_pubkey: 
-node_key: 
+node_key: EfeFqTrp6LMYGmL9KKMSTKg9Xtjxn8AJTcjTCaY7bo99
 
 non_root_user: "devops"
 non_root_group: "devops"

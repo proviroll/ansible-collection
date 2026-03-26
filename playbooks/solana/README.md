@@ -169,6 +169,16 @@ Follow this section : [Here](./Run-Agave.md#upgrade-agave)
 
 Follow this section : [Here](./Run-Firedancer.md#upgrade-firedancer)
 
+### Safe Upgrade Windows
+
+Both upgrade playbooks incorporate an automated safety audit mechanism. Prior to terminating the validator service, the system performs a diagnostic check against the cluster leader schedule to identify a maintenance window of at least 60 minutes.
+
+- **Automated Termination:** If no sufficient maintenance window is identified, the playbook execution will terminate to prevent block production delinquency.
+- **Emergency Override:** In critical scenarios requiring immediate deployment, the safety check may be bypassed by setting the `ignore_safe_window` variable:
+  ```bash
+  ansible-playbook ... -e "ignore_safe_window=true"
+  ```
+
 ## Health & Monitoring
 
 >Note: Once the validator is started, it takes minutes for the RPC enpoint to be up. Generally, until the node gets a first snapshot and starts catching up.
