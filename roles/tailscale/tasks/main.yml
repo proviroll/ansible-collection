@@ -24,6 +24,6 @@
 
 - name: Authenticate and join tailnet
   ansible.builtin.command:
-    cmd: "tailscale up --authkey={{ tailscale_authkey }} {{ tailscale_args }}"
+    cmd: "tailscale up --authkey={{ tailscale_authkey }} --reset {{ tailscale_args }}"
   changed_when: true
   no_log: true
