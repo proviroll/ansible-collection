@@ -36,6 +36,15 @@
     proto: any
   loop: "{{ metrics_apps | default([]) }}"
 
+- name: Allow source-restricted ports
+  community.general.ufw:
+    rule: allow
+    port: "{{ item.port }}"
+    proto: "{{ item.proto | default('tcp') }}"
+    from_ip: "{{ item.from_ip }}"
+    comment: "{{ item.name }}"
+  loop: "{{ firewall_source_ports | default([]) }}"
+
 - name: Enable firewall
   community.general.ufw:
     state: enabled
