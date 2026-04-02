@@ -27,3 +27,29 @@
     cmd: "tailscale up --authkey={{ tailscale_authkey }} --reset {{ tailscale_args }}"
   changed_when: true
   no_log: true
+
+- name: Install socat
+  ansible.builtin.apt:
+    name: socat
+    state: present
+  when: tailscale_socat_forwards | length > 0
+
+- name: Deploy socat systemd services
+  ansible.builtin.template:
+    src: socat-timescaledb.service.j2
+    dest: "/etc/systemd/system/socat-timescaledb.service"
+    owner: root
+    group: root
+    mode: "0644"
+  vars:
+    tailscale_ip: "{{ ansible_facts['tailscale0']['ipv4']['address'] }}"
+  when: tailscale_socat_forwards | length > 0
+  notify: Reload systemd
+
+- name: Enable and start socat-timescaledb
+  ansible.builtin.systemd:
+    name: socat-timescaledb
+    enabled: true
+    state: started
+    daemon_reload: true
+  when: tailscale_socat_forwards | length > 0

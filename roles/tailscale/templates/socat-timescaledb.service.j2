@@ -1,0 +1,12 @@
+[Unit]
+Description=socat TCP forward Tailscale -> TimescaleDB
+After=network.target tailscaled.service
+Requires=tailscaled.service
+
+[Service]
+ExecStart=/usr/bin/socat TCP-LISTEN:5432,bind={{ tailscale_ip }},fork,reuseaddr TCP:127.0.0.1:5432
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
