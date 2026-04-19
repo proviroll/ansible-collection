@@ -1,0 +1,4 @@
+---
+tailscale_authkey: "{{ vault_tailscale_authkey }}"  # Set vault_tailscale_authkey in vault.yml
+tailscale_args: ""
+tailscale_socat_forwards: []  # Set to non-empty list to enable socat forwarding

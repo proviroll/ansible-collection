@@ -1,0 +1,55 @@
+---
+- name: Add Tailscale apt signing key
+  ansible.builtin.apt_key:
+    url: https://pkgs.tailscale.com/stable/ubuntu/focal.noarmor.gpg
+    state: present
+
+- name: Add Tailscale apt repository
+  ansible.builtin.apt_repository:
+    repo: "deb https://pkgs.tailscale.com/stable/ubuntu focal main"
+    state: present
+    filename: tailscale
+
+- name: Install Tailscale
+  ansible.builtin.apt:
+    name: tailscale
+    state: present
+    update_cache: true
+
+- name: Enable and start tailscaled
+  ansible.builtin.systemd:
+    name: tailscaled
+    enabled: true
+    state: started
+
+- name: Authenticate and join tailnet
+  ansible.builtin.command:
+    cmd: "tailscale up --authkey={{ tailscale_authkey }} --reset {{ tailscale_args }}"
+  changed_when: true
+  no_log: true
+
+- name: Install socat
+  ansible.builtin.apt:
+    name: socat
+    state: present
+  when: tailscale_socat_forwards | length > 0
+
+- name: Deploy socat systemd services
+  ansible.builtin.template:
+    src: socat-timescaledb.service.j2
+    dest: "/etc/systemd/system/socat-timescaledb.service"
+    owner: root
+    group: root
+    mode: "0644"
+  vars:
+    tailscale_ip: "{{ ansible_facts['tailscale0']['ipv4']['address'] }}"
+  when: tailscale_socat_forwards | length > 0
+  notify: Reload systemd
+
+- name: Enable and start socat-timescaledb
+  ansible.builtin.systemd:
+    name: socat-timescaledb
+    enabled: true
+    state: started
+    daemon_reload: true
+  when: tailscale_socat_forwards | length > 0

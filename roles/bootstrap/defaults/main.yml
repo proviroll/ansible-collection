@@ -2,9 +2,12 @@
 github_user_pubkeys:
   - aminechakr
   - zaguezzar
-  - talbitalbi
+  - ibnoulouafi-omar
+  - HafsaBk
+  - abdou-roa
 
-old_github_user_pubkeys: []
+old_github_user_pubkeys:
+  - talbitalbi
 ansible_user: devops
 bootstrap_user: devops
 backup_user: loginbackup
