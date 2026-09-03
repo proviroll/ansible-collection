@@ -1,6 +1,6 @@
 ---
 # defaults file for ansible/polkadot/roles/polkadot_snapshot
-container_name_polkadot: chainsafe_snapshot_server_{{ network }}
+container_name_polkadot: proviroll_snapshot_server_{{ network }}
 polkadot_image_and_tag: parity/polkadot:latest
 
 # Below user ID will be set in both host and container folders

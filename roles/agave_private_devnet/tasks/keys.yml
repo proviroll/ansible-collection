@@ -1,0 +1,47 @@
+---
+- name: Ensure config directory exists
+  file:
+    path: "{{ solana_config_dir }}"
+    state: directory
+    owner: "{{ solana_user }}"
+    group: "{{ solana_group }}"
+    mode: "0700"
+  become: yes
+
+- name: Write provided keys
+  ansible.builtin.copy:
+    content: "{{ item.content }}"
+    dest: "{{ solana_config_dir }}/{{ item.dest }}"
+    owner: "{{ solana_user }}"
+    group: "{{ solana_group }}"
+    mode: "0600"
+  loop:
+    - { content: "{{ solana_identity_key }}", dest: "id.json" }
+    - { content: "{{ solana_vote_key }}", dest: "vote-account.json" }
+    - { content: "{{ solana_stake_key }}", dest: "stake-account.json" }
+    - { content: "{{ solana_faucet_key }}", dest: "faucet.json", role: "bootstrap" }
+  when:
+    - item.content is defined
+    - item.content | length > 0
+    - item.role is not defined or (item.role == 'bootstrap' and solana_role == 'bootstrap')
+  become: yes
+
+- name: Generate keys if not provided (optional/fallback)
+  ansible.builtin.shell: |
+    if [ ! -f {{ solana_config_dir }}/id.json ]; then solana-keygen new --no-passphrase -o {{ solana_config_dir }}/id.json; fi
+    if [ ! -f {{ solana_config_dir }}/vote-account.json ]; then solana-keygen new --no-passphrase -o {{ solana_config_dir }}/vote-account.json; fi
+    if [ ! -f {{ solana_config_dir }}/stake-account.json ]; then solana-keygen new --no-passphrase -o {{ solana_config_dir }}/stake-account.json; fi
+    if [ "{{ solana_role }}" = "bootstrap" ] && [ ! -f {{ solana_config_dir }}/faucet.json ]; then solana-keygen new --no-passphrase -o {{ solana_config_dir }}/faucet.json; fi
+  become: yes
+  become_user: "{{ solana_user }}"
+  when: solana_identity_key is not defined or solana_identity_key | length == 0
+
+- name: Get node identity pubkey
+  ansible.builtin.command: "solana-keygen pubkey {{ solana_config_dir }}/id.json"
+  register: node_pubkey_cmd
+  changed_when: false
+  become: yes
+
+- name: Set identity pubkey fact
+  ansible.builtin.set_fact:
+    solana_identity_pubkey_fact: "{{ node_pubkey_cmd.stdout }}"

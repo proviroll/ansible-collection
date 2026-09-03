@@ -1,0 +1,17 @@
+[Unit]
+Description=Solana Faucet
+After=network.target
+
+[Service]
+Type=simple
+User={{ solana_user }}
+Group={{ solana_group }}
+ExecStart={{ solana_bin_dir }}/solana-faucet \
+    --keypair {{ solana_config_dir }}/faucet.json \
+    --per-request-cap {{ faucet_per_request_cap }} \
+    --per-time-cap {{ faucet_per_time_cap }}
+Restart=always
+RestartSec=1
+
+[Install]
+WantedBy=multi-user.target

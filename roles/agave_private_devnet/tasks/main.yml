@@ -1,0 +1,23 @@
+---
+- name: Setup system
+  include_tasks: setup.yml
+
+- name: Install Agave
+  include_tasks: install.yml
+
+- name: Configure keys
+  include_tasks: keys.yml
+
+- name: Create genesis
+  include_tasks: genesis.yml
+  when: solana_role == 'bootstrap'
+
+- name: Setup and start validator service
+  include_tasks: service.yml
+
+- name: Setup and start faucet service
+  include_tasks: faucet.yml
+  when: faucet_enabled and solana_role == 'bootstrap'
+
+- name: Verify deployment
+  include_tasks: verify.yml

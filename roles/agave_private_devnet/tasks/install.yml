@@ -1,0 +1,67 @@
+---
+- name: Install dependencies
+  apt:
+    name:
+      - curl
+      - docker.io
+      - bzip2
+      - libssl-dev
+      - libudev-dev
+      - pkg-config
+      - zlib1g-dev
+      - llvm
+      - clang
+      - cmake
+      - make
+      - libprotobuf-dev
+      - protobuf-compiler
+    state: present
+    update_cache: yes
+  become: yes
+
+- name: Ensure docker is started and enabled
+  systemd:
+    name: docker
+    state: started
+    enabled: yes
+  become: yes
+
+- name: Check if solana is already installed
+  command: solana --version
+  register: solana_check
+  ignore_errors: yes
+  changed_when: false
+
+- block:
+    - name: Pull custom agave image
+      command: "docker pull {{ solana_image_repository }}:{{ solana_image_tag }}"
+      become: yes
+
+    - name: Remove existing temporary container
+      command: "docker rm -f agave_temp"
+      ignore_errors: yes
+      become: yes
+
+    - name: Create temporary container
+      command: "docker create --name agave_temp {{ solana_image_repository }}:{{ solana_image_tag }}"
+      become: yes
+
+    - name: Extract binaries from image
+      command: "docker cp agave_temp:/usr/bin/{{ item }} {{ solana_bin_dir }}/{{ item }}"
+      loop:
+        - solana
+        - solana-validator
+        - solana-keygen
+        - solana-genesis
+        - solana-faucet
+        - solana-stake-accounts
+        - solana-gossip
+        - solana-ledger-tool
+        - solana-test-validator
+        - solana-bench-tps
+      become: yes
+
+    - name: Remove temporary container
+      command: "docker rm agave_temp"
+      become: yes
+  when: solana_image_repository != "" and (solana_check.failed or "ackermann" not in solana_check.stdout)

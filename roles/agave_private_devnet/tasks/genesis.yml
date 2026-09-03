@@ -1,0 +1,82 @@
+---
+- name: Check if genesis exists
+  stat:
+    path: "{{ solana_ledger_dir }}/genesis.bin"
+  register: genesis_bin
+
+- name: Create genesis (Bootstrap only)
+  block:
+    - name: Create genesis temp dir
+      file:
+        path: "/tmp/genesis-config"
+        state: directory
+        mode: "0755"
+
+    - name: Copy fetch scripts
+      copy:
+        src: "{{ item }}"
+        dest: "/tmp/{{ item }}"
+        mode: "0755"
+      loop:
+        - fetch-core-bpf.sh
+        - fetch-spl.sh
+        - fetch-programs.sh
+
+    - name: Run fetch scripts
+      shell: "bash /tmp/{{ item }}"
+      args:
+        chdir: "/tmp/genesis-config"
+      loop:
+        - fetch-core-bpf.sh
+        - fetch-spl.sh
+
+    - name: Read genesis args
+      shell: "cat /tmp/genesis-config/{{ item }}"
+      register: genesis_args
+      loop:
+        - core-bpf-genesis-args.sh
+        - spl-genesis-args.sh
+
+    - name: Get identity pubkey
+      command: "solana-keygen pubkey {{ solana_config_dir }}/id.json"
+      register: identity_pubkey
+      changed_when: false
+
+    - name: Get vote pubkey
+      command: "solana-keygen pubkey {{ solana_config_dir }}/vote-account.json"
+      register: vote_pubkey
+      changed_when: false
+
+    - name: Get stake pubkey
+      command: "solana-keygen pubkey {{ solana_config_dir }}/stake-account.json"
+      register: stake_pubkey
+      changed_when: false
+
+    - name: Get faucet pubkey
+      command: "solana-keygen pubkey {{ solana_config_dir }}/faucet.json"
+      register: faucet_pubkey
+      changed_when: false
+
+    - name: Run solana-genesis
+      shell: >
+        solana-genesis
+        --hashes-per-tick sleep
+        --ledger "{{ solana_ledger_dir }}"
+        --faucet-pubkey "{{ faucet_pubkey.stdout }}"
+        --faucet-lamports 1000000000000000
+        --bootstrap-validator
+        "{{ identity_pubkey.stdout }}"
+        "{{ vote_pubkey.stdout }}"
+        "{{ stake_pubkey.stdout }}"
+        --bootstrap-validator-lamports 5000000000000
+        --bootstrap-validator-stake-lamports 5000000000000
+        --slots-per-epoch 432000
+        --ticks-per-slot 64
+        --cluster-type development
+        {{ genesis_args.results[0].stdout }}
+        {{ genesis_args.results[1].stdout }}
+      args:
+        chdir: "/tmp/genesis-config"
+      become: yes
+      become_user: "{{ solana_user }}"
+  when: not genesis_bin.stat.exists and solana_role == 'bootstrap'

@@ -1,0 +1,57 @@
+---
+- name: Create solana group
+  group:
+    name: "{{ solana_group }}"
+    state: present
+  become: yes
+
+- name: Create solana user
+  user:
+    name: "{{ solana_user }}"
+    group: "{{ solana_group }}"
+    home: "{{ solana_home }}"
+    shell: /bin/bash
+  become: yes
+
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ solana_user }}"
+    group: "{{ solana_group }}"
+    mode: "0755"
+  loop:
+    - "{{ solana_base_dir }}"
+    - "{{ solana_config_dir }}"
+    - "{{ solana_data_dir }}"
+    - "{{ solana_ledger_dir }}"
+    - "{{ solana_accounts_dir }}"
+  become: yes
+
+- name: Apply sysctl tuning
+  sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: present
+    reload: yes
+  loop:
+    - { name: 'net.core.rmem_max', value: '134217728' }
+    - { name: 'net.core.rmem_default', value: '134217728' }
+    - { name: 'net.core.wmem_max', value: '134217728' }
+    - { name: 'net.core.wmem_default', value: '134217728' }
+    - { name: 'vm.max_map_count', value: '1000000' }
+    - { name: 'fs.nr_open', value: '1000000' }
+  become: yes
+
+- name: Set ulimits for solana user
+  pam_limits:
+    domain: "{{ solana_user }}"
+    limit_type: "{{ item.type }}"
+    limit_item: "{{ item.item }}"
+    value: "{{ item.value }}"
+  loop:
+    - { type: 'soft', item: 'nofile', value: '1000000' }
+    - { type: 'hard', item: 'nofile', value: '1000000' }
+    - { type: 'soft', item: 'stack', value: 'unlimited' }
+    - { type: 'hard', item: 'stack', value: 'unlimited' }
+  become: yes

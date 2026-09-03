@@ -1,0 +1,26 @@
+---
+- name: Ensure solana base directory ownership
+  file:
+    path: "{{ solana_base_dir }}"
+    owner: "{{ solana_user }}"
+    group: "{{ solana_group }}"
+    recurse: yes
+  become: yes
+
+- name: Create solana-validator systemd service
+  template:
+    src: solana-validator.service.j2
+    dest: /etc/systemd/system/solana-validator.service
+    owner: root
+    group: root
+    mode: "0644"
+  become: yes
+  notify: restart solana-validator
+
+- name: Enable and start solana-validator service
+  systemd:
+    name: solana-validator
+    enabled: yes
+    state: started
+    daemon_reload: yes
+  become: yes

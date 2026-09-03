@@ -16,7 +16,7 @@ Docker needs to be installed
   name: Deploy and start polkadot
   become: true
   roles:
-    - role: chainsafe.general.polkadot_node_docker_role
+    - role: proviroll.ansible_collection.polkadot_node_docker_role
 ```
 
 ## Link to [default values](./defaults/main.yml)

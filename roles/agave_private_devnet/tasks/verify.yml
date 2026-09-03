@@ -1,0 +1,30 @@
+---
+- name: Wait for RPC port to be open
+  wait_for:
+    host: "{{ ansible_host }}"
+    port: 8899
+    delay: 5
+    timeout: 300
+  ignore_errors: yes
+
+- name: Check Solana cluster health
+  command: "solana cluster-version --url http://{{ ansible_host }}:8899"
+  register: solana_health
+  retries: 5
+  delay: 10
+  until: solana_health.rc == 0
+
+- name: Verify validator is catching up or voting
+  command: "solana slot --url http://{{ ansible_host }}:8899"
+  register: slot_before
+
+- pause:
+    seconds: 10
+
+- name: Verify slot is progressing
+  command: "solana slot --url http://{{ ansible_host }}:8899"
+  register: slot_after
+  failed_when: slot_after.stdout|int <= slot_before.stdout|int
+
+- debug:
+    msg: "Validator is healthy and slot is progressing: {{ slot_after.stdout }}"

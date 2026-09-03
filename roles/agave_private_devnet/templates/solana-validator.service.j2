@@ -1,0 +1,67 @@
+[Unit]
+Description=Solana Validator
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+User={{ solana_user }}
+Group={{ solana_group }}
+WorkingDirectory={{ solana_base_dir }}
+LimitNOFILE=1000000
+LogRateLimitIntervalSec=0
+ExecStart={{ solana_bin_dir }}/solana-validator \
+    --identity {{ solana_config_dir }}/id.json \
+    --vote-account {{ solana_config_dir }}/vote-account.json \
+    --ledger {{ solana_ledger_dir }} \
+    --accounts {{ solana_accounts_dir }} \
+    --bind-address {{ ansible_host }} \
+    --gossip-port 8001 \
+    --gossip-host {{ ansible_host }} \
+    --rpc-port 8899 \
+    --public-rpc-address {{ ansible_host }}:8899 \
+    --dynamic-port-range {{ solana_dynamic_port_range }} \
+    --tpu-use-quic \
+    {% if solana_role != 'bootstrap' %}
+    --entrypoint {{ solana_bootstrap_ip | default('127.0.0.1') }}:8001 \
+    {% endif %}
+    {% if solana_role == 'bootstrap' %}
+    --no-genesis-fetch \
+    --no-snapshot-fetch \
+    {% endif %}
+    {% for arg in solana_extra_args %}
+    {{ arg }} \
+    {% endfor %}
+    {% if solana_role == 'bootstrap' %}
+    {% for arg in solana_bootstrap_extra_args %}
+    {{ arg }} \
+    {% endfor %}
+    {% else %}
+    {% for arg in solana_follower_extra_args %}
+    {{ arg }} \
+    {% endfor %}
+    {% set bootstrap_host = groups['private_devnet'] | select('match', '.*bootstrap.*') | first | default(groups['private_devnet'][0]) %}
+    {% set bootstrap_pubkey = hostvars[bootstrap_host]['solana_identity_pubkey_fact'] | default(solana_known_validators[0] | default('')) %}
+    {% if bootstrap_pubkey %}
+    --known-validator {{ bootstrap_pubkey }} \
+    {% endif %}
+    {% for validator in solana_known_validators %}
+    {% if validator != bootstrap_pubkey %}
+    --known-validator {{ validator }} \
+    {% endif %}
+    {% endfor %}
+    {% if solana_expected_genesis_hash %}
+    --expected-genesis-hash {{ solana_expected_genesis_hash }} \
+    {% endif %}
+    {% endif %}
+    {% if ackermann_sidecar_pubkey %}
+    --ackermann-sidecar {{ ackermann_sidecar_pubkey }} \
+    --ackermann-regular-port {{ ackermann_regular_port }} \
+    --ackermann-slot-inclusion-port {{ ackermann_slot_inclusion_port }} \
+    {% endif %}
+
+Restart=always
+RestartSec=1
+
+[Install]
+WantedBy=multi-user.target

@@ -15,7 +15,7 @@ Docker needs to be installed on the host system to use this role.
   name: Depoly Polkadot full node and generate and upload snapshots
   become: true
   roles:
-    - role: chainsafe.general.polkadot_snapshot
+    - role: proviroll.ansible_collection.polkadot_snapshot
   vars:
     aws_access_key: AKIXXXXXXXXXX
     aws_secret_key: Wexxxxxxxxxxxxxxxxxxxx

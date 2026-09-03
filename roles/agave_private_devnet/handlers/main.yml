@@ -1,0 +1,12 @@
+---
+- name: restart solana-validator
+  systemd:
+    name: solana-validator
+    state: restarted
+  become: yes
+
+- name: restart solana-faucet
+  systemd:
+    name: solana-faucet
+    state: restarted
+  become: yes

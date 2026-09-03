@@ -1,2 +1,14 @@
 tmp
 .vault_pass
+
+# Environment-specific inventories and secret material. Keep these outside
+# this public collection, or provide only explicitly redacted examples.
+hosts.ini
+vault.yml
+vault.yml.bckp
+group_vars/private_devnet.yml
+group_vars/x-trading.yml
+*.pem
+*.key
+*.keypair
+**/*keypair.json

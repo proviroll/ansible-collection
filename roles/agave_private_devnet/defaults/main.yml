@@ -1,0 +1,78 @@
+---
+# agave_private_devnet defaults
+
+solana_user: solana
+solana_group: solana
+solana_home: "/home/{{ solana_user }}"
+
+# Directory configuration
+solana_base_dir: "/opt/solana"
+solana_config_dir: "{{ solana_base_dir }}/config"
+solana_data_dir: "{{ solana_base_dir }}/data"
+solana_ledger_dir: "{{ solana_data_dir }}/ledger"
+solana_accounts_dir: "{{ solana_data_dir }}/accounts"
+solana_bin_dir: "/usr/local/bin"
+
+# Network configuration
+solana_cluster: "devnet"
+solana_role: "follower" # bootstrap or follower
+
+# Image configuration used to extract the Agave binaries.
+solana_image_repository: "solanalabs/solana"
+solana_image_tag: "stable"
+
+# Faucet configuration
+faucet_enabled: true
+faucet_port: 9900
+faucet_per_request_cap: 1000000000    # 1 SOL
+faucet_per_time_cap: 10000000000      # 10 SOL
+faucet_time_slice: 60                # seconds
+
+# Validator resources & limits (system tuning)
+solana_limit_ledger_size: "100000000"
+
+# Networking Configuration
+solana_dynamic_port_range: "8000-8020"
+solana_quic_port: 34455
+solana_quic_slot_port: 34456
+
+# QUIC Ports (Optional overrides for specific node types if needed)
+# solana_quic_port: 30455
+# solana_quic_slot_port: 30456
+
+solana_bootstrap_ip: "127.0.0.1"
+
+# Follower configuration
+solana_known_validators: []
+solana_expected_genesis_hash: ""
+
+# Extra arguments for validator
+solana_extra_args:
+  - "--no-os-network-limits-test"
+  - "--limit-ledger-size {{ solana_limit_ledger_size }}"
+  - "--no-poh-speed-test"
+  - "--allow-private-addr"
+  - "--no-wait-for-vote-to-start-leader"
+
+# Bootstrap specific args
+solana_bootstrap_extra_args:
+  - "--full-rpc-api"
+  - "--rpc-bind-address 0.0.0.0"
+  - "--full-snapshot-interval-slots 500"
+
+# Follower specific args
+solana_follower_extra_args:
+  - "--only-known-rpc"
+
+# Optional sidecar integration
+ackermann_sidecar_pubkey: ""
+ackermann_regular_port: "34455"
+ackermann_slot_inclusion_port: "34456"
+
+# Optional externally managed secret values. Empty values cause the role to
+# generate development keypairs locally on the target node.
+ansible_become_password: "{{ vault_solana_become_password | default('') }}"
+solana_identity_key: "{{ vault_solana_identity_key | default('') }}"
+solana_vote_key: "{{ vault_solana_vote_key | default('') }}"
+solana_stake_key: "{{ vault_solana_stake_key | default('') }}"
+solana_faucet_key: "{{ vault_solana_faucet_key | default('') }}"

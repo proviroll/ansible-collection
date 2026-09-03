@@ -1,24 +1,20 @@
 #Collection Galaxy metadata Structure can be found here: https://docs.ansible.com/ansible/latest/dev_guide/collections_galaxy_meta.html
 
-namespace: chainsafe
-name: general
-version: "0.0.1"
+namespace: proviroll
+name: ansible_collection
+version: "1.0.0"
 readme: README.md
-description: Ansible collection containing playbooks, roles, modules, and plugins used for server configuration in Chainsafe.
-license_file: 'LICENSE.md'
-repository: https://github.com/ChainSafe/ansible-collection
-documentation: https://github.com/ChainSafe/ansible-collection
-homepage: https://github.com/ChainSafe/ansible-collection
-issues: https://github.com/ChainSafe/ansible-collection/issues
+description: Reusable Ansible roles and playbooks for blockchain and supporting infrastructure.
+license_file: 'LICENSE'
+repository: https://github.com/proviroll/ansible-collection
+documentation: https://github.com/proviroll/ansible-collection
+homepage: https://github.com/proviroll/ansible-collection
+issues: https://github.com/proviroll/ansible-collection/issues
 dependencies:
   "community.docker": ">=3.0.0,<4.0.0"
   "community.general": ">=6.0.0,<7.0.0"
   "ansible.posix": ">=1.0.0,<2.0.0"
 authors:
-  - "Josh (https://github.com/joshdougall)"
-  - "Amine https://github.com/Aminechakr"
-  - "Samuel https://github.com/samuelarogbonlo"
-  - "Hamid (https://github.com/hamidmuslih)"
-  - "Faith Olapade (https://github.com/Faithtosin)"
+  - Proviroll
 build_ignore:
   - .github

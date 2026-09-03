@@ -13,7 +13,7 @@ non_root_group: "1000"
 
 polkadot_args:
   - --base-path "{{polkadot_container_data_dir}}"
-  - --name Chainsafe-validator
+  - --name proviroll-validator
   - --chain="{{network}}"
 
 docker_log_driver: json-file
